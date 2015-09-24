@@ -1,16 +1,5 @@
-/*
-    IFJ 2013
-
-    xmarko07 - AntonÃ­n Marko
-    xmahne00 - Jakub Mahnert
-    xkurit00 - Jakub KuÅ™itka
-    xkubic34 - Martin KubÃ­Äek
-    xlechp00  - Pali Lech
-
-    "Let the C language die."
- */
-
 //jednoducha knihovna pro praci s nekonecne dlouhymi retezci
+// TODO: volame gc_realloc misto malloc !!
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -26,12 +15,12 @@
 string* new_str(char* txt)
 // funkce vytvori novy retezec
 {
-	string* s = (string*)gc_malloc(sizeof(string));
+	string* s = (string*)malloc(sizeof(string));
 	if (!s) {
 		return NULL;
 	}
 
-    if ((s->str = (char*)gc_malloc(sizeof(char) * STR_LEN_INC)) == NULL) {
+    if ((s->str = (char*)malloc(sizeof(char) * STR_LEN_INC)) == NULL) {
         // malloc error
         return NULL;
     }
@@ -67,6 +56,7 @@ string* cat_str(string* str1, string* str2) {
 int add_char(string* s, char c) {
    if (s->len + 1 >= s->alloc_size) {
       // pamet nestaci, je potreba provest realokaci
+      // TODO :: tady volame realloc
       if ((s->str = (char*)gc_realloc(s->str, (s->len + STR_LEN_INC) * sizeof(char))) == NULL)
          return false;
       s->alloc_size = s->len + STR_LEN_INC;
