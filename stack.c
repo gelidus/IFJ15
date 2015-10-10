@@ -28,7 +28,7 @@ void stack_free(struct stack* s)
 // Pushnuti do zasobniku
 void stack_push(struct stack* s, string* arr)
 {
-	if((s->node = (struct element*) gc_malloc(sizeof(struct element))) == NULL)
+	if((s->node = (struct element*) malloc(sizeof(struct element))) == NULL)
 		return;
 
 	s->node->value = arr;

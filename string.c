@@ -1,9 +1,10 @@
 //jednoducha knihovna pro praci s nekonecne dlouhymi retezci
 // TODO: volame gc_realloc misto malloc !!
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdbool.h>
-#include "str.h"
+#include <malloc.h>
+#include "string.h"
 #include "gc.h"
 
 #define STR_LEN_INC 8
@@ -57,7 +58,7 @@ int add_char(string* s, char c) {
    if (s->len + 1 >= s->alloc_size) {
       // pamet nestaci, je potreba provest realokaci
       // TODO :: tady volame realloc
-      if ((s->str = (char*)gc_realloc(s->str, (s->len + STR_LEN_INC) * sizeof(char))) == NULL)
+      if ((s->str = (char*)realloc(s->str, (s->len + STR_LEN_INC) * sizeof(char))) == NULL)
          return false;
       s->alloc_size = s->len + STR_LEN_INC;
    }

@@ -1,6 +1,10 @@
 #include <stdio.h>
-#include "interpret.h"
 
 int main(int argc, char *argv[]) {
+	if (argc < 2) { // input program not specified
+		return 0;
+	}
+
+	const char *file = argv[1];
 
 }

@@ -5,10 +5,6 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-// barvicky na hezci debug
-#define C_B "\x1b[34m"
-#define C_R "\x1b[0m"
-
 // postupne doplnit
 enum token_type {
     T_ID,// 0
@@ -57,7 +53,7 @@ struct symbol_table_data
 {
 	double numeric_data;
 	string* string_data;
-	enum ast_literal_type literal_type;
+	//enum ast_literal_type literal_type;
 };
 struct symbol_table
 {
@@ -65,7 +61,7 @@ struct symbol_table
 	char* key;
 
 	//typ obsahu
-	enum ast_var_type var_type;
+	//enum ast_var_type var_type;
 
 	//datova struktura
 	struct symbol_table_data d;

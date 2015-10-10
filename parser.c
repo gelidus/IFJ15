@@ -7,6 +7,8 @@
 
 #define PRINT  1
 
+/*
+
 
 bool run()
 {
@@ -133,3 +135,5 @@ bool token_comma()
     if (PRINT) printf('\tparser: comma\n');
     return except(T_COMMA);
 }
+
+ */

@@ -1,5 +1,5 @@
-#include ast.h
-
+#include "ast.h"
+/*
 #define PRINT 1
 
 struct ast_node* ast_create_node()
@@ -12,3 +12,4 @@ struct ast_node* ast_create_node()
 
     return n;
 }
+*/
