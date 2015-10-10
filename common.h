@@ -5,6 +5,10 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+// barvicky na hezci debug
+#define C_B "\x1b[34m"
+#define C_R "\x1b[0m"
+
 // postupne doplnit
 enum token_type {
     T_ID,// 0
@@ -110,6 +114,8 @@ typedef enum ERROR_CODES {
 		if(!e) return false;
 
 // ocekava validitu
+// a taky ocekava, ze se datova struktura jmenuje d
+// kdyz se d nebude jmenovat, tak to nebude fungovat !
 #define EXPECT_VALIDITY(d)\
         if(d->error != 0) return false;
 
