@@ -5,6 +5,5 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 
-	const char *file = argv[1];
-
+	const char *file = argv[1]; // save this to the scanner instead
 }
