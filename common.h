@@ -42,13 +42,20 @@ enum token_type {
     T_THE_END // 33
 };
 
+enum literal type
+{
+    T_STRING,
+    T_DOUBLE,
+    T_INT
+}
+
 // nejsem si jistej, jestli to je potreba
 struct symbol_table_data
 {
 	double numeric_data;
 	string* string_data;
     // proc nebudeme mit typ literalu?
-	//enum ast_literal_type literal_type;
+	enum literal_type literal_type;
 };
 struct symbol_table
 {
