@@ -53,6 +53,7 @@ struct symbol_table_data
 {
 	double numeric_data;
 	string* string_data;
+    // proc nebudeme mit typ literalu?
 	//enum ast_literal_type literal_type;
 };
 struct symbol_table

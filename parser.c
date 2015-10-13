@@ -7,18 +7,26 @@
 
 #define PRINT  1
 
+struct data d;
 
-bool run()
+
+struct data parser_run()
 {
     EXPECT(program_body());
 
-    return true;
+    return d;
 }
 
 bool parse_function_call()
 {
     EXPECT(token_id())
 
+}
+
+// alokace, nastaveni
+void parser_prepare(struct data* data)
+{
+    d = data;
 }
 
 bool no_errors()
