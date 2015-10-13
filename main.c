@@ -1,19 +1,27 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include "common.h"
+#include "parser.h"
 
-struct data d;
+
+struct data* d;
+
+
+int check_params(int argc, char *argv[]);
 
 int main(int argc, char *argv[]) {
 	// nebudeme do mainu zanaset kousky logiky, testy na existenci zdrojoveho souboru apod. testujeme tady
-	if (int result = check_params(argc, argv)) {
+	int result;
+	if ((result = check_params(argc, argv))) {
 		return result;
 	}
 
 	// naalokujeme sdilenou datovou strukturu
-	d = malloc(sizeof(struct data));
+	d = (struct data* )malloc(sizeof(struct data));
 
 	// parse
-	parser_prepare(*d);
-	*d = parser_run();
+	parser_prepare(d);
+	d = parser_run();
 
 	const char *file = argv[1]; // save this to the scanner instead
 }

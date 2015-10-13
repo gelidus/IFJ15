@@ -5,22 +5,31 @@
 #include "string.h"
 #include "interpret.h"
 
-#define PRINT  1
+#define PRINT 1
 
-struct data d;
+bool program_body();
+bool expect(enum token_type t);
+
+struct data* d;
 
 
-struct data parser_run()
+struct data* parser_run()
 {
-    EXPECT(program_body());
+    expect(program_body());
 
     return d;
 }
 
+bool program_body()
+{
+    return true;
+}
+
 bool parse_function_call()
 {
-    EXPECT(token_id())
+    // EXPECT(token_id())
 
+    return true;
 }
 
 // alokace, nastaveni
@@ -31,26 +40,27 @@ void parser_prepare(struct data* data)
 
 bool no_errors()
 {
-    return d->error = E_OK;
+    return d->error == CODE_OK;
 }
 
 // je dalsi token ten, ktery chci?
 bool accept(enum token_type t)
 {
-    if (PRINT) printf('\tparser: accepting token type %d\n', t);
+    if (PRINT) printf("\tparser: accepting token type %d\n", t);
     return t == d->token->type && no_errors();
 }
 
 // ocekavam na vstupu token, prijmu ho a prectu dalsi
-bool expect(enum token_type t, ERROR_CODE error)
+bool expect(enum token_type t)
 {
-    if (PRINT) printf('\tparser: expecting token type %d\n', t);
+    if (PRINT) printf("\tparser: expecting token type %d\n", t);
     if (! accept(t)) {
-        d->error = error;
+        d->error = CODE_ERROR_SYNTAX;
         return false;
     }
 
-    EXPECT(get_token());
+    get_token();
+    EXPECT(no_errors());
 
     return true;
 }
@@ -58,14 +68,14 @@ bool expect(enum token_type t, ERROR_CODE error)
 // TODO: mame vsechny z enumu?
 bool token_empty()
 {
-    if (PRINT) printf('\tparser: empty\n');
-    return except(T_THE_END);
+    if (PRINT) printf("\tparser: empty\n");
+    return expect(T_THE_END);
 }
 
 bool token_id(string* id)
 {
-    if (PRINT) printf('\tparser: ID\n');
-    EXPECT(except(T_ID));
+    if (PRINT) printf("\tparser: ID\n");
+    EXPECT(expect(T_ID));
 
     id = d->token->data;
 
@@ -74,8 +84,8 @@ bool token_id(string* id)
 
 bool token_variable(string* var)
 {
-    if (PRINT) printf('\tparser: variable\n');
-    EXPECT(except(T_VAR));
+    if (PRINT) printf("\tparser: variable\n");
+    EXPECT(expect(T_VAR));
 
     var = d->token->data;
 
@@ -84,60 +94,60 @@ bool token_variable(string* var)
 
 bool token_if()
 {
-    if (PRINT) printf('\tparser: if\n');
-    return except(T_IF);
+    if (PRINT) printf("\tparser: if\n");
+    return expect(T_IF);
 }
 
 bool token_else()
 {
-    if (PRINT) printf('\tparser: else\n');
-    return except(T_ELSE);
+    if (PRINT) printf("\tparser: else\n");
+    return expect(T_ELSE);
 }
 
 bool token_while()
 {
-    if (PRINT) printf('\tparser: while\n');
-    return except(T_WHILE);
+    if (PRINT) printf("\tparser: while\n");
+    return expect(T_WHILE);
 }
 
 bool token_return()
 {
-    if (PRINT) printf('\tparser: return\n');
-    return except(T_RETURN);
+    if (PRINT) printf("\tparser: return\n");
+    return expect(T_RETURN);
 }
 
 bool token_left_par()
 {
-    if (PRINT) printf('\tparser: left parenthesis\n');
-    return except(T_LPAR);
+    if (PRINT) printf("\tparser: left parenthesis\n");
+    return expect(T_LPAR);
 }
 
 bool token_right_par()
 {
-    if (PRINT) printf('\tparser: right parenthesis\n');
-    return except(T_RPAR);
+    if (PRINT) printf("\tparser: right parenthesis\n");
+    return expect(T_RPAR);
 }
 
 bool token_left_brace()
 {
-    if (PRINT) printf('\tparser: left brace\n');
-    return except(T_LBRACE);
+    if (PRINT) printf("\tparser: left brace\n");
+    return expect(T_LBRACE);
 }
 
 bool token_right_brace()
 {
-    if (PRINT) printf('\tparser: right brace\n');
-    return except(T_RBRACE);
+    if (PRINT) printf("\tparser: right brace\n");
+    return expect(T_RBRACE);
 }
 
 bool token_semicolon()
 {
-    if (PRINT) printf('\tparser: semicolon\n');
-    return except(T_SEMICOLON);
+    if (PRINT) printf("\tparser: semicolon\n");
+    return expect(T_SEMICOLON);
 }
 
 bool token_comma()
 {
-    if (PRINT) printf('\tparser: comma\n');
-    return except(T_COMMA);
+    if (PRINT) printf("\tparser: comma\n");
+    return expect(T_COMMA);
 }
