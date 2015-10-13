@@ -41,13 +41,7 @@ enum token_type {
     T_CONCATENATE, // 32
     T_THE_END // 33
 };
-struct token
-{
-    enum token_type type;
-    int line;
 
-    string* data;
-};
 // nejsem si jistej, jestli to je potreba
 struct symbol_table_data
 {
@@ -74,6 +68,33 @@ struct symbol_table
 	//leva a prava podvetev
 	struct symbol_table *left;
 	struct symbol_table *right;
+};
+
+// doplnim postupne
+enum instruction_type {
+    INST_ASSIGN,
+    INST_WHILE,
+    INST_IF,
+    INST_FN_CALL,
+    INST_RETURN,
+    INST_COUT
+};
+
+typedef struct instruction {
+    enum instruction_type type;
+    struct symbol_table *source1;
+    struct symbol_table *source2;
+    void *destination;
+
+    struct instruction *next;
+} instruction;
+
+struct token
+{
+    enum token_type type;
+    int line;
+
+    string* data;
 };
 
 struct data
