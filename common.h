@@ -80,11 +80,16 @@ struct symbol_table
 // doplnim postupne
 enum instruction_type {
     INST_ASSIGN,
+    // odlisna od prirazeni!
+    INST_VAR_CREATE,
     INST_WHILE,
     INST_IF,
     INST_FN_CALL,
     INST_RETURN,
-    INST_COUT
+    INST_COUT,
+    INST_CIN,
+    INST_FN_DEFINITION,
+    INST_FOR,
 };
 
 typedef struct instruction {
