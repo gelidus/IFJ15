@@ -4,25 +4,26 @@
 #include "scanner.h"
 #include "string.h"
 #include "interpret.h"
+#include "stdlib.h"
 
 #define PRINT 1
 
 bool program_body();
 bool expect(enum token_type t);
+bool parse_program_body();
+
 
 struct data* d;
 
 
 struct data* parser_run()
 {
-    expect(program_body());
+    int result = expect(parse_program_body());
+    if (! result) {
+        d->error = CODE_ERROR_SYNTAX;
+    }
 
     return d;
-}
-
-bool program_body()
-{
-    return true;
 }
 
 bool parse_function_call()
@@ -36,6 +37,7 @@ bool parse_function_call()
 void parser_prepare(struct data* data)
 {
     d = data;
+    d->instructions = malloc(sizeof(instruction));
 }
 
 bool no_errors()
@@ -64,6 +66,23 @@ bool expect(enum token_type t)
 
     return true;
 }
+
+bool parse_program_block()
+{
+    return true;
+}
+
+bool parse_program_body()
+{
+    get_token();
+
+    EXPECT(no_errors());
+
+    EXPECT(parse_program_block());
+
+    return true;
+}
+
 
 // TODO: mame vsechny z enumu?
 bool token_empty()

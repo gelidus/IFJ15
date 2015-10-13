@@ -42,12 +42,12 @@ enum token_type {
     T_THE_END // 33
 };
 
-enum literal type
+enum literal_type
 {
-    T_STRING,
-    T_DOUBLE,
-    T_INT
-}
+    LITERAL_STRING,
+    LITERAL_DOUBLE,
+    LITERAL_INT
+};
 
 // nejsem si jistej, jestli to je potreba
 struct symbol_table_data
@@ -90,6 +90,8 @@ enum instruction_type {
     INST_CIN,
     INST_FN_DEFINITION,
     INST_FOR,
+    // binarni operace
+    INST_BIN_OP,
 };
 
 typedef struct instruction {
@@ -118,7 +120,7 @@ struct data
     FILE* file; // soubor, ktery bude interpretovan
     struct symbol_table* functions;
     struct symbol_table* vars;
-    struct ast_node* tree;
+    struct instruction* instructions;
 };
 
 typedef enum ERROR_CODES {
