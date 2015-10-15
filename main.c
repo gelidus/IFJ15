@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "common.h"
 #include "parser.h"
+#include "gc.h"
 
 
 struct data* d;
@@ -17,7 +18,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// naalokujeme sdilenou datovou strukturu
-	d = (struct data* )malloc(sizeof(struct data));
+	d = (struct data* )gc_malloc(sizeof(struct data));
 
 	// parse
 	parser_prepare(d);

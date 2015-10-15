@@ -1,7 +1,7 @@
-#include "string.h"
-
 #ifndef STACK_H
 #define STACK_H
+
+#include "string.h"
 
 struct element{
 	string* value;

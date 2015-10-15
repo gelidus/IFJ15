@@ -1,7 +1,8 @@
-#include "string.h"
-
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
+
+#include "string.h"
+
 
 int length(string* s);
 string substr(string* source, int offset, int length);

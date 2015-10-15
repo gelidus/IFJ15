@@ -5,6 +5,7 @@
 #include "string.h"
 #include "interpret.h"
 #include "stdlib.h"
+#include "gc.h"
 
 #define PRINT 1
 
@@ -37,7 +38,7 @@ bool parse_function_call()
 void parser_prepare(struct data* data)
 {
     d = data;
-    d->instructions = malloc(sizeof(instruction));
+    d->instructions = gc_malloc(sizeof(instruction));
 }
 
 bool no_errors()

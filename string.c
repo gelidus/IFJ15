@@ -1,5 +1,5 @@
 //jednoducha knihovna pro praci s nekonecne dlouhymi retezci
-// TODO: volame gc_realloc misto malloc !!
+// TODO: volame gc_realloc misto gc_malloc !!
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -16,13 +16,13 @@
 string* new_str(char* txt)
 // funkce vytvori novy retezec
 {
-	string* s = (string*)malloc(sizeof(string));
+	string* s = (string*)gc_malloc(sizeof(string));
 	if (!s) {
 		return NULL;
 	}
 
-    if ((s->str = (char*)malloc(sizeof(char) * STR_LEN_INC)) == NULL) {
-        // malloc error
+    if ((s->str = (char*)gc_malloc(sizeof(char) * STR_LEN_INC)) == NULL) {
+        // gc_malloc error
         return NULL;
     }
 
