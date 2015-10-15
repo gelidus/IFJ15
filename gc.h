@@ -13,12 +13,12 @@
 	#define gc_free(x)
 #endif
 
-void _gc_malloc(void *x) {
-
+void* _gc_malloc(int size) {
+	return malloc(size);
 }
 
-void _gc_free(void *x) {
-
+void _gc_free() {
+	// nebudeme zatim volat
 }
 
 #endif //IFJ_GC_H
