@@ -1,8 +1,14 @@
-ast.o: ast.c ast.h
-functions.o: functions.c functions.h string.h
+scanner.o: scanner.c common.h
 interpret.o: interpret.c
-main.o: main.c common.h string.h parser.h gc.h
-parser.o: parser.c common.h string.h parser.h scanner.h interpret.h gc.h
-scanner.o: scanner.c common.h string.h
-stack.o: stack.c stack.h string.h gc.h
+ast.o: ast.c ast.h
+input.o: input.c input.h errors.h
+functions.o: functions.c functions.h string.h
+ial.o: ial.c ial.h errors.h
+main.o: main.c common.h parser.h string.h gc.h
 string.o: string.c string.h gc.h
+gc.o: gc.c gc.h
+finite.o: finite.c finite.h input.h errors.h
+main2.o: main2.c errors.h input.h ial.h finite.h
+stack.o: stack.c stack.h string.h
+parser.o: parser.c common.h parser.h string.h gc.h
+errors.o: errors.c errors.h

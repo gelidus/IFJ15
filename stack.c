@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include "stack.h"
 #include "string.h"
-#include "gc.h"
-
+//#include "gc.h"
+/*
 // Inicializace zasobniku
 void stack_init(struct stack* s)
 {
@@ -59,3 +59,4 @@ string* stack_top(struct stack* s)
 	} else
 		return NULL;
 }
+*/

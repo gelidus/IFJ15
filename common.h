@@ -1,9 +1,10 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#define DEBUG true
+
 #include <stdio.h>
-#include <string.h>
-#include "string.h"
+#include <stdlib.h>
 
 // postupne doplnit
 enum token_type {
@@ -49,34 +50,6 @@ enum literal_type
     LITERAL_INT
 };
 
-// nejsem si jistej, jestli to je potreba
-struct symbol_table_data
-{
-	double numeric_data;
-	string* string_data;
-    // proc nebudeme mit typ literalu?
-	enum literal_type literal_type;
-};
-struct symbol_table
-{
-	//klic a nebo nazev promenne
-	char* key;
-
-	//typ obsahu
-	//enum ast_var_type var_type;
-
-	//datova struktura
-	struct symbol_table_data d;
-
-	//v pripade funkce pro uchovani posloupnosti prikazu
-	struct ast_node* statement;
-	struct ast_list* params;
-
-	//leva a prava podvetev
-	struct symbol_table *left;
-	struct symbol_table *right;
-};
-
 // doplnim postupne
 enum instruction_type {
     INST_ASSIGN,
@@ -102,14 +75,6 @@ typedef struct instruction {
 
     struct instruction *next;
 } instruction;
-
-struct token
-{
-    enum token_type type;
-    int line;
-
-    string* data;
-};
 
 struct data
 {

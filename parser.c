@@ -1,10 +1,6 @@
 #include <stdbool.h>
 #include "common.h"
 #include "parser.h"
-#include "scanner.h"
-#include "string.h"
-#include "interpret.h"
-#include "stdlib.h"
 #include "gc.h"
 
 #define PRINT 1

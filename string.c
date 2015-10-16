@@ -1,7 +1,6 @@
 //jednoducha knihovna pro praci s nekonecne dlouhymi retezci
 // TODO: volame gc_realloc misto gc_malloc !!
 #include <stdio.h>
-#include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include "string.h"
@@ -37,6 +36,7 @@ string* new_str(char* txt)
 	}
 
 	return s;
+	return NULL;
 }
 
 // funkce vymaze obsah retezce
