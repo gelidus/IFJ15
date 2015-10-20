@@ -2,12 +2,15 @@
 #include "common.h"
 #include "parser.h"
 #include "gc.h"
+#include "scanner.h"
 
 #define PRINT 1
 
 bool program_body();
 bool expect(enum token_type t);
 bool parse_program_body();
+bool parse_statement(instruction* instr, bool in_root);
+bool token_empty();
 
 
 struct data* d;
@@ -64,8 +67,46 @@ bool expect(enum token_type t)
     return true;
 }
 
-bool parse_program_block()
+bool parse_statement(instruction* instr, bool in_root)
 {
+    // create var
+    // while
+    // if
+    // return
+    // fn_call
+    //function declaration
+    // dopln kod
+
+    return true;
+}
+
+bool parse_program_block(instruction* instr, bool in_root)
+{
+    // prepare instruction list or smth
+    // TODO: do
+
+    while(true) {
+        // posledni token ale nejsme v bloku?
+        if (!in_root && token_empty()) {
+            d->error = CODE_ERROR_SYNTAX;
+            return false;
+        // posledni token v mainu programu je poslednim tokenem
+        } else if (in_root && token_empty()) {
+            break;
+        // zavrena zavorka v bloku je konec bloku
+        } else if (accept(T_RBRACE)) {
+            break;
+        }
+
+        // prepare current instruction or smth
+        // TODO: do
+
+        EXPECT(parse_statement(instr, in_root))
+
+        // insert statement in list
+        // TODO: do
+    }
+
     return true;
 }
 
@@ -75,7 +116,9 @@ bool parse_program_body()
 
     EXPECT(no_errors());
 
-    EXPECT(parse_program_block());
+    instruction* instr = NULL;
+
+    EXPECT(parse_program_block(instr, true));
 
     return true;
 }
