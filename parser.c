@@ -10,7 +10,7 @@
 bool program_body();
 bool expect(enum token_type t);
 bool parse_program_body();
-bool parse_statement(instruction* instr, bool in_root);
+bool parse_statement(struct ast_node* instr, bool in_root);
 bool token_empty();
 
 
@@ -38,7 +38,8 @@ bool parse_function_call()
 void parser_prepare(struct data* data)
 {
     d = data;
-    d->tree = ast_create_tree();
+    // inicializace stromu
+    d->tree = ast_create_node();
 }
 
 bool no_errors()
@@ -68,7 +69,7 @@ bool expect(enum token_type t)
     return true;
 }
 
-bool parse_statement(instruction* instr, bool in_root)
+bool parse_statement(struct ast_node* node, bool in_root)
 {
     // create var
     // while
@@ -81,11 +82,12 @@ bool parse_statement(instruction* instr, bool in_root)
     return true;
 }
 
-bool parse_program_block(instruction* instr, bool in_root)
+bool parse_program_block(struct ast_node* node, bool in_root)
 {
-    // prepare instruction list or smth
-    // TODO: do
+    // prepare instruction list
+    node->d.list = ast_create_list();
 
+    struct ast_node* new_node;
     while(true) {
         // posledni token ale nejsme v bloku?
         if (!in_root && token_empty()) {
@@ -100,12 +102,16 @@ bool parse_program_block(instruction* instr, bool in_root)
         }
 
         // prepare current instruction or smth
-        // TODO: do
+        new_node = ast_create_node();
 
-        EXPECT(parse_statement(instr, in_root))
+        EXPECT(parse_statement(new_node, in_root))
 
         // insert statement in list
-        // TODO: do
+        ast_list_insert(node->d.list, new_node);
+
+        if (token_empty()) {
+            break;
+        }
     }
 
     return true;
@@ -117,9 +123,7 @@ bool parse_program_body()
 
     EXPECT(no_errors());
 
-    instruction* instr = NULL;
-
-    EXPECT(parse_program_block(instr, true));
+    EXPECT(parse_program_block(d->tree, true));
 
     return true;
 }

@@ -7,13 +7,11 @@
 
 struct ast_node* ast_create_node();
 struct ast_list* ast_create_list();
-struct ast_node* ast_create_tree();
 
 bool ast_list_insert(struct ast_list* l, struct ast_node* n);
 struct ast_list* ast_list_get_last(struct ast_list* l);
 void ast_list_print(struct ast_list* l);
 void ast_node_print(struct ast_node* n);
-
 
 
 // ENUMY PRO abstraktni syntakticky strom
@@ -88,6 +86,13 @@ struct ast_node
 
     struct ast_node* left;
     struct ast_node* right;
+};
+
+// seznam instrukci
+struct ast_list
+{
+    struct ast_node* elem;
+    struct ast_list* next;
 };
 
 #endif

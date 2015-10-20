@@ -1,15 +1,25 @@
 #include "ast.h"
-/*
-#define PRINT 1
+#include <stdlib.h>
 
 struct ast_node* ast_create_node()
 {
-    struct ast_node* n = (struct ast_node*) gc_malloc(sizeof(struct ast_node));
+    struct ast_node* node = (struct ast_node*) malloc(sizeof(struct ast_node));
+    node->left = NULL;
+    node->right = NULL;
 
-    if ( PRINT ) printf("ast:ast_create_node:%p\n", (void*)n);
-    n->left =  NULL;
-    n->right = NULL;
-
-    return n;
+    return node;
 }
-*/
+
+struct ast_list* ast_create_list()
+{
+    struct ast_list* list = (struct ast_list*) malloc(sizeof(struct ast_list));
+    list->next = NULL;
+
+    return list;
+}
+
+bool ast_list_insert(struct ast_list* l, struct ast_node* n)
+{
+    //TODO:: insert!!!!
+    return true;
+}
