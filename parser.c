@@ -84,7 +84,7 @@ bool parse_statement(struct ast_node* node, bool in_root)
 
 bool parse_program_block(struct ast_node* node, bool in_root)
 {
-    // prepare instruction list
+    // priprav seznam instrukci bloku
     node->d.list = ast_create_list();
 
     struct ast_node* new_node;
@@ -101,14 +101,15 @@ bool parse_program_block(struct ast_node* node, bool in_root)
             break;
         }
 
-        // prepare current instruction or smth
+        // soucasna instrukce
         new_node = ast_create_node();
 
         EXPECT(parse_statement(new_node, in_root))
 
-        // insert statement in list
+        // vloz do seznamu
         ast_list_insert(node->d.list, new_node);
 
+        // mozna jde prepsat?
         if (token_empty()) {
             break;
         }
