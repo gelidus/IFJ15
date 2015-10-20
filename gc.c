@@ -3,7 +3,11 @@
 //
 
 #include "gc.h"
-#include <malloc.h>
+// malloc.h is non-standard linux-specific header.
+// malloc() function always exists in stdlib.h - it's guaranteed by standard.
+// https://code.google.com/p/word2vec/issues/detail?id=17
+// #include<malloc.h>
+#include <stdlib.h>
 
 void* gc_malloc(int size) {
 	return malloc((size_t)size);
