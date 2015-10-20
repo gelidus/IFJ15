@@ -85,7 +85,7 @@ struct data
     FILE* file; // soubor, ktery bude interpretovan
     struct symbol_table* functions;
     struct symbol_table* vars;
-    struct instruction* instructions;
+    struct ast_node* tree;
 };
 
 typedef enum ERROR_CODES {

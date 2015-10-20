@@ -1,8 +1,23 @@
+
+#ifndef AST_H
+#define AST_H
+
+#include <stdbool.h>
+#include "string.h"
+
+struct ast_node* ast_create_node();
+struct ast_list* ast_create_list();
+struct ast_node* ast_create_tree();
+
+bool ast_list_insert(struct ast_list* l, struct ast_node* n);
+struct ast_list* ast_list_get_last(struct ast_list* l);
+void ast_list_print(struct ast_list* l);
+void ast_node_print(struct ast_node* n);
+
+
+
 // ENUMY PRO abstraktni syntakticky strom
-
-// mozna se nepouzijou, jeste nevim !
-
-
+// po libosti upravujte
 enum ast_node_type
 {
     AST_STATEMENT, // v sobe obsahuje cokoliv
@@ -24,7 +39,7 @@ enum ast_var_type
     AST_VAR_DOUBLE,
     AST_VAR_STRING,
     AST_VAR_BOOLEAN,
-    AST_VAR_NULL,  // pouze hodnota null
+    AST_VAR_NULL  // pouze hodnota null
 };
 
 enum ast_literal_type
@@ -52,3 +67,27 @@ enum ast_binary_op_type
     AST_BINARY_STRICT_NOT_EQUALS, //11
 	AST_BINARY_STRING_CONCATENATION //12
 };
+
+
+// po libosti upravujte, kdyz vam neco nesedi!
+struct ast_node
+{
+    enum ast_node_type type;
+
+    union ast_node_data
+    {
+        enum ast_binary_op_type binary; // typ binarni operace
+        string* string_data; // nazev fce, nebo promenne, text
+        double numeric_data;
+        struct ast_node* condition; //pro podminku u if
+        struct ast_list* list; // pro uchovavani agumentu, statement body, function body, if body, else body..
+    } d;
+
+    enum ast_var_type var_type;
+    enum ast_literal_type literal; // typ konstanty
+
+    struct ast_node* left;
+    struct ast_node* right;
+};
+
+#endif

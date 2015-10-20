@@ -3,6 +3,7 @@
 #include "parser.h"
 #include "gc.h"
 #include "scanner.h"
+#include "ast.h"
 
 #define PRINT 1
 
@@ -37,7 +38,7 @@ bool parse_function_call()
 void parser_prepare(struct data* data)
 {
     d = data;
-    d->instructions = gc_malloc(sizeof(instruction));
+    d->tree = ast_create_tree();
 }
 
 bool no_errors()
