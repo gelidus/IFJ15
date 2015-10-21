@@ -1,6 +1,7 @@
 #include "common.h"
 #include "parser.h"
 #include "gc.h"
+#include "interpret.h"
 
 struct data* d;
 
@@ -22,6 +23,7 @@ int main(int argc, char *argv[]) {
 	d = parser_run();
 
 	const char *file = argv[1]; // save this to the scanner instead
+
 }
 
 int check_params(int argc, char *argv[])

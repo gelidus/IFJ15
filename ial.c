@@ -18,7 +18,7 @@ void htInit(Ttable_hash *hasht) {
 }
 
 /**
-** Rozptylovaci funkce. Zpracovava klic 
+** Rozptylovaci funkce. Zpracovava klic
 ** a vraci index v rozmezí 0..HTSIZE - 1.
 */
 int hashCode(char *key) {
@@ -36,7 +36,7 @@ int hashCode(char *key) {
 }
 
 /**
-** Vyhleda prvek v tabulce podle klice. 
+** Vyhleda prvek v tabulce podle klice.
 ** V pripade uspechu vraci data, jinak NULL.
 */
 TtitemPtr htSearch(char *key, Ttable_hash *hasht) {
@@ -106,18 +106,18 @@ void htRemoveAll(Ttable_hash *hasht) {
 		temp = (*hasht)[i];
 
 		while (temp != NULL) // V kazde polozce odstranime vsechny jeji prvky
-		{ 
+		{
 			temp2 = temp;
 			temp = temp->nextPtr;
 
 			if (temp2->data != NULL)
 			{
 				if (temp2->data->type == T_STR) // Musime take uvolnit retezec, pokud je.
-					free(temp2->data->val.str); 
+					free(temp2->data->val.str);
 				else if (temp2->data->type == T_FUNC) // Stejne tak lokalni hashovaci tabulku.
 				{
 					if (temp2->data->val.vlFunc.loc_hash != NULL)
-					{ 
+					{
 						htRemoveAll((Ttable_hash*)temp2->data->val.vlFunc.loc_hash);
 						free((Ttable_hash*)temp2->data->val.vlFunc.loc_hash);
 					}
@@ -146,7 +146,7 @@ TData *htRead(char *key, Ttable_hash *hasht) {
 }
 
 /***
-** Zasobnikove funkce 
+** Zasobnikove funkce
 ***/
 
 /**
@@ -156,7 +156,7 @@ int HTstackInit(THTStack *Stack) {
 	Stack->size = MAX_HTSTACK;
 	Stack->top = -1;
 
-	if ((Stack->stack = malloc(sizeof(Ttable_hash *)* MAX_HTSTACK)) == NULL) 
+	if ((Stack->stack = malloc(sizeof(Ttable_hash *)* MAX_HTSTACK)) == NULL)
 		return ERR_INT;
 	for (int i = 0; i < MAX_HTSTACK; i++)
 		Stack->stack[i] = NULL;
@@ -175,10 +175,10 @@ int HTstackPush(THTStack *Stack, Ttable_hash **hasht) {
 		Stack->size += MAX_HTSTACK;
 		Ttable_hash **tmp_st;
 
-		if ((tmp_st = (Ttable_hash **)realloc(Stack->stack,sizeof(Ttable_hash*)*Stack->size)) == NULL)  
+		if ((tmp_st = (Ttable_hash **)realloc(Stack->stack,sizeof(Ttable_hash*)*Stack->size)) == NULL)
 			return ERR_INT;
 
-		Stack->stack = tmp_st; 
+		Stack->stack = tmp_stxw;
 	}
 
 	Stack->stack[Stack->top] = *hasht;
@@ -195,8 +195,8 @@ void HTstackPop(THTStack *Stack) {
 	else
 	{
 	 /*free(Stack->stack[Stack->top]);
-	 Stack->stack[Stack->top]=NULL;*/      
-		Stack->top--; 
+	 Stack->stack[Stack->top]=NULL;*/
+		Stack->top--;
 	}
 
 	return;
@@ -205,7 +205,7 @@ void HTstackPop(THTStack *Stack) {
 /**
 ** Prvek ze shora zasobniku.
 */
-void HTstackTop(THTStack *Stack, Ttable_hash **hasht) { 
+void HTstackTop(THTStack *Stack, Ttable_hash **hasht) {
 	*hasht=Stack->stack[Stack->top];
 
 	return;
@@ -216,7 +216,7 @@ void HTstackTop(THTStack *Stack, Ttable_hash **hasht) {
 */
 void HTstackRemove(THTStack *Stack) {
 	for (int i = 0; i < Stack->top+1; i++)
-		htRemoveAll(Stack->stack[i]); 
+		htRemoveAll(Stack->stack[i]);
 
 	free(Stack->stack);
 
@@ -228,6 +228,33 @@ void HTstackRemove(THTStack *Stack) {
 */
 int HTstore(Ttable_hash *hasht, THTStack *Stack) {
 	return 0;
+}
+
+int length(char* s) {
+	int c = 0;
+	if (!strcmp(s, "")) {
+		return 0;
+	}
+ 	while (s[c] != '\0')
+  	c++;
+ 	return c;
+}
+
+char* substr(char* s, int i, int n) {
+  int max;
+  if(length(s) > i+n)
+    max = i+n-1;
+  else
+    max = length(s)-1;
+  string* str = new_str("");
+  for (i; i <= max; i++) {
+    add_char(str,s[i]);
+  }
+  return str->str;
+}
+
+char* concat(char* s1, char* s2) {
+  return (cat_str(new_str(s1), new_str(s2))->str);
 }
 
 /**sort**/
@@ -291,8 +318,8 @@ int find(char *input, char *pat)
 		}
 
         if (a < 0)
-        {            
-            return tmp;            
+        {
+            return tmp;
         } else {
             tmp += max(1, a - chr[(int)input[tmp+a]]);
 		}

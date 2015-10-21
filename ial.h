@@ -32,7 +32,7 @@ typedef struct FuncForm {
 	void *label;		// Navesti kde zacina funkce.
 } FuncForm;
 
-/** 
+/**
 ** Union (kvuli setreni mista) pro vsechny typy.
 */
 typedef union {
@@ -91,6 +91,9 @@ void HTstackRemove(THTStack *Stack);
 int HTstore(Ttable_hash *hasht, THTStack *Stack);
 void HTrevive(Ttable_hash *hasht, THTStack *Stack, char *key);
 
+int length(char* s);
+char* substr(char* s, int i, int n);
+char* concat(char* s1, char* s2);
 int max(int a, int b);
 char* sort(char* chars);
 int find(char* s, char* search);
