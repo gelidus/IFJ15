@@ -11,9 +11,31 @@
 
 #define CHUNK 256
 
+enum lex_type
+{
+  NO_TYPE,
+  IDENTIFIER,
+  KW_AUTO, KW_CIN, KW_COUT, KW_DOUBLE, KW_ELSE, KW_FOR, KW_IF, KW_INT, KW_RETURN, KW_STRING, //auto, cin, cout, double, else, for, if, int, return, string
+  INTEGER, DOUBLE, STRING, //literaly
+  PLUS, MINUS, MULT, DIVIDE, EQUALS, // + - * / =
+  LT, GT, LTE, GTE, EQ, NEQ, INSOP, EXTOP, // < > <= >= == != << >>
+  LPAR, RPAR, LBR, RBR, // ( ) { }
+  SEMICOLON, COLON, // ; ,
+  END_OF_FILE
+};
+
+enum input_type {
+  LETTER,
+  DIGIT,
+  WHITE_SPACE,
+  UNDERSCORE,
+  END,
+  OTHERS
+};
+
 //structura lexemu
 struct lexeme {
-  enum token_type type; //typ
+  enum lex_type type; //typ
   union {
     unsigned char *string;
     int integer;
@@ -21,11 +43,11 @@ struct lexeme {
   } value; //hodnota ulozena ve value (pokud obsahuje)
 };
 
-enum token_type check_keyword(unsigned char *); //rozlyseni identifikatoru a kw
+enum lex_type check_keyword(unsigned char *); //rozlyseni identifikatoru a kw
 void read_input(); //nacteni znaku ze vstupu
 void return_input(); //vraceni znaku na vstup nacteneho navic pri ukonceni lexemu
 
-void get_token(); //hlavni funkce pro cteni vstupu a vraceni lexemu pro parser
+struct lexeme get_token(); //hlavni funkce pro cteni vstupu a vraceni lexemu pro parser
 
 void free_token(struct lexeme *); //uvolneni struktury lexemu
 

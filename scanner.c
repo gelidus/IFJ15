@@ -10,21 +10,22 @@ const static struct {
 };
 
 static int input_char; //prave nacteny znak
-static enum literal_type input_char_type; //prave nacteny typ znaku
+static enum input_type input_char_type; //prave nacteny typ znaku
 
 static unsigned char temp[CHUNK];
 //static char* safeStr = "74|75|99|111|112|121|114|105|103|104|116";
-static size_t temp_length;
+static int temp_length;
 
 static void save(struct lexeme *, unsigned char); //trvale ulozeni retezce do lexemu
 static void save_temp(unsigned char); //docasne ulozeni stringu
+struct lexeme read_lexeme(void);
 
-static size_t length; //delka retezce
+static int length; //delka retezce
 static int chunks; //zvetsovani bufferu
 
 static char *e_strtod; //osetreni parametru pro prevod cisel double
 
-enum literal_type check_keyword(unsigned char* candidate) {
+enum lex_type check_keyword(unsigned char* candidate) {
   int i = -1;
 
   while(keywords_table[++i].id) //pruchod celou tabulkou symbolu
@@ -55,10 +56,10 @@ void return_input() {
 	return_char(input_char); //vraceni znaku na vstup
 }
 
-void get_token()
+// adapter mezi interfacy
+struct lexeme get_token()
 {
-    struct lexeme lex = read_lexeme();
-
+    return read_lexeme();
 }
 
 //hlavni funkce
@@ -199,7 +200,7 @@ q1: //identifier OK
 			save_temp(0);
 			if((tmpData.type = check_keyword(temp)) == IDENTIFIER) {
 				if((tmpData.value.string = (unsigned char *)malloc(temp_length)) == NULL)
-					throw_error(ERR_INT, "malloc error");
+					throw_error(CODE_ERROR_INTERNAL, "malloc error");
 				memcpy((void *)tmpData.value.string, (void *)temp, temp_length);
 			}
 			return tmpData;
@@ -450,7 +451,7 @@ void save(struct lexeme *tmpData, unsigned char to_save) {
     if(chunks)
       holder = tmpData->value.string; //napln temp
     if((tmpData->value.string = (unsigned char *)malloc(++chunks*CHUNK)) == NULL) //alokuj pamet
-      throw_error(ERR_INT, "malloc error");
+      throw_error(CODE_ERROR_INTERNAL, "malloc error");
     if(holder) {
       memcpy((void *)tmpData->value.string, (void *)holder, length); //kopiruj hodnotu retezce
       free(holder); //uvolni tmp

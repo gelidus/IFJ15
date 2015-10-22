@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include "ial.h"
 #include "errors.h"
+#include "common.h"
+#include "string.h"
 
 int HTSIZE = MAX_HTSIZE;
 
@@ -78,7 +80,7 @@ int htInsert (char *key, Ttable_hash *hasht, TData *data) {
 
 		// Vytvoreni noveho prvku.
 		if ((elem = malloc(sizeof(struct Ttitem))) == NULL)
-			return ERR_INT;
+			return CODE_ERROR_INTERNAL;
 		else
 		{
 			strcpy(elem->key,key);	// Zkopirovani klice.
@@ -157,7 +159,7 @@ int HTstackInit(THTStack *Stack) {
 	Stack->top = -1;
 
 	if ((Stack->stack = malloc(sizeof(Ttable_hash *)* MAX_HTSTACK)) == NULL)
-		return ERR_INT;
+		return CODE_ERROR_INTERNAL;
 	for (int i = 0; i < MAX_HTSTACK; i++)
 		Stack->stack[i] = NULL;
 
@@ -176,9 +178,9 @@ int HTstackPush(THTStack *Stack, Ttable_hash **hasht) {
 		Ttable_hash **tmp_st;
 
 		if ((tmp_st = (Ttable_hash **)realloc(Stack->stack,sizeof(Ttable_hash*)*Stack->size)) == NULL)
-			return ERR_INT;
+			return CODE_ERROR_INTERNAL;
 
-		Stack->stack = tmp_stxw;
+		Stack->stack = tmp_st;
 	}
 
 	Stack->stack[Stack->top] = *hasht;

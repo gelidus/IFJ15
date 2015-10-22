@@ -14,4 +14,6 @@ struct token
 struct data* parser_run();
 void parser_prepare(struct data*);
 
+void get_scanned_token();
+
 #endif

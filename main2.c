@@ -5,7 +5,7 @@
 #include "errors.h"
 #include "input.h"
 #include "ial.h"
-#include "finite.h"
+// #include "finite.h"
 
 // int main(int argc, char** argv) {
 //    //tSTable STable;

@@ -88,6 +88,9 @@ struct data
     struct ast_node* tree;
 };
 
+// TODO: nema tam byt jeste jeden radek?
+// nema tam byt jeste jeden radek?
+// chyba "neni mozne odvodit datovy typ promenne"
 typedef enum ERROR_CODES {
     CODE_OK = 0,
     CODE_ERROR_LEX = 1,

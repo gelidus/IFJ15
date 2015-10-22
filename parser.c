@@ -17,6 +17,14 @@ bool token_empty();
 struct data* d;
 
 
+// interfacova lahudka
+void get_scanned_token()
+{
+    struct lexeme lex = get_token();
+    // nasetovat do datove struktury veci z lex struktury
+}
+
+
 struct data* parser_run()
 {
     int result = expect(parse_program_body());
