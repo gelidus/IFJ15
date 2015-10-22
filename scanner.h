@@ -47,7 +47,7 @@ enum lex_type check_keyword(unsigned char *); //rozlyseni identifikatoru a kw
 void read_input(); //nacteni znaku ze vstupu
 void return_input(); //vraceni znaku na vstup nacteneho navic pri ukonceni lexemu
 
-struct lexeme get_token(); //hlavni funkce pro cteni vstupu a vraceni lexemu pro parser
+struct lexeme read_lexeme(void); // hlavni funkce
 
 void free_token(struct lexeme *); //uvolneni struktury lexemu
 

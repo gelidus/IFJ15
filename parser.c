@@ -18,9 +18,9 @@ struct data* d;
 
 
 // interfacova lahudka
-void get_scanned_token()
+void get_token()
 {
-    struct lexeme lex = get_token();
+    struct lexeme lex = read_lexeme();
     // nasetovat do datove struktury veci z lex struktury
 }
 

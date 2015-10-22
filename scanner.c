@@ -18,7 +18,6 @@ static int temp_length;
 
 static void save(struct lexeme *, unsigned char); //trvale ulozeni retezce do lexemu
 static void save_temp(unsigned char); //docasne ulozeni stringu
-struct lexeme read_lexeme(void);
 
 static int length; //delka retezce
 static int chunks; //zvetsovani bufferu
@@ -54,12 +53,6 @@ void read_input() {
 
 void return_input() {
 	return_char(input_char); //vraceni znaku na vstup
-}
-
-// adapter mezi interfacy
-struct lexeme get_token()
-{
-    return read_lexeme();
 }
 
 //hlavni funkce
