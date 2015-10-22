@@ -5,7 +5,7 @@ const static struct {
   enum lex_type type;
 } keywords_table[] = {
   {"auto", KW_AUTO}, {"cin", KW_CIN}, {"cout", KW_COUT}, {"double", KW_DOUBLE}, {"else", KW_ELSE},
-  {"for", KW_FOR}, {"if", KW_IF}, {"int", KW_INT}, {"return", KW_RETURN}, {"string", KW_STRING}, 
+  {"for", KW_FOR}, {"if", KW_IF}, {"int", KW_INT}, {"return", KW_RETURN}, {"string", KW_STRING},
   {NULL, NO_TYPE}
 };
 
@@ -46,7 +46,7 @@ void read_input() {
   else if(input_char <= 32)
     input_char_type = WHITE_SPACE;
   else if(input_char == '_')
-    input_char_type = UNDERSCORE;    
+    input_char_type = UNDERSCORE;
   else
     input_char_type = OTHERS;
 }
@@ -55,20 +55,26 @@ void return_input() {
 	return_char(input_char); //vraceni znaku na vstup
 }
 
-//hlavni funkce 
+void get_token()
+{
+    struct lexeme lex = read_lexeme();
+
+}
+
+//hlavni funkce
 struct lexeme read_lexeme(void) {
 	struct lexeme tmpData;
 	tmpData.type = NO_TYPE;
 
 	read_input();
-	
-q0: //default state	
+
+q0: //default state
 	switch(input_char_type) {
 		case LETTER:
 			temp_length = 0;
 			save_temp(input_char);
 			read_input();
-			goto q1; //identifier 		
+			goto q1; //identifier
 		case DIGIT:
 			tmpData.type = INTEGER;
 			temp_length = 0;
@@ -121,7 +127,7 @@ q0: //default state
 					}
 					return_input();
 					tmpData.type = LT;
-					return tmpData;					
+					return tmpData;
 				case '>':
 					read_input();
 					if(input_char == '=') {
@@ -140,7 +146,7 @@ q0: //default state
 						tmpData.type = NEQ;
 						return tmpData;
 					}
-					throw_error(ERR_LEX, "invalid input");
+					throw_error(CODE_ERROR_LEX, "invalid input");
 					break;
 				case ';':
 					tmpData.type = SEMICOLON;
@@ -168,15 +174,15 @@ q0: //default state
 					read_input();
 					goto q8; //string
 				default:
-					throw_error(ERR_LEX, "invalid input");
+					throw_error(CODE_ERROR_LEX, "invalid input");
 					break;
 			}
 			break;
 		default:
-			throw_error(ERR_LEX, "invalid input");
+			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;
 	}
-	
+
 q1: //identifier OK
 	switch(input_char_type) {
 		case LETTER:
@@ -198,7 +204,7 @@ q1: //identifier OK
 			}
 			return tmpData;
 	}
-	
+
 q2: //underscored identifier OK
 	switch(input_char_type) {
 		case LETTER:
@@ -214,7 +220,7 @@ q2: //underscored identifier OK
 			return_input();
 			return tmpData;
 	}
-	
+
 q3: //comments or divide OK
 	switch(input_char_type) {
 		case DIGIT:
@@ -224,7 +230,7 @@ q3: //comments or divide OK
 			return tmpData;
 		default:
 			switch(input_char) {
-				case '/':	
+				case '/':
 					//q11
 					do {
 						read_input();
@@ -239,7 +245,7 @@ q3: //comments or divide OK
 					//q12
 					do {
 						do {
-							read_input();		
+							read_input();
 						} while(input_char != '*' && input_char_type != END);
 						if(input_char_type == END) {
 							tmpData.type = END_OF_FILE;
@@ -250,14 +256,14 @@ q3: //comments or divide OK
 							read_input();
 							goto q0; //default state
 						}
-					} while(1);				
+					} while(1);
 				default:
-					throw_error(ERR_LEX, "invalid input");
+					throw_error(CODE_ERROR_LEX, "invalid input");
 					break;
-			}		
+			}
 			break;
 	}
-	
+
 q4: //integer or double OK
 	switch(input_char_type) {
 		case DIGIT:
@@ -266,7 +272,7 @@ q4: //integer or double OK
 			goto q4; //integer or double
 		case WHITE_SPACE:
 			save_temp(0);
-			tmpData.value.integer = atoi((const char *)temp);			
+			tmpData.value.integer = atoi((const char *)temp);
 			return tmpData;
 		case LETTER:
 			if(input_char == 'e' || input_char == 'E') {
@@ -275,10 +281,10 @@ q4: //integer or double OK
 				tmpData.type = DOUBLE;
 				goto q5; //double e
 			} else {
-				throw_error(ERR_LEX, "invalid input");
+				throw_error(CODE_ERROR_LEX, "invalid input");
 				break;
 			}
-		case END:			
+		case END:
 			return_input();
 			save_temp(0);
 			tmpData.value.integer = atoi((const char *)temp);
@@ -292,21 +298,21 @@ q4: //integer or double OK
 			}
 			return_input();
 			save_temp(0);
-			tmpData.value.integer = atoi((const char *)temp);			
+			tmpData.value.integer = atoi((const char *)temp);
 			return tmpData;
 		default:
 			return_input();
 			save_temp(0);
-			tmpData.value.integer = atoi((const char *)temp);			
+			tmpData.value.integer = atoi((const char *)temp);
 			return tmpData;
 	}
-	
+
 q5: //double e OK
 	switch(input_char_type) {
 		case DIGIT:
 			save_temp(input_char);
 			read_input();
-			goto q5; //double e		
+			goto q5; //double e
 		case OTHERS:
 			if(input_char == '+' || input_char == '-') {
 				save_temp(input_char);
@@ -317,12 +323,12 @@ q5: //double e OK
 				save_temp(0);
 				tmpData.value.real = strtod((const char *)temp, &e_strtod);
 				return tmpData;
-			}	
+			}
 		case WHITE_SPACE:
 			save_temp(0);
-			tmpData.value.real = strtod((const char *)temp, &e_strtod);			
+			tmpData.value.real = strtod((const char *)temp, &e_strtod);
 			return tmpData;
-		case END:			
+		case END:
 			return_input();
 			save_temp(0);
 			tmpData.value.real = strtod((const char *)temp, &e_strtod);
@@ -331,9 +337,9 @@ q5: //double e OK
 			return_input();
 			save_temp(0);
 			tmpData.value.real = strtod((const char *)temp, &e_strtod);
-			return tmpData;	
+			return tmpData;
 	}
-	
+
 q6: //double OK
 	switch(input_char_type) {
 		case DIGIT:
@@ -348,14 +354,14 @@ q6: //double OK
 			} else {
 				return_input();
 				save_temp(0);
-				tmpData.value.real = strtod((const char *)temp, &e_strtod);			
+				tmpData.value.real = strtod((const char *)temp, &e_strtod);
 				return tmpData;
 			}
 		case WHITE_SPACE:
 			save_temp(0);
-			tmpData.value.real = strtod((const char *)temp, &e_strtod);			
+			tmpData.value.real = strtod((const char *)temp, &e_strtod);
 			return tmpData;
-		case END:			
+		case END:
 			return_input();
 			save_temp(0);
 			tmpData.value.real = strtod((const char *)temp, &e_strtod);
@@ -363,10 +369,10 @@ q6: //double OK
 		default:
 			return_input();
 			save_temp(0);
-			tmpData.value.real = strtod((const char *)temp, &e_strtod);			
-			return tmpData;		
+			tmpData.value.real = strtod((const char *)temp, &e_strtod);
+			return tmpData;
 	}
-	
+
 q7: //double e +- OK
 	switch(input_char_type) {
 		case DIGIT:
@@ -375,9 +381,9 @@ q7: //double e +- OK
 			goto q7; //double e +-
 		case WHITE_SPACE:
 			save_temp(0);
-			tmpData.value.real = strtod((const char *)temp, &e_strtod);			
+			tmpData.value.real = strtod((const char *)temp, &e_strtod);
 			return tmpData;
-		case END:			
+		case END:
 			return_input();
 			save_temp(0);
 			tmpData.value.real = strtod((const char *)temp, &e_strtod);
@@ -385,10 +391,10 @@ q7: //double e +- OK
 		default:
 			return_input();
 			save_temp(0);
-			tmpData.value.real = strtod((const char *)temp, &e_strtod);			
-			return tmpData;			
+			tmpData.value.real = strtod((const char *)temp, &e_strtod);
+			return tmpData;
 	}
-	
+
 q8: //string OK
 	switch(input_char_type) {
 		case OTHERS:
@@ -396,7 +402,7 @@ q8: //string OK
 				save(&tmpData, input_char);
 				read_input();
 				goto q9;	//escaped string
-			} else if(input_char == '"') {	
+			} else if(input_char == '"') {
 				//q10
 				save(&tmpData, 0);
 				return tmpData;
@@ -405,35 +411,35 @@ q8: //string OK
 			read_input();
 			goto q8; //string
 		case END:
-			throw_error(ERR_LEX, "invalid input");
+			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;
 		case WHITE_SPACE:
 			if(input_char == '\n') {
-				throw_error(ERR_LEX, "invalid input");
+				throw_error(CODE_ERROR_LEX, "invalid input");
 				break;
 			}
-		default:			
+		default:
 			save(&tmpData, input_char);
 			read_input();
 			goto q8;  //string
 	}
-	
+
 q9: //escaped string OK
 	switch(input_char_type) {
 		case END:
-			throw_error(ERR_LEX, "invalid input");
+			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;
 		case WHITE_SPACE:
 			if(input_char == '\n') {
-				throw_error(ERR_LEX, "invalid input");
+				throw_error(CODE_ERROR_LEX, "invalid input");
 				break;
 			}
-		default:			
+		default:
 			save(&tmpData, input_char);
 			read_input();
-			goto q8;  //string			
+			goto q8;  //string
 	}
-	
+
 	return tmpData;
 }
 
@@ -456,7 +462,7 @@ void save(struct lexeme *tmpData, unsigned char to_save) {
 
 void save_temp(unsigned char to_save) {
   if(temp_length >= CHUNK) //pokud neni alokovane misto
-    throw_error(ERR_LEX, "identifier or number too long");
+    throw_error(CODE_ERROR_LEX, "identifier or number too long");
   temp[temp_length++] = to_save; //ulozeni retezce
 }
 

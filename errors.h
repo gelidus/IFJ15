@@ -18,4 +18,4 @@ struct compiler_error {
   char* err_msg;
 };
 
-void throw_error(enum compiler_error_type, const char *);
+void throw_error(ERROR_CODE, const char *);
