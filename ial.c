@@ -285,7 +285,7 @@ char* sort(char* input)
 /**sort**/
 
 /**find**/
-# define MAX 256
+#define MAX 256
 
 int max(int a, int b)
 {

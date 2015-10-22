@@ -6,41 +6,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// postupne doplnit
-enum token_type {
-    T_ID,// 0
-    T_VAR,// 1
-    T_STRING, // 3 ukladani stringu
-    T_FUNCTION, // 4
-    T_IF, // 5
-    T_ELSE, // 6
-    T_WHILE, // 7
-    T_RETURN, // 8
-    T_LPAR, // 9 (
-    T_RPAR, // 10 )
-    T_LBRACE, // 11 {
-    T_RBRACE, // 12}
-    T_NOT, // 13
-    T_PLUS, // 14
-    T_MINUS, // 15
-    T_MULTIPLY, // 16
-    T_DIVIDE, // 17
-    T_LESS, // 18
-    T_MORE, // 19
-    T_LESSOREQ, // 20
-    T_MOREOREQ, // 21
-    T_EQUALS, // 22 ==
-    T_NOTEQUAL, // 23 !=
-    T_STRICTNOTEQ, // !25 ==
-
-    T_ASSIGN, // 26 =
-    T_TRUE, // 27
-    T_FALSE, // 28
-    T_NULL, //29
-    T_COMMA, // 30
-    T_SEMICOLON, // 31
-    T_CONCATENATE, // 32
-    T_THE_END // 33
+enum lex_type
+{
+  NO_TYPE,
+  IDENTIFIER,
+  KW_AUTO, KW_CIN, KW_COUT, KW_DOUBLE, KW_ELSE, KW_FOR, KW_IF, KW_INT, KW_RETURN, KW_STRING, //auto, cin, cout, double, else, for, if, int, return, string
+  KW_WHILE, // while, netusim, jestli tu ma byt.. ?
+  INTEGER, DOUBLE, STRING, //literaly
+  PLUS, MINUS, MULT, DIVIDE, EQUALS, // + - * / =
+  LT, GT, LTE, GTE, EQ, NEQ, INSOP, EXTOP, // < > <= >= == != << >>
+  LPAR, RPAR, LBR, RBR, // ( ) { }
+  SEMICOLON, COLON, // ; ,
+  END_OF_FILE
 };
 
 enum literal_type
@@ -76,11 +53,21 @@ typedef struct instruction {
     struct instruction *next;
 } instruction;
 
+//structura lexemu
+struct lexeme {
+  enum lex_type type; //typ
+  union {
+    unsigned char *string;
+    int integer;
+    double real;
+  } value; //hodnota ulozena ve value (pokud obsahuje)
+};
+
 struct data
 {
     int error; // jsem se ulozi error, ten se dispatchne na nejvyssi urovni
 
-    struct token* token; // aktualni token
+    struct lexeme* token; // aktualni token
 
     FILE* file; // soubor, ktery bude interpretovan
     struct symbol_table* functions;
