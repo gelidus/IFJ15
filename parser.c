@@ -159,7 +159,7 @@ bool token_id(string* id)
     if (PRINT) printf("\tparser: ID\n");
     EXPECT(expect(IDENTIFIER));
 
-    // id = d->token->data;
+    id = new_str(d->token->value.string);
 
     return true;
 }
@@ -169,7 +169,7 @@ bool token_variable(string* var)
     if (PRINT) printf("\tparser: variable\n");
     EXPECT(expect(IDENTIFIER));
 
-    // var = d->token->data;
+    var = new_str(d->token->value.string);
 
     return true;
 }

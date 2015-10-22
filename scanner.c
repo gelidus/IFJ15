@@ -192,7 +192,7 @@ q1: //identifier OK
 			return_input();
 			save_temp(0);
 			if((tmpData.type = check_keyword(temp)) == IDENTIFIER) {
-				if((tmpData.value.string = (unsigned char *)malloc(temp_length)) == NULL)
+				if((tmpData.value.string = (char *)malloc(temp_length)) == NULL)
 					throw_error(CODE_ERROR_INTERNAL, "malloc error");
 				memcpy((void *)tmpData.value.string, (void *)temp, temp_length);
 			}
@@ -443,7 +443,7 @@ void save(struct lexeme *tmpData, unsigned char to_save) {
   if(length>=chunks*CHUNK) { //pokud je delka retezce vetsi nez alokovane
     if(chunks)
       holder = tmpData->value.string; //napln temp
-    if((tmpData->value.string = (unsigned char *)malloc(++chunks*CHUNK)) == NULL) //alokuj pamet
+    if((tmpData->value.string = (char *)malloc(++chunks*CHUNK)) == NULL) //alokuj pamet
       throw_error(CODE_ERROR_INTERNAL, "malloc error");
     if(holder) {
       memcpy((void *)tmpData->value.string, (void *)holder, length); //kopiruj hodnotu retezce

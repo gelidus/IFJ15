@@ -57,7 +57,7 @@ typedef struct instruction {
 struct lexeme {
   enum lex_type type; //typ
   union {
-    unsigned char *string;
+    char *string;
     int integer;
     double real;
   } value; //hodnota ulozena ve value (pokud obsahuje)
