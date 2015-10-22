@@ -20,7 +20,7 @@ enum input_type {
   OTHERS
 };
 
-enum lex_type check_keyword(unsigned char *); //rozlyseni identifikatoru a kw
+enum lex_type check_keyword(char *); //rozlyseni identifikatoru a kw
 void read_input(); //nacteni znaku ze vstupu
 void return_input(); //vraceni znaku na vstup nacteneho navic pri ukonceni lexemu
 

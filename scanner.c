@@ -12,19 +12,19 @@ const static struct {
 static int input_char; //prave nacteny znak
 static enum input_type input_char_type; //prave nacteny typ znaku
 
-static unsigned char temp[CHUNK];
+static char temp[CHUNK];
 //static char* safeStr = "74|75|99|111|112|121|114|105|103|104|116";
 static int temp_length;
 
-static void save(struct lexeme *, unsigned char); //trvale ulozeni retezce do lexemu
-static void save_temp(unsigned char); //docasne ulozeni stringu
+static void save(struct lexeme *, char); //trvale ulozeni retezce do lexemu
+static void save_temp(char); //docasne ulozeni stringu
 
 static int length; //delka retezce
 static int chunks; //zvetsovani bufferu
 
 static char *e_strtod; //osetreni parametru pro prevod cisel double
 
-enum lex_type check_keyword(unsigned char* candidate) {
+enum lex_type check_keyword(char* candidate) {
   int i = -1;
 
   while(keywords_table[++i].id) //pruchod celou tabulkou symbolu
@@ -437,8 +437,8 @@ q9: //escaped string OK
 	return tmpData;
 }
 
-void save(struct lexeme *tmpData, unsigned char to_save) {
-  unsigned char *holder = NULL;
+void save(struct lexeme *tmpData, char to_save) {
+  char *holder = NULL;
 
   if(length>=chunks*CHUNK) { //pokud je delka retezce vetsi nez alokovane
     if(chunks)
@@ -454,7 +454,7 @@ void save(struct lexeme *tmpData, unsigned char to_save) {
   tmpData->value.string[length++] = to_save; //ulozeni retezce
 }
 
-void save_temp(unsigned char to_save) {
+void save_temp(char to_save) {
   if(temp_length >= CHUNK) //pokud neni alokovane misto
     throw_error(CODE_ERROR_LEX, "identifier or number too long");
   temp[temp_length++] = to_save; //ulozeni retezce
