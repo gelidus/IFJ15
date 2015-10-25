@@ -4,26 +4,26 @@
 #include "string.h"
 #include "gc.h"
 
-void stack_init(Stack* s)
+void StackInit(Stack *s)
 {
 	s->head = NULL;
 	s->node = NULL;
 }
 
-int stack_empty(Stack* s)
+int StackEmpty(Stack *s)
 {
 	return (s->head == NULL);
 }
 
-void stack_free(Stack* s)
+void StackFree(Stack *s)
 {
-	while(!stack_empty(s))
-		stack_pop(s);
+	while(!StackEmpty(s))
+		StackPop(s);
 
 	s = NULL;
 }
 
-void stack_push(Stack* s, void* elem)
+void StackPush(Stack *s, void *elem)
 {
 	if((s->node = (Element*) gc_malloc(sizeof(Element))) == NULL)
 		return;
@@ -33,7 +33,7 @@ void stack_push(Stack* s, void* elem)
 	s->head = s->node;
 }
 
-void* stack_pop(Stack* s)
+void*StackPop(Stack *s)
 {
 	if(s->head == NULL)
 		return NULL;
@@ -46,7 +46,7 @@ void* stack_pop(Stack* s)
 	return tmp;
 }
 
-void* stack_top(Stack* s)
+void*StackTop(Stack *s)
 {
 	if (s->head) {
 		return s->head->value;

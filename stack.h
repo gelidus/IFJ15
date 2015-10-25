@@ -13,11 +13,11 @@ typedef struct stack {
 	Element* node;
 } Stack;
 
-int stack_empty(Stack* s);
-void stack_init(Stack* s);
-void stack_free(Stack* s);
-void stack_push(Stack* s, void* ch);
-void* stack_pop(Stack* s);
-void* stack_top(Stack* s);
+int StackEmpty(Stack *s);
+void StackInit(Stack *s);
+void StackFree(Stack *s);
+void StackPush(Stack *s, void *ch);
+void*StackPop(Stack *s);
+void*StackTop(Stack *s);
 
 #endif
