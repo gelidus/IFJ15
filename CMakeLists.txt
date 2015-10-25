@@ -14,8 +14,8 @@ set(SOURCE_FILES
         parser.h
         scanner.c
         scanner.h
-        #stack.c
-        #stack.h
+        stack.c
+        stack.h
         string.c
         string.h
         #gc.h

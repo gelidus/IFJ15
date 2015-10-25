@@ -2,23 +2,20 @@
 #include <stdlib.h>
 #include "stack.h"
 #include "string.h"
-//#include "gc.h"
-/*
-// Inicializace zasobniku
-void stack_init(struct stack* s)
+#include "gc.h"
+
+void stack_init(Stack* s)
 {
 	s->head = NULL;
 	s->node = NULL;
 }
 
-//kontrola
-int stack_empty(struct stack* s)
+int stack_empty(Stack* s)
 {
 	return (s->head == NULL);
 }
 
-// Uvolneni vsech prvku zasobniku pomoci pop
-void stack_free(struct stack* s)
+void stack_free(Stack* s)
 {
 	while(!stack_empty(s))
 		stack_pop(s);
@@ -26,19 +23,17 @@ void stack_free(struct stack* s)
 	s = NULL;
 }
 
-// Pushnuti do zasobniku
-void stack_push(struct stack* s, string* arr)
+void stack_push(Stack* s, void* elem)
 {
-	if((s->node = (struct element*) gc_malloc(sizeof(struct element))) == NULL)
+	if((s->node = (Element*) gc_malloc(sizeof(Element))) == NULL)
 		return;
 
-	s->node->value = arr;
+	s->node->value = elem;
 	s->node->next = s->head;
 	s->head = s->node;
 }
 
-// Popnuti ze zasobniku
-string* stack_pop(struct stack* s)
+void* stack_pop(Stack* s)
 {
 	if(s->head == NULL)
 		return NULL;
@@ -51,12 +46,11 @@ string* stack_pop(struct stack* s)
 	return tmp;
 }
 
-// Ziskani vrcholu zasobniku
-string* stack_top(struct stack* s)
+void* stack_top(Stack* s)
 {
 	if (s->head) {
 		return s->head->value;
 	} else
 		return NULL;
 }
-*/
+
