@@ -23,6 +23,6 @@ set(SOURCE_FILES
         errors.h
         errors.c
         gc.c
-        gc.h)
+        gc.h test.c test.h)
 
 add_executable(IFJ ${SOURCE_FILES})
