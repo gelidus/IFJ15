@@ -18,8 +18,7 @@ set(SOURCE_FILES
         stack.h
         string.c
         string.h
-        #gc.h
-        #instruction.h
-        gc.c gc.h)
+        gc.c
+        gc.h)
 
 add_executable(IFJ ${SOURCE_FILES})

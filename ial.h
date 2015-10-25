@@ -82,14 +82,6 @@ TtitemPtr htSearch (char *key, Ttable_hash *hasht);
 int htInsert (char *key, Ttable_hash *hasht, TData *data);
 TData *htRead (char *key, Ttable_hash *hasht);
 void htRemoveAll (Ttable_hash *hasht);
-// Pro zasobnik
-int HTstackInit(THTStack *Stack);
-int HTstackPush(THTStack *Stack, Ttable_hash **hasht);
-void HTstackPop(THTStack *Stack);
-void HTstackTop(THTStack *Stack, Ttable_hash **hasht);
-void HTstackRemove(THTStack *Stack);
-int HTstore(Ttable_hash *hasht, THTStack *Stack);
-void HTrevive(Ttable_hash *hasht, THTStack *Stack, char *key);
 
 int length(char* s);
 char* substr(char* s, int i, int n);
