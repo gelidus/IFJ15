@@ -1,42 +1,44 @@
 #include "interpret.h"
 #include "string.h"
 
-void InterpretAST(struct ast_node* tree) {
+#define ASTNode struct ast_node // definition of ast node for definition file
+
+void InterpretAST(ASTNode* tree) {
 
 }
 
-void InterpretStatement(struct ast_node *statement) {
+void InterpretStatement(ASTNode *statement) {
 
 }
 
-void InterpretVarDeclaration(struct ast_node *var) {
+void InterpretVarDeclaration(ASTNode *var) {
 
 }
 
-void InrerpretAssign(struct ast_node *statement) {
+void InrerpretAssign(ASTNode *statement) {
 
 }
 
-void InterpretReturn(struct ast_node *ret) {
+void InterpretReturn(ASTNode *ret) {
 
 }
 
-void InterpretIf(struct ast_node *ifstatement) {
+void InterpretIf(ASTNode *ifstatement) {
 
 }
 
-void InterpretFunctionDeclaration(struct ast_node *func) {
+void InterpretFunctionDeclaration(ASTNode *func) {
 
 }
 
-void InterpretFunctionDefinition(struct ast_node *func) {
+void InterpretFunctionDefinition(ASTNode *func) {
 
 }
 
-void InterpretFunctionCall(struct ast_node *func) {
+void InterpretFunctionCall(ASTNode *func) {
 
 }
 
-void InterpretBinaryOperation(struct ast_node *op) {
+void InterpretBinaryOperation(ASTNode *op) {
 
 }
