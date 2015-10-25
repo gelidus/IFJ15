@@ -7,6 +7,6 @@ struct compiler_error {
   char* err_msg;
 };
 
-void throw_error(ERROR_CODE type, const char *);
+void throw_error(ERROR_CODE type, const char* err);
 
 #endif

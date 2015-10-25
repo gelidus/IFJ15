@@ -1,4 +1,19 @@
+#ifdef _WIN32 // windows dont have err.h
+#include <stdlib.h>
+#define warnx(...) do { \
+        fprintf (stderr, __VA_ARGS__); \
+        fprintf (stderr, "\n"); \
+} while (0)
+
+#define errx(code, ...) do { \
+        fprintf (stderr, __VA_ARGS__); \
+        fprintf (stderr, "\n"); \
+        exit (code); \
+} while (0)
+#else // linux
 #include <err.h>
+#endif
+
 #include "errors.h"
 
 const struct compiler_error compiler_errors[] = {
