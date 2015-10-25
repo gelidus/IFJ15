@@ -2,6 +2,11 @@
 // Created by Peter on 10/25/2015.
 //
 
-#ifdef UNIT_TEST
+// starts only unit tests instead of interpret
+// undef this to get the fully running interpret
 
-#endif // UNIT_TEST
+#include "common.h"
+
+void StartUnitTests();
+
+void TestNothing();

@@ -2,8 +2,18 @@
 // Created by Peter on 10/25/2015.
 //
 
-#ifdef UNIT_TEST
-
 #include "test.h"
+#include <stdio.h>
+#include <assert.h>
 
-#endif // UNIT_TEST
+// Call only your testing funcitons in this function
+void StartUnitTests(){
+	// Add calls to testing functions here
+	TestNothing();
+
+	printf("All tests were successfully executed!\n");
+}
+
+void TestNothing(){
+	assert(1 != 2);
+}

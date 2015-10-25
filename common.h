@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #define DEBUG // enables DEBUGGING information
+//#define UNIT_TEST
 
 enum lex_type
 {
