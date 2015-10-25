@@ -18,6 +18,10 @@ set(SOURCE_FILES
         stack.h
         string.c
         string.h
+        input.h
+        input.c
+        errors.h
+        errors.c
         gc.c
         gc.h)
 

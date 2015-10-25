@@ -22,8 +22,7 @@ int main(int argc, char *argv[]) {
 	parser_prepare(d);
 	d = parser_run();
 
-	const char *file = argv[1]; // save this to the scanner instead
-
+	return 0;
 }
 
 int check_params(int argc, char *argv[])
