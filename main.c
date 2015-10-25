@@ -9,7 +9,12 @@ struct data* d;
 int check_params(int argc, char *argv[]);
 
 int main(int argc, char *argv[]) {
-	// nebudeme do mainu zanaset kousky logiky, testy na existenci zdrojoveho souboru apod. testujeme tady
+#ifdef ONLY_TEST
+	// launch only tests ...
+
+	return 0;
+#else
+
 	int result;
 	if ((result = check_params(argc, argv))) {
 		return result;
@@ -23,6 +28,7 @@ int main(int argc, char *argv[]) {
 	d = parser_run();
 
 	return 0;
+#endif
 }
 
 int check_params(int argc, char *argv[])
