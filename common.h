@@ -1,10 +1,11 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define DEBUG true
-
 #include <stdio.h>
 #include <stdlib.h>
+
+#define DEBUG // enables DEBUGGING information
+//#define UNIT_TEST
 
 enum lex_type
 {

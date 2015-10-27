@@ -3,21 +3,21 @@
 
 #include "string.h"
 
-struct element{
-	string* value;
+typedef struct element {
+	void* value;
 	struct element* next;
-};
+} Element;
 
-struct stack{
-	struct element* head;
-	struct element* node;
-};
+typedef struct stack {
+	Element* head;
+	Element* node;
+} Stack;
 
-int stack_empty(struct stack* s);
-void stack_init(struct stack* s);
-void stack_free(struct stack* s);
-void stack_push(struct stack* s, string* ch);
-string* stack_pop(struct stack* s);
-string* stack_top(struct stack* s);
+int StackEmpty(Stack *s);
+void StackInit(Stack *s);
+void StackFree(Stack *s);
+void StackPush(Stack *s, void *ch);
+void*StackPop(Stack *s);
+void*StackTop(Stack *s);
 
 #endif
