@@ -17,20 +17,11 @@ bool token_empty();
 struct data* d;
 
 
-// //structura lexemu
-// struct lexeme {
-//   enum lex_type type; //typ
-//   union {
-//     unsigned char *string;
-//     int integer;
-//     double real;
-//   } value; //hodnota ulozena ve value (pokud obsahuje)
-// };
 // interfacova lahudka
 void get_token()
 {
-    struct lexeme lex = read_lexeme();
-    // nasetovat do datove struktury veci z lex struktury
+    struct lexeme token = read_lexeme();
+    d->token = &token;
 }
 
 
