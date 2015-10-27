@@ -21,6 +21,7 @@ struct data* d;
 void get_token()
 {
     struct lexeme token = read_lexeme();
+    // nejsem si uplne jistej, jestli to takhle bude fungovat!
     d->token = &token;
 }
 
@@ -33,13 +34,6 @@ struct data* parser_run()
     }
 
     return d;
-}
-
-bool parse_function_call()
-{
-    // EXPECT(token_id())
-
-    return true;
 }
 
 // alokace, nastaveni
@@ -79,13 +73,23 @@ bool expect(enum lex_type t)
 
 bool parse_statement(struct ast_node* node, bool in_root)
 {
-    // create var
-    // while
-    // if
-    // return
-    // fn_call
-    //function declaration
-    // dopln kod
+    // doplnit, az bude jasne, co jak vypada
+    if (accept(KW_IF)) {
+        EXPECT(parse_if(node));
+    } else if(accept(KW_RETURN)) {
+        EXPECT(parse_return(node));
+    } else if (token_empty()) {
+        // prazdny statement je validni
+        return true;
+    } else if (accept(SEMICOLON)) {
+        // je strednik vubec validni statement?
+        return true;
+    } else {
+        // vsechno ostatni je pro me vyraz
+        EXPECT(parse_expression(node));
+    }
+
+    EXPECT_VALIDITY();
 
     return true;
 }
