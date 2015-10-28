@@ -21,6 +21,8 @@ bool token_left_par();
 bool token_right_par();
 bool token_left_brace();
 bool token_right_brace();
+bool token_semicolon();
+bool token_return();
 
 
 struct data* d;
@@ -191,7 +193,14 @@ bool parse_if(struct ast_node* node)
 
 bool parse_return(struct ast_node* node)
 {
-    // TODO: parse return
+    struct ast_node* expression = ast_create_node();
+    EXPECT(token_return());
+    EXPECT(parse_expression(expression));
+    EXPECT(token_semicolon());
+
+    //poskladame
+    node->type = AST_RETURN;
+    node->left = expression;
     return true;
 }
 
