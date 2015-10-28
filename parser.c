@@ -15,6 +15,12 @@ bool parse_expression(struct ast_node* node);
 bool parse_if(struct ast_node* node);
 bool parse_return(struct ast_node* node);
 bool token_empty();
+bool token_if();
+bool token_else();
+bool token_left_par();
+bool token_right_par();
+bool token_left_brace();
+bool token_right_brace();
 
 
 struct data* d;
@@ -152,7 +158,34 @@ bool parse_expression(struct ast_node* node)
 
 bool parse_if(struct ast_node* node)
 {
-    // TODO:: zpracovat IF node
+    struct ast_node* condition = ast_create_node();
+    struct ast_node* if_body   = ast_create_node();
+    struct ast_node* else_body = ast_create_node();
+
+    // if, zavorky, vyraz
+    EXPECT(token_if());
+    EXPECT(token_left_par());
+    EXPECT(parse_expression(condition));
+    EXPECT(token_right_par());
+    EXPECT_VALIDITY();
+
+    // if blok
+    EXPECT(token_left_brace());
+    EXPECT(parse_statement(if_body, false));
+    EXPECT(token_right_brace());
+
+    // else blok
+    EXPECT(token_else());
+    EXPECT(token_left_brace())
+    EXPECT(parse_statement(else_body, false));
+    EXPECT(token_right_brace());
+
+    // poskladame
+    node->type = AST_IF;
+    node->d.condition = condition;
+    node->left = if_body;
+    node->right = else_body;
+
     return true;
 }
 
