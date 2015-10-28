@@ -11,6 +11,9 @@ bool program_body();
 bool expect(enum lex_type t);
 bool parse_program_body();
 bool parse_statement(struct ast_node* instr, bool in_root);
+bool parse_expression(struct ast_node* node);
+bool parse_if(struct ast_node* node);
+bool parse_return(struct ast_node* node);
 bool token_empty();
 
 
@@ -140,6 +143,25 @@ bool parse_program_body()
 
     return true;
 }
+
+bool parse_expression(struct ast_node* node)
+{
+    // TODO: tady bude expression parser!
+    return true;
+}
+
+bool parse_if(struct ast_node* node)
+{
+    // TODO:: zpracovat IF node
+    return true;
+}
+
+bool parse_return(struct ast_node* node)
+{
+    // TODO: parse return
+    return true;
+}
+
 
 
 // TODO: mame vsechny z enumu?

@@ -104,7 +104,7 @@ typedef enum ERROR_CODES {
 // ocekava validitu
 // a taky ocekava, ze se datova struktura jmenuje d
 // kdyz se d nebude jmenovat, tak to nebude fungovat !
-#define EXPECT_VALIDITY(d)\
+#define EXPECT_VALIDITY()\
         if(d->error != 0) return false;
 
 #endif
