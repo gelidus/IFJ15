@@ -233,7 +233,7 @@ bool parse_var_creation(struct ast_node* node)
     if (PRINT) printf("\tparser: parsing variable creation!\n");
     struct ast_node* var = ast_create_node();
     struct ast_node* datatype = ast_create_node();
-    enum ast_var_type* var_type = NULL;
+    enum ast_var_type* var_type = malloc(sizeof(enum ast_var_type));
     EXPECT(parse_datatype(var_type));
     node->type = AST_VAR_CREATION;
     datatype->var_type = *var_type;
@@ -245,6 +245,8 @@ bool parse_var_creation(struct ast_node* node)
     var->type = AST_VAR;
 
     node->right = var;
+
+    if (PRINT) printf("\tparser: parsed variable creation! the type is %i\n", datatype->var_type);
 
     return true;
 }
