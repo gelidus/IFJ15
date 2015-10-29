@@ -25,6 +25,8 @@ bool token_semicolon();
 bool token_return();
 bool parse_datatype(enum ast_var_type* var_type);
 bool token_variable(string* name);
+bool token_datatype();
+bool parse_var_creation(struct ast_node* node);
 
 
 struct data* d;
@@ -87,7 +89,9 @@ bool expect(enum lex_type t)
 bool parse_statement(struct ast_node* node, bool in_root)
 {
     // doplnit, az bude jasne, co jak vypada
-    if (accept(KW_IF)) {
+    if (token_datatype()) {
+        EXPECT(parse_var_creation(node));
+    } else if (accept(KW_IF)) {
         EXPECT(parse_if(node));
     } else if(accept(KW_RETURN)) {
         EXPECT(parse_return(node));
@@ -254,7 +258,7 @@ bool token_variable(string* var)
     return true;
 }
 
-bool parse_datatype(enum ast_var_type* var_type)
+bool token_datatype()
 {
     if (PRINT) printf("\tparser: datatype\n");
     // tohle je chujovinaaaaaa
@@ -262,6 +266,12 @@ bool parse_datatype(enum ast_var_type* var_type)
         d->error = CODE_ERROR_SYNTAX;
         return false;
     }
+
+    return true;
+}
+
+bool parse_datatype(enum ast_var_type* var_type)
+{
     // uhh
     if (accept(KW_INT)) {
         get_token();
