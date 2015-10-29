@@ -36,8 +36,11 @@ struct data* d;
 void get_token()
 {
     struct lexeme token = read_lexeme();
-    // nejsem si uplne jistej, jestli to takhle bude fungovat!
-    d->token = &token;
+    // takhle je to potreba delat, protoze jinak se ccko z tech pointeru zblazni
+    d->token = (struct lexeme*)malloc(sizeof(struct lexeme));
+    d->token->type = token.type;
+    d->token->value = token.value;
+    if (PRINT) printf("\tLEXER: got token of type %i\n", d->token->type);
 }
 
 
@@ -46,6 +49,7 @@ struct data* parser_run()
     if (PRINT) printf("\tparser: run\n");
     int result = expect(parse_program_body());
     if (! result) {
+        if (PRINT) printf("\tparser: SETTING ERROR VALUE\n");
         d->error = CODE_ERROR_SYNTAX;
     }
 
@@ -63,14 +67,18 @@ void parser_prepare(struct data* data)
 
 bool no_errors()
 {
+    if (d->error != CODE_OK) {
+        if (PRINT) printf("\tparser: no_errors failed since error no is %d\n", d->error);
+    }
+
     return d->error == CODE_OK;
 }
 
 // je dalsi token ten, ktery chci?
 bool accept(enum lex_type t)
 {
-    if (PRINT) printf("\tparser: accepting token type %d\n", t);
-    return t == d->token->type && no_errors();
+    if (PRINT) printf("\tparser: accepting token type %d; actual type is now %d\n", t, d->token->type);
+    return ((t == d->token->type) && no_errors());
 }
 
 // ocekavam na vstupu token, prijmu ho a prectu dalsi
@@ -78,6 +86,7 @@ bool expect(enum lex_type t)
 {
     if (PRINT) printf("\tparser: expecting token type %d\n", t);
     if (! accept(t)) {
+        if (PRINT) printf("\tparser: SETTING ERROR VALUE\n");
         d->error = CODE_ERROR_SYNTAX;
         return false;
     }
@@ -91,6 +100,7 @@ bool expect(enum lex_type t)
 bool parse_statement(struct ast_node* node, bool in_root)
 {
     // doplnit, az bude jasne, co jak vypada
+    if (PRINT) printf("\tparser: handling statement\n");
     if (token_datatype()) {
         EXPECT(parse_var_creation(node));
     } else if (accept(KW_IF)) {
@@ -116,6 +126,7 @@ bool parse_statement(struct ast_node* node, bool in_root)
 
 bool parse_program_block(struct ast_node* node, bool in_root)
 {
+    if (PRINT) printf("\tparser: handling program block\n");
     // priprav seznam instrukci bloku
     node->d.list = ast_create_list();
 
@@ -123,6 +134,7 @@ bool parse_program_block(struct ast_node* node, bool in_root)
     while(true) {
         // posledni token ale nejsme v bloku?
         if (!in_root && token_empty()) {
+            if (PRINT) printf("\tparser: SETTING ERROR VALUE\n");
             d->error = CODE_ERROR_SYNTAX;
             return false;
         // posledni token v mainu programu je poslednim tokenem
@@ -240,8 +252,8 @@ bool parse_var_creation(struct ast_node* node)
 // TODO: mame vsechny z enumu?
 bool token_empty()
 {
-    if (PRINT) printf("\tparser: empty\n");
-    return expect(END_OF_FILE);
+    if (PRINT) printf("\tparser: empty ?\n");
+    return accept(END_OF_FILE);
 }
 
 bool token_id(string* id)
@@ -266,9 +278,11 @@ bool token_variable(string* var)
 
 bool token_datatype()
 {
-    if (PRINT) printf("\tparser: datatype\n");
-    // tohle je chujovinaaaaaa
+    if (PRINT) printf("\tparser: accepting datatype\n");
+    // tohle je hnusny, ale v navrhu jsem s tim nepocital
+    // a zas tak moc me to nestve
     if (! (accept(KW_INT) || accept(KW_STRING) || accept(KW_DOUBLE))) {
+        if (PRINT) printf("\tparser: SETTING ERROR VALUE\n");
         d->error = CODE_ERROR_SYNTAX;
         return false;
     }
@@ -278,7 +292,7 @@ bool token_datatype()
 
 bool parse_datatype(enum ast_var_type* var_type)
 {
-    if (PRINT) printf("\tparser: parsing datatype");
+    if (PRINT) printf("\tparser: parsing datatype\n");
     // uhh
     if (accept(KW_INT)) {
         get_token();

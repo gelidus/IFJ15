@@ -8,6 +8,7 @@ struct data* d;
 
 
 int check_params(int argc, char *argv[]);
+void make_data_structure();
 
 #ifdef UNIT_TEST
 #include "test.h"
@@ -28,7 +29,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// naalokujeme sdilenou datovou strukturu
-	d = (struct data* )gc_malloc(sizeof(struct data));
+	make_data_structure();
 
 	// otevrem soubor
 	set_input(argv[1]);
@@ -49,4 +50,15 @@ int check_params(int argc, char *argv[])
 
 	// vsechno proslo
 	return 0;
+}
+
+// alokuje a zabezpeci sdilenou datovou strukturu
+void make_data_structure()
+{
+	d = (struct data* )gc_malloc(sizeof(struct data));
+	d->error = CODE_OK;
+	d->token = NULL;
+	d->functions = NULL;
+	d->vars = NULL;
+	d->tree = NULL;
 }
