@@ -23,6 +23,8 @@ bool token_left_brace();
 bool token_right_brace();
 bool token_semicolon();
 bool token_return();
+bool parse_datatype(enum ast_var_type* var_type);
+bool token_variable(string* name);
 
 
 struct data* d;
@@ -89,6 +91,7 @@ bool parse_statement(struct ast_node* node, bool in_root)
         EXPECT(parse_if(node));
     } else if(accept(KW_RETURN)) {
         EXPECT(parse_return(node));
+    // tyhle jsou uz fallback!
     } else if (token_empty()) {
         // prazdny statement je validni
         return true;
@@ -100,7 +103,7 @@ bool parse_statement(struct ast_node* node, bool in_root)
         EXPECT(parse_expression(node));
     }
 
-    EXPECT_VALIDITY();
+    EXPECT(no_errors());
 
     return true;
 }
@@ -169,7 +172,7 @@ bool parse_if(struct ast_node* node)
     EXPECT(token_left_par());
     EXPECT(parse_expression(condition));
     EXPECT(token_right_par());
-    EXPECT_VALIDITY();
+    EXPECT(no_errors());
 
     // if blok
     EXPECT(token_left_brace());
@@ -204,7 +207,25 @@ bool parse_return(struct ast_node* node)
     return true;
 }
 
+bool parse_var_creation(struct ast_node* node)
+{
+    struct ast_node* var = ast_create_node();
+    struct ast_node* datatype = ast_create_node();
+    enum ast_var_type* var_type = NULL;
+    EXPECT(parse_datatype(var_type));
+    node->type = AST_VAR_CREATION;
+    datatype->var_type = *var_type;
+    node->left = datatype;
 
+    string* var_name = NULL;
+    EXPECT(token_variable(var_name));
+    var->d.string_data = var_name;
+    var->type = AST_VAR;
+
+    node->right = var;
+
+    return true;
+}
 
 // TODO: mame vsechny z enumu?
 bool token_empty()
@@ -231,6 +252,37 @@ bool token_variable(string* var)
     var = new_str(d->token->value.string);
 
     return true;
+}
+
+bool parse_datatype(enum ast_var_type* var_type)
+{
+    if (PRINT) printf("\tparser: datatype\n");
+    // tohle je chujovinaaaaaa
+    if (! (accept(KW_INT) || accept(KW_STRING) || accept(KW_DOUBLE))) {
+        d->error = CODE_ERROR_SYNTAX;
+        return false;
+    }
+    // uhh
+    if (accept(KW_INT)) {
+        get_token();
+        EXPECT(no_errors());
+        *var_type = AST_VAR_INT;
+        return true;
+    } else if (accept(KW_STRING)) {
+        // se s tim nebudu mrdat
+        get_token();
+        EXPECT(no_errors());
+        *var_type = AST_VAR_STRING;
+        return true;
+    } else if (accept(KW_DOUBLE)) {
+        get_token();
+        EXPECT(no_errors());
+        *var_type = AST_VAR_DOUBLE;
+        return true;
+    }
+
+    // uhhhhh
+    return false;
 }
 
 bool token_if()

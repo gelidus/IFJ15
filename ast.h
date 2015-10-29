@@ -24,6 +24,7 @@ enum ast_node_type
     AST_RETURN, // return
     AST_LITERAL, // string, cisla, false, true, null
     AST_IF, // ze by if?
+    AST_VAR_CREATION, //deklarace promenne
 
     AST_FUNCTION, //vytvareni funkce
     AST_CALL, //volani fce
@@ -36,7 +37,6 @@ enum ast_var_type
     AST_VAR_INT,
     AST_VAR_DOUBLE,
     AST_VAR_STRING,
-    AST_VAR_BOOLEAN,
     AST_VAR_NULL  // pouze hodnota null
 };
 
