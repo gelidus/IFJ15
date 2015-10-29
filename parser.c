@@ -297,12 +297,6 @@ bool token_else()
     return expect(KW_ELSE);
 }
 
-bool token_while()
-{
-    if (PRINT) printf("\tparser: while\n");
-    return expect(KW_WHILE);
-}
-
 bool token_return()
 {
     if (PRINT) printf("\tparser: return\n");

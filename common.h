@@ -12,7 +12,6 @@ enum lex_type
   NO_TYPE,
   IDENTIFIER,
   KW_AUTO, KW_CIN, KW_COUT, KW_DOUBLE, KW_ELSE, KW_FOR, KW_IF, KW_INT, KW_RETURN, KW_STRING, //auto, cin, cout, double, else, for, if, int, return, string
-  KW_WHILE, // while, netusim, jestli tu ma byt.. ?
   INTEGER, DOUBLE, STRING, //literaly
   PLUS, MINUS, MULT, DIVIDE, EQUALS, // + - * / =
   LT, GT, LTE, GTE, EQ, NEQ, INSOP, EXTOP, // < > <= >= == != << >>
@@ -100,5 +99,5 @@ typedef enum ERROR_CODES {
  */
 #define EXPECT(e)\
 		if(!e) return false;
-        
+
 #endif
