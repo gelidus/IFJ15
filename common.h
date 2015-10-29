@@ -9,15 +9,47 @@
 
 enum lex_type
 {
-  NO_TYPE,
-  IDENTIFIER,
-  KW_AUTO, KW_CIN, KW_COUT, KW_DOUBLE, KW_ELSE, KW_FOR, KW_IF, KW_INT, KW_RETURN, KW_STRING, //auto, cin, cout, double, else, for, if, int, return, string
-  INTEGER, DOUBLE, STRING, //literaly
-  PLUS, MINUS, MULT, DIVIDE, EQUALS, // + - * / =
-  LT, GT, LTE, GTE, EQ, NEQ, INSOP, EXTOP, // < > <= >= == != << >>
-  LPAR, RPAR, LBR, RBR, // ( ) { }
-  SEMICOLON, COLON, // ; ,
-  END_OF_FILE
+  NO_TYPE, //0
+  IDENTIFIER, //1
+  //auto, cin, cout, double, else, for, if, int, return, string
+  KW_AUTO, //2
+  KW_CIN, //3
+  KW_COUT, //4
+  KW_DOUBLE, //5
+  KW_ELSE, //6
+  KW_FOR, //7
+  KW_IF, //8
+  KW_INT, //9
+  KW_RETURN, //10
+  KW_STRING, //11
+  //literaly
+  INTEGER, //12
+  DOUBLE, //13
+  STRING, //14
+  // + - * / =
+  PLUS, //15
+  MINUS, //16
+  MULT, //17
+  DIVIDE, //18
+  EQUALS, //19
+  // < > <= >= == != << >>
+  LT, //20
+  GT, //21
+  LTE, //22
+  GTE, //23
+  EQ, //24
+  NEQ, //25
+  INSOP, //26
+  EXTOP,  //27
+  // ( ) { }
+  LPAR, //28
+  RPAR, //29
+  LBR, //30
+  RBR, //31
+  // ; ,
+  SEMICOLON , //32
+  COLON, //33
+  END_OF_FILE //34
 };
 
 enum literal_type

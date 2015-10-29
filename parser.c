@@ -43,7 +43,7 @@ void get_token()
 
 struct data* parser_run()
 {
-    if (PRINT) printf("\tparser: run");
+    if (PRINT) printf("\tparser: run\n");
     int result = expect(parse_program_body());
     if (! result) {
         d->error = CODE_ERROR_SYNTAX;
@@ -55,7 +55,7 @@ struct data* parser_run()
 // alokace, nastaveni
 void parser_prepare(struct data* data)
 {
-    if (PRINT) printf("\tparser: prepare");
+    if (PRINT) printf("\tparser: prepare\n");
     d = data;
     // inicializace stromu
     d->tree = ast_create_node();
@@ -163,14 +163,14 @@ bool parse_program_body()
 
 bool parse_expression(struct ast_node* node)
 {
-    if (PRINT) printf("\tparser: expression");
+    if (PRINT) printf("\tparser: parsing expression\n");
     // TODO: tady bude expression parser!
     return true;
 }
 
 bool parse_if(struct ast_node* node)
 {
-    if (PRINT) printf("\tparser: parsing if");
+    if (PRINT) printf("\tparser: parsing if\n");
     struct ast_node* condition = ast_create_node();
     struct ast_node* if_body   = ast_create_node();
     struct ast_node* else_body = ast_create_node();
@@ -204,7 +204,7 @@ bool parse_if(struct ast_node* node)
 
 bool parse_return(struct ast_node* node)
 {
-    if (PRINT) printf("\tparser: parsing return");
+    if (PRINT) printf("\tparser: parsing return\n");
     struct ast_node* expression = ast_create_node();
     EXPECT(token_return());
     EXPECT(parse_expression(expression));
@@ -218,7 +218,7 @@ bool parse_return(struct ast_node* node)
 
 bool parse_var_creation(struct ast_node* node)
 {
-    if (PRINT) printf("\tparser: parsing variable creation!");
+    if (PRINT) printf("\tparser: parsing variable creation!\n");
     struct ast_node* var = ast_create_node();
     struct ast_node* datatype = ast_create_node();
     enum ast_var_type* var_type = NULL;
