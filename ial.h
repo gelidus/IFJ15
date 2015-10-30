@@ -3,8 +3,9 @@
 
 #include <stdbool.h>
 # include <limits.h>
-# include <string.h>
+#include "string.h"
 # include <stdio.h>
+#include "common.h"
 
 /******************** HASH TABLE ********************/
 
@@ -66,22 +67,10 @@ typedef struct Ttitem {
 */
 typedef TtitemPtr Ttable_hash[MAX_HTSIZE];
 
-/**
-** Zasobnik.
-*/
-typedef struct THTStack {
-  int size;
-  int top;
-  Ttable_hash **stack;
-} THTStack;
-
-// Pro tabulku
-int hashCode (char *key);
-void htInit (Ttable_hash *hasht);
-TtitemPtr htSearch (char *key, Ttable_hash *hasht);
-int htInsert (char *key, Ttable_hash *hasht, TData *data);
-TData *htRead (char *key, Ttable_hash *hasht);
-void htRemoveAll (Ttable_hash *hasht);
+// Hash table functions
+unsigned long Hash(unsigned char* what);
+void HashTableAddVariable(string* scope, string* var_name, enum ast_var_type type);
+void HashTableFindVariable(string* scope, string* var_name);
 
 int length(char* s);
 char* substr(char* s, int i, int n);

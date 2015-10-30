@@ -4,6 +4,7 @@
 
 #include <stdbool.h>
 #include "string.h"
+#include "common.h"
 
 struct ast_node* ast_create_node();
 struct ast_list* ast_create_list();
@@ -30,14 +31,6 @@ enum ast_node_type
     AST_CALL, //volani fce
     AST_VAR, //promenna
     AST_BINARY_OP //binarni operace +-*/
-};
-
-enum ast_var_type
-{
-    AST_VAR_INT,
-    AST_VAR_DOUBLE,
-    AST_VAR_STRING,
-    AST_VAR_NULL  // pouze hodnota null
 };
 
 enum ast_literal_type

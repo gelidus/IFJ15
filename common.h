@@ -126,6 +126,14 @@ typedef enum ERROR_CODES {
     CODE_PARSE_END = 1000
 } ERROR_CODE;
 
+enum ast_var_type
+{
+    AST_VAR_INT,
+    AST_VAR_DOUBLE,
+    AST_VAR_STRING,
+    AST_VAR_NULL  // pouze hodnota null
+};
+
 /*
  * Makro, ktere ukonci funkci a vrati false, kdyz nastal error
  */

@@ -8,153 +8,28 @@
 
 int HTSIZE = MAX_HTSIZE;
 
-/**
-** Inicializace tabulky.
-*/
-void htInit(Ttable_hash *hasht) {
 
-   for (int i = 0; i < HTSIZE; i++)
-      (*hasht)[i] = NULL;
-
-   return;
+// hash table functions
+unsigned long Hash(unsigned char *what) {
+  return 0;
 }
 
-/**
-** Rozptylovaci funkce. Zpracovava klic
-** a vraci index v rozmezí 0..HTSIZE - 1.
-*/
-int hashCode(char *key) {
-	int retval = 1, keylen = 0;
+void HashTableAddVariable(string *scope, string *var_name, enum ast_var_type type) {
 
-	if (key != NULL)
-	{
-		keylen = strlen(key);
-		for (int i = 0; i < keylen; i++)
-			retval += key[i];
-
-		return (retval % HTSIZE);
-	}
-	return -1;
 }
 
-/**
-** Vyhleda prvek v tabulce podle klice.
-** V pripade uspechu vraci data, jinak NULL.
-*/
-TtitemPtr htSearch(char *key, Ttable_hash *hasht) {
-	// Zjisteni pozice v tabulce.
-	int index = hashCode(key);
-	TtitemPtr temp = (*hasht)[index];
+void HashTableFindVariable(string *scope, string *var_name) {
 
-	if (temp != NULL)
-	{
-		// Hledani podle klice.
-		while (temp != NULL)
-		{
-			if(temp != NULL)
-			{
-				while(temp->nextPtr != NULL && temp->key != key) // Hledame klic na indexu.
-					temp = temp->nextPtr; // Posuneme se dal, klic nebyl nalezen.
-
-				if(temp->key == key)
-					return temp; //Nasli jsme hledany klic, vratime dany prvek.
-				else
-					return NULL; // Nenasli jsme klic.
-			}
-		}
-	}
-	return NULL;
-}
-
-/**
-** Vlozi prvek do seznamu.
-*/
-int htInsert (char *key, Ttable_hash *hasht, TData *data) {
-	// Zjistim index do tabulky.
-	TtitemPtr temp = htSearch(key,hasht);
-
-	if (temp == NULL)
-	{
-		int index = hashCode(key);
-			TtitemPtr elem;
-
-		// Vytvoreni noveho prvku.
-		if ((elem = malloc(sizeof(struct Ttitem))) == NULL)
-			return CODE_ERROR_INTERNAL;
-		else
-		{
-			strcpy(elem->key,key);	// Zkopirovani klice.
-			elem->data = data;
-			elem->len_key = strlen(key);
-			// Novy prvek se stava prvnim a ukazuje na minuleho prvniho nebo na NULL.
-			elem->nextPtr = (*hasht)[index];
-			(*hasht)[index] = elem;
-		}
-	}
-	else // Polozka existuje, aktualizuji data.
-		temp->data = data;
-
-	return 0;
-}
-
-/**
-** Zrusi vsechny prvky v tabulce
-*/
-void htRemoveAll(Ttable_hash *hasht) {
-	TtitemPtr temp, temp2;
-
-	for (int i = 0; i < HTSIZE; i++) // Prochazime vsemi polozkami v poli.
-	{
-		temp = (*hasht)[i];
-
-		while (temp != NULL) // V kazde polozce odstranime vsechny jeji prvky
-		{
-			temp2 = temp;
-			temp = temp->nextPtr;
-
-			if (temp2->data != NULL)
-			{
-				if (temp2->data->type == T_STR) // Musime take uvolnit retezec, pokud je.
-					free(temp2->data->val.str);
-				else if (temp2->data->type == T_FUNC) // Stejne tak lokalni hashovaci tabulku.
-				{
-					if (temp2->data->val.vlFunc.loc_hash != NULL)
-					{
-						htRemoveAll((Ttable_hash*)temp2->data->val.vlFunc.loc_hash);
-						free((Ttable_hash*)temp2->data->val.vlFunc.loc_hash);
-					}
-				}
-				free(temp2->data);
-			}
-			free(temp2->key);
-			free(temp2);
-		}
-		(*hasht)[i]=NULL;
-	}
-
-	return;
-}
-
-/**
-** Najde a vrati data prvku.
-*/
-TData *htRead(char *key, Ttable_hash *hasht) {
-	TtitemPtr search = htSearch(key,hasht);
-
-	if (search != NULL)
-		return search->data;
-
-	return NULL;
 }
 
 int length(char* s) {
-	int c = 0;
-	if (!strcmp(s, "")) {
-		return 0;
-	}
- 	while (s[c] != '\0')
-  	c++;
- 	return c;
+  int c = 0;
+  if (!strcmp(s, "")) {
+    return 0;
+  }
+  while (s[c] != '\0')
+    c++;
+  return c;
 }
 
 char* substr(char* s, int i, int n) {
