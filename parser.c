@@ -7,13 +7,9 @@
 
 #define PRINT 1
 
-bool program_body();
 bool expect(enum lex_type t);
-bool parse_program_body();
-bool parse_statement(struct ast_node* instr, bool in_root);
-bool parse_expression(struct ast_node* node);
-bool parse_if(struct ast_node* node);
-bool parse_return(struct ast_node* node);
+bool accept(enum lex_type t);
+
 bool token_empty();
 bool token_if();
 bool token_else();
@@ -24,12 +20,24 @@ bool token_right_brace();
 bool token_semicolon();
 bool token_return();
 bool token_comma();
-bool parse_datatype(enum ast_var_type* var_type);
-bool parse_id(string* name);
+bool token_extop();
+bool token_insop();
 bool token_datatype();
+bool token_cout();
+bool token_cin();
+
+bool parse_id(string* name);
+bool parse_datatype(enum ast_var_type* var_type);
 bool parse_var_creation(struct ast_node* node);
 bool parse_function_definition(struct ast_node* node);
 bool parse_function_arguments(struct ast_node* node);
+bool parse_cout(struct ast_node* node);
+bool parse_cin(struct ast_node* cin);
+bool parse_program_body();
+bool parse_statement(struct ast_node* instr, bool in_root);
+bool parse_expression(struct ast_node* node);
+bool parse_if(struct ast_node* node);
+bool parse_return(struct ast_node* node);
 
 
 struct data* d;
@@ -110,6 +118,10 @@ bool parse_statement(struct ast_node* node, bool in_root)
         EXPECT(parse_if(node));
     } else if(accept(KW_RETURN)) {
         EXPECT(parse_return(node));
+    } else if (accept(KW_COUT)) {
+        EXPECT(parse_cout(node));
+    } else if (accept(KW_CIN)) {
+        EXPECT(parse_cin(node));
     // tyhle jsou uz fallback!
     } else if (token_empty()) {
         // prazdny statement je validni
@@ -177,6 +189,38 @@ bool parse_program_body()
     EXPECT(no_errors());
 
     EXPECT(parse_program_block(d->tree, true));
+
+    return true;
+}
+
+bool parse_cout(struct ast_node* node)
+{
+    if (PRINT) printf("\tparser: parsing cout\n");
+
+    struct ast_node* expression = ast_create_node();
+
+    EXPECT(token_cout());
+    EXPECT(token_insop());
+    EXPECT(parse_expression(expression));
+
+    node->type = AST_COUT;
+    node->left = expression;
+
+    return true;
+}
+
+bool parse_cin(struct ast_node* node)
+{
+    if (PRINT) printf("\tparser: parsing cin\n");
+
+    string* var = NULL;
+
+    EXPECT(token_cin());
+    EXPECT(token_extop());
+    EXPECT(parse_id(var));
+
+    node->type = AST_CIN;
+    node->d.string_data = var;
 
     return true;
 }
@@ -363,6 +407,30 @@ bool parse_datatype(enum ast_var_type* var_type)
         d->error = CODE_ERROR_SYNTAX;
         return false;
     }
+}
+
+bool token_cout()
+{
+    if (PRINT) printf("\tparser: cout\n");
+    return expect(KW_COUT);
+}
+
+bool token_cin()
+{
+    if (PRINT) printf("\tparser: cin\n");
+    return expect(KW_CIN);
+}
+
+bool token_extop()
+{
+    if (PRINT) printf("\tparser: >>\n");
+    return expect(EXTOP);
+}
+
+bool token_insop()
+{
+    if (PRINT) printf("\tparser: <<\n");
+    return expect(INSOP);
 }
 
 bool token_if()

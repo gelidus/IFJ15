@@ -30,7 +30,9 @@ enum ast_node_type
     AST_FUNCTION, //vytvareni funkce
     AST_CALL, //volani fce
     AST_VAR, //promenna
-    AST_BINARY_OP //binarni operace +-*/
+    AST_BINARY_OP, //binarni operace +-*/,
+    AST_COUT,
+    AST_CIN
 };
 
 enum ast_literal_type
