@@ -115,8 +115,7 @@ bool parse_statement(struct ast_node* node, bool in_root)
         // prazdny statement je validni
         return true;
     } else if (accept(SEMICOLON)) {
-        // je strednik vubec validni statement?
-        return true;
+        EXPECT(token_semicolon());
     } else {
         // vsechno ostatni je pro me vyraz
         EXPECT(parse_expression(node));
@@ -198,7 +197,7 @@ bool parse_function_definition(struct ast_node* node)
     EXPECT(parse_function_arguments(arguments));
 
     EXPECT(token_left_brace());
-    EXPECT(parse_statement(body, false));
+    EXPECT(parse_program_block(body, false));
     EXPECT(token_right_brace());
 
     // poskladame
@@ -335,13 +334,7 @@ bool token_datatype()
     if (PRINT) printf("\tparser: accepting datatype\n");
     // tohle je hnusny, ale v navrhu jsem s tim nepocital
     // a zas tak moc me to nestve
-    if (! (accept(KW_INT) || accept(KW_STRING) || accept(KW_DOUBLE))) {
-        if (PRINT) printf("\tparser: SETTING ERROR VALUE\n");
-        d->error = CODE_ERROR_SYNTAX;
-        return false;
-    }
-
-    return true;
+    return (accept(KW_INT) || accept(KW_STRING) || accept(KW_DOUBLE));
 }
 
 bool parse_datatype(enum ast_var_type* var_type)
@@ -364,10 +357,12 @@ bool parse_datatype(enum ast_var_type* var_type)
         EXPECT(no_errors());
         *var_type = AST_VAR_DOUBLE;
         return true;
+    } else {
+        // failure
+        if (PRINT) printf("\tparser: SETTING ERROR VALUE\n");
+        d->error = CODE_ERROR_SYNTAX;
+        return false;
     }
-
-    // uhhhhh
-    return false;
 }
 
 bool token_if()
