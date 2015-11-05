@@ -32,7 +32,8 @@ enum ast_node_type
     AST_VAR, //promenna
     AST_BINARY_OP, //binarni operace +-*/,
     AST_COUT,
-    AST_CIN
+    AST_CIN,
+    AST_FOR
 };
 
 enum ast_literal_type

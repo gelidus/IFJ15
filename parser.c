@@ -25,6 +25,7 @@ bool token_insop();
 bool token_datatype();
 bool token_cout();
 bool token_cin();
+bool token_for();
 
 bool parse_id(string* name);
 bool parse_datatype(enum ast_var_type* var_type);
@@ -38,6 +39,7 @@ bool parse_statement(struct ast_node* instr, bool in_root);
 bool parse_expression(struct ast_node* node);
 bool parse_if(struct ast_node* node);
 bool parse_return(struct ast_node* node);
+bool parse_for(struct ast_node* node);
 
 
 struct data* d;
@@ -122,6 +124,8 @@ bool parse_statement(struct ast_node* node, bool in_root)
         EXPECT(parse_cout(node));
     } else if (accept(KW_CIN)) {
         EXPECT(parse_cin(node));
+    } else if (accept(KW_FOR)) {
+        EXPECT(parse_for(node));
     // tyhle jsou uz fallback!
     } else if (token_empty()) {
         // prazdny statement je validni
@@ -189,6 +193,40 @@ bool parse_program_body()
     EXPECT(no_errors());
 
     EXPECT(parse_program_block(d->tree, true));
+
+    return true;
+}
+
+bool parse_for(struct ast_node* node)
+{
+    if (PRINT) printf("\tparser: parsing for\n");
+
+    struct ast_node* first_field = ast_create_node();
+    struct ast_node* second_field = ast_create_node();
+    struct ast_node* third_field = ast_create_node();
+    struct ast_node* block = ast_create_node();
+
+    EXPECT(token_for());
+    // podminky
+    EXPECT(token_left_par())
+    EXPECT(parse_expression(first_field));
+    EXPECT(token_semicolon());
+    EXPECT(parse_expression(second_field))
+    EXPECT(token_semicolon());
+    EXPECT(parse_expression(third_field));
+
+    EXPECT(token_left_brace())
+    EXPECT(parse_program_block(block, false));
+    EXPECT(token_right_brace());
+
+    node->d.list = ast_create_list();
+    // povkladame
+    ast_list_insert(node->d.list, first_field);
+    ast_list_insert(node->d.list, second_field);
+    ast_list_insert(node->d.list, third_field);
+
+    node->type = AST_FOR;
+    node->left = block;
 
     return true;
 }
@@ -311,13 +349,13 @@ bool parse_if(struct ast_node* node)
 
     // if blok
     EXPECT(token_left_brace());
-    EXPECT(parse_statement(if_body, false));
+    EXPECT(parse_program_block(if_body, false));
     EXPECT(token_right_brace());
 
     // else blok
     EXPECT(token_else());
     EXPECT(token_left_brace())
-    EXPECT(parse_statement(else_body, false));
+    EXPECT(parse_program_block(else_body, false));
     EXPECT(token_right_brace());
 
     // poskladame
@@ -417,6 +455,12 @@ bool parse_datatype(enum ast_var_type* var_type)
         d->error = CODE_ERROR_SYNTAX;
         return false;
     }
+}
+
+bool token_for()
+{
+    if (PRINT) printf("\tparser: for\n");
+    return expect(KW_FOR);
 }
 
 bool token_cout()
