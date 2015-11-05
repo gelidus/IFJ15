@@ -197,14 +197,18 @@ bool parse_cout(struct ast_node* node)
 {
     if (PRINT) printf("\tparser: parsing cout\n");
 
-    struct ast_node* expression = ast_create_node();
+    node->d.list = ast_create_list();
 
     EXPECT(token_cout());
-    EXPECT(token_insop());
-    EXPECT(parse_expression(expression));
 
+    while (! accept(SEMICOLON)) {
+        EXPECT(token_insop());
+        struct ast_node* expression = ast_create_node();
+        EXPECT(parse_expression(expression));
+
+        ast_list_insert(node->d.list, expression);
+    }
     node->type = AST_COUT;
-    node->left = expression;
 
     return true;
 }
@@ -213,14 +217,20 @@ bool parse_cin(struct ast_node* node)
 {
     if (PRINT) printf("\tparser: parsing cin\n");
 
-    string* var = NULL;
+    node->d.list = ast_create_list();
 
     EXPECT(token_cin());
-    EXPECT(token_extop());
-    EXPECT(parse_id(var));
 
+    while (! accept(SEMICOLON)) {
+        EXPECT(token_extop());
+        string* var = NULL;
+        EXPECT(parse_id(var));
+        struct ast_node* variable = ast_create_node();
+        variable->type = AST_VAR;
+        variable->d.string_data = var;
+        ast_list_insert(node->d.list, variable);
+    }
     node->type = AST_CIN;
-    node->d.string_data = var;
 
     return true;
 }
