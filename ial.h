@@ -33,35 +33,6 @@ typedef struct FuncForm {
 	void *label;		// Navesti kde zacina funkce.
 } FuncForm;
 
-/**
-** Union (kvuli setreni mista) pro vsechny typy.
-*/
-typedef union {
-	double number;
-	char *str;
-	int boolean;
-	FuncForm vlFunc;
-} TValues;
-
-/**
-** Typ promenne nebo funkce a hodnota.
-*/
-typedef struct TData {
-	TValues val;	// Hodnoty
-	Ttypes type;	// Typy
-} TData;
-
-/**
-** Struktura pro prvek v tabulce.
-*/
-typedef struct Ttitem {
-	char *key;
-	int len_key;	// Delka klice nebo retezce.
-	bool def;
-	TData *data;
-	struct Ttitem *nextPtr;
-} *TtitemPtr;
-
 // Variable is linked list of Symbols which
 // represents variable.
 typedef struct Variable {
@@ -76,10 +47,9 @@ typedef struct {
 		Variable* first;
 } Scope;
 
-/**
-** Hashovaci tabulka.
-*/
-typedef TtitemPtr HashTable[MAX_HTSIZE];
+// HashTable is an array of scopes with
+// maximum size of MAX_HTSIZE
+typedef Scope HashTable[MAX_HTSIZE];
 
 // Hash table functions
 unsigned long Hash(unsigned char* what);
