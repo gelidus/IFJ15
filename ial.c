@@ -8,17 +8,27 @@
 
 int HTSIZE = MAX_HTSIZE;
 
-
 // hash table functions
 unsigned long Hash(unsigned char *what) {
-  return 0;
+  unsigned long hash = 5381;
+  int c;
+
+  while ((c = *what++)) {
+    hash = ((hash << 5) + hash) + c;
+  }
+
+  return hash % HTSIZE;
+}
+
+void HashTableInit() {
+
 }
 
 void HashTableAddVariable(string *scope, string *var_name, enum ast_var_type type) {
 
 }
 
-void HashTableFindVariable(string *scope, string *var_name) {
+Variable* HashTableFindVariable(string *scope, string *var_name) {
 
 }
 

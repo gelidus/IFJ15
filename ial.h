@@ -62,15 +62,30 @@ typedef struct Ttitem {
 	struct Ttitem *nextPtr;
 } *TtitemPtr;
 
+// Variable is linked list of Symbols which
+// represents variable.
+typedef struct Variable {
+		struct Variable* next;
+} Variable;
+
+// Scope is the registered scope of the function
+// which contains linked list of available vairbales
+// inside the function (scope)
+typedef struct {
+		string* name;
+		Variable* first;
+} Scope;
+
 /**
 ** Hashovaci tabulka.
 */
-typedef TtitemPtr Ttable_hash[MAX_HTSIZE];
+typedef TtitemPtr HashTable[MAX_HTSIZE];
 
 // Hash table functions
 unsigned long Hash(unsigned char* what);
+void HashTableInit();
 void HashTableAddVariable(string* scope, string* var_name, enum ast_var_type type);
-void HashTableFindVariable(string* scope, string* var_name);
+Variable* HashTableFindVariable(string* scope, string* var_name);
 
 int length(char* s);
 char* substr(char* s, int i, int n);
