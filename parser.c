@@ -352,9 +352,8 @@ bool parse_expression(struct ast_node* node) {
     Stack stack;
     StackInit(&stack);
 
-    enum lex_type currentTokenType, stackType;
-    struct ast_node* source1, *source2, *result;
-    ERROR_CODE returnCode = CODE_OK;
+    enum lex_type currentTokenType = NO_TYPE, stackType = NO_TYPE;
+    struct ast_node* source = NULL, *source2 = NULL, *result = NULL;
 
     get_token();
     do { // until $ on all stacks
