@@ -33,7 +33,10 @@ enum ast_node_type
     AST_BINARY_OP, //binarni operace +-*/,
     AST_COUT,
     AST_CIN,
-    AST_FOR
+    AST_FOR,
+    AST_EXPRESSION,
+    AST_LEFT_BRACKET,
+    AST_RIGHT_BRACKET
 };
 
 enum ast_literal_type

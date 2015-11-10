@@ -348,107 +348,71 @@ const char PrecendenceTable[OPERATORS][OPERATORS] = {
 
 bool parse_expression(struct ast_node* node) {
 
-    struct ast_node* source1, *source2, *destination;
+    Stack expStack;
+    StackInit(&expStack);
+
+    enum lex_type currentTokenType, nextTokenType;
+    struct ast_node* source1, *source2, *result;
     ERROR_CODE returnCode = CODE_OK;
 
+    get_token();
     do { // until $ on all stacks
-        get_token();
+        // ak nepatri lexem do expression lexemov, potom priradit typ unknown
+        if (false) {
+          first.type = NO_TYPE;
+        }
 
-        char precendenceCharacter = PrecendenceTable[stackType][currentTokenType];
-        debug("[%d,%d] -> %c\n", stackType, currentTokenType, precendenceCharacter);
+        char precendenceCharacter = PrecendenceTable[d->token.type][first.type];
 
         switch(precendenceCharacter) {
             case '=':
             case '<':
-                if(!pushExpressionData(&stack, currentToken, currentToken->type, NULL, function, global))
-                    returnCode = CODE_ERROR_SEMANTIC;
+                //TODO: push data about expression to stack
 
-            if(stackTop(tokens) == NULL) {
-                currentTokenType = TOKEN_TYPE_NONE;
+            if(StackTop(&tokens) == NULLs) {
+                d->token.type = NO_TYPE;
             } else {
-                currentToken = stackPop(&tokens);
-                currentTokenType = currentToken->type;
+                get_token();
+                currentTokenType = d->token->type;
             }
             break;
 
             case '>':
-                if(stack == NULL) {
-                    returnCode = CODE_ERROR_SYNTAX; // please, don't happen
+                struct ast_node *current = StackPop(&stack);
+
+                if(current != NULL && current->type == AST_EXPRESSION) {
+                    //// E -> E1 op E2 ////
+
+                    // get second source
+                    source2 = current;
+
+                    // get operation
+                    result = StackPop(&stack);
+
+                    // get first source
+                    source1 = StackPop(&stack);
+
+                } else if(current != NULL && current->type == RIGHT_BRACKET) {
+                    //// E -> (E) ////
+                    currentData = popExpressionData(&stack);
+                    if(currentData == NULL || currentData->tokenType != EXPRESSION) {
+                        //returnCode = CODE_ERROR_SYNTAX;
+                        break;
+                    }
+
+                    destination = currentData->symbol;
+
+                    currentData = popExpressionData(&stack);
+                    if(currentData == NULL || currentData->tokenType != LEFT_BRACKET) {
+                        returnCode = CODE_ERROR_SYNTAX;
+                        break;
+                    }
                 } else {
-                    ExpressionData *currentData = popExpressionData(&stack);
-                    INSTRUCTION instruction = I_UNKNOWN;
+                    return CODE_ERROR_SYNTAX;
+                }
 
-                    if(currentData != NULL && currentData->tokenType == EXPRESSION) {
-                        //// E -> E op E ////
-
-                        source2 = currentData->symbol;
-                        free(currentData);
-
-                        // get instruction
-                        currentData = popExpressionData(&stack);
-                        if(currentData == NULL || !isOperator(currentData->tokenType)) {
-                            free(currentData);
-                            returnCode = CODE_ERROR_SYNTAX;
-                            break;
-                        }
-                        instruction = getInstructionFromToken(currentData->tokenType);
-                        free(currentData);
-
-                        // get second expression
-                        currentData = popExpressionData(&stack);
-                        if(currentData == NULL || currentData->tokenType != EXPRESSION) {
-                            free(currentData);
-                            returnCode = CODE_ERROR_SYNTAX;
-                            break;
-                        }
-                        source1 = currentData->symbol;
-                        free(currentData);
-
-                        DATA_TYPE source1Type = symbolGetDataType(source1);
-                        DATA_TYPE source2Type = symbolGetDataType(source2);
-
-                        DATA_TYPE destinationType;
-
-                        if(source1Type == source2Type) {
-                            destinationType = source1Type;
-                        } else if((source1Type == FLOAT && source2Type == INT)
-                                  || (source2Type == FLOAT && source1Type == INT)) {
-                            destinationType = FLOAT;
-                        } else {
-                            return CODE_ERROR_COMPATIBILITY;
-                        }
-
-                        // generate instruction
-                        destination = functionInsertConstant(function, NULL, EXPRESSION, destinationType);
-                        instructionSetAddInstruction(instructions, instruction, source1, source2, destination);
-
-                    } else if(currentData != NULL && currentData->tokenType == RIGHT_BRACKET) {
-                        //// E -> (E) ////
-                        free(currentData);
-                        currentData = popExpressionData(&stack);
-                        if(currentData == NULL || currentData->tokenType != EXPRESSION) {
-                            free(currentData);
-                            returnCode = CODE_ERROR_SYNTAX;
-                            break;
-                        }
-
-                        destination = currentData->symbol;
-                        free(currentData);
-
-                        currentData = popExpressionData(&stack);
-                        if(currentData == NULL || currentData->tokenType != LEFT_BRACKET) {
-                            free(currentData);
-                            returnCode = CODE_ERROR_SYNTAX;
-                            break;
-                        }
-                        free(currentData);
-                    } else {
-                        return CODE_ERROR_SYNTAX;
-                    }
-
-                    if(!pushExpressionData(&stack, NULL, EXPRESSION, &destination, function, global)) {
-                        return CODE_ERROR_SEMANTIC;
-                    }
+                if(!pushExpressionData(&stack, NULL, EXPRESSION, &destination, function, global)) {
+                    return CODE_ERROR_SEMANTIC;
                 }
             break;
 
@@ -472,15 +436,15 @@ bool parse_expression(struct ast_node* node) {
         }
 
         if(currentTokenType != TOKEN_TYPE_NONE) {
-            //TODO: FIX IT!! free(currentToken);
+            //TODO: FIX IT!! free(currentToken)
         }
+
+        first = d->token;
     } while(returnCode == CODE_OK && !(stackTop(stack) == NULL && stackTop(tokens) == NULL));
 
     if(result) {
         *result = destination;
     }
-
-    stackClear(&stack);
 
     return true;
 }
