@@ -21,7 +21,7 @@ unsigned long Hash(unsigned char *what) {
 }
 
 void HashTableInit() {
-
+  SymbolTable = (Scope*)malloc(sizeof(Scope*) * MAX_HTSIZE);
 }
 
 void HashTableAddVariable(string *scope, string *var_name, enum ast_var_type type) {

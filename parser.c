@@ -324,12 +324,164 @@ bool parse_function_arguments(struct ast_node* node)
     EXPECT(token_right_par());
 
     return true;
+
 }
 
-bool parse_expression(struct ast_node* node)
-{
-    if (PRINT) printf("\tparser: parsing expression\n");
-    // TODO: tady bude expression parser!
+#define OPERATORS 14
+const char PrecendenceTable[OPERATORS][OPERATORS] = {
+    /////   +    -    *    /    <    >   <=   >=   <>    =    (    )   ID    $
+    /*+*/ {'>', '>', '<', '<', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
+    /*-*/ {'>', '>', '<', '<', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
+    /***/ {'>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
+    /*/*/ {'>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
+    /*<*/ {'<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
+    /*>*/ {'<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
+    /*<=*/{'<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
+    /*>=*/{'<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
+    /*<>*/{'<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
+    /*= */{'<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
+    /*(*/ {'<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '=', '<', 0 },
+    /*)*/ {'>', '>', '>', '>', '>', '>', '>', '>', '>', '>', 0, '>', 0, '>'},
+    /*ID*/{'>', '>', '>', '>', '>', '>', '>', '>', '>', '>', 0, '>', 0, '>'},
+    /*$*/ {'<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 0, '<', '$'}
+};
+
+bool parse_expression(struct ast_node* node) {
+
+    struct ast_node* source1, *source2, *destination;
+    ERROR_CODE returnCode = CODE_OK;
+
+    do { // until $ on all stacks
+        get_token();
+
+        char precendenceCharacter = PrecendenceTable[stackType][currentTokenType];
+        debug("[%d,%d] -> %c\n", stackType, currentTokenType, precendenceCharacter);
+
+        switch(precendenceCharacter) {
+            case '=':
+            case '<':
+                if(!pushExpressionData(&stack, currentToken, currentToken->type, NULL, function, global))
+                    returnCode = CODE_ERROR_SEMANTIC;
+
+            if(stackTop(tokens) == NULL) {
+                currentTokenType = TOKEN_TYPE_NONE;
+            } else {
+                currentToken = stackPop(&tokens);
+                currentTokenType = currentToken->type;
+            }
+            break;
+
+            case '>':
+                if(stack == NULL) {
+                    returnCode = CODE_ERROR_SYNTAX; // please, don't happen
+                } else {
+                    ExpressionData *currentData = popExpressionData(&stack);
+                    INSTRUCTION instruction = I_UNKNOWN;
+
+                    if(currentData != NULL && currentData->tokenType == EXPRESSION) {
+                        //// E -> E op E ////
+
+                        source2 = currentData->symbol;
+                        free(currentData);
+
+                        // get instruction
+                        currentData = popExpressionData(&stack);
+                        if(currentData == NULL || !isOperator(currentData->tokenType)) {
+                            free(currentData);
+                            returnCode = CODE_ERROR_SYNTAX;
+                            break;
+                        }
+                        instruction = getInstructionFromToken(currentData->tokenType);
+                        free(currentData);
+
+                        // get second expression
+                        currentData = popExpressionData(&stack);
+                        if(currentData == NULL || currentData->tokenType != EXPRESSION) {
+                            free(currentData);
+                            returnCode = CODE_ERROR_SYNTAX;
+                            break;
+                        }
+                        source1 = currentData->symbol;
+                        free(currentData);
+
+                        DATA_TYPE source1Type = symbolGetDataType(source1);
+                        DATA_TYPE source2Type = symbolGetDataType(source2);
+
+                        DATA_TYPE destinationType;
+
+                        if(source1Type == source2Type) {
+                            destinationType = source1Type;
+                        } else if((source1Type == FLOAT && source2Type == INT)
+                                  || (source2Type == FLOAT && source1Type == INT)) {
+                            destinationType = FLOAT;
+                        } else {
+                            return CODE_ERROR_COMPATIBILITY;
+                        }
+
+                        // generate instruction
+                        destination = functionInsertConstant(function, NULL, EXPRESSION, destinationType);
+                        instructionSetAddInstruction(instructions, instruction, source1, source2, destination);
+
+                    } else if(currentData != NULL && currentData->tokenType == RIGHT_BRACKET) {
+                        //// E -> (E) ////
+                        free(currentData);
+                        currentData = popExpressionData(&stack);
+                        if(currentData == NULL || currentData->tokenType != EXPRESSION) {
+                            free(currentData);
+                            returnCode = CODE_ERROR_SYNTAX;
+                            break;
+                        }
+
+                        destination = currentData->symbol;
+                        free(currentData);
+
+                        currentData = popExpressionData(&stack);
+                        if(currentData == NULL || currentData->tokenType != LEFT_BRACKET) {
+                            free(currentData);
+                            returnCode = CODE_ERROR_SYNTAX;
+                            break;
+                        }
+                        free(currentData);
+                    } else {
+                        return CODE_ERROR_SYNTAX;
+                    }
+
+                    if(!pushExpressionData(&stack, NULL, EXPRESSION, &destination, function, global)) {
+                        return CODE_ERROR_SEMANTIC;
+                    }
+                }
+            break;
+
+            case '$':
+                if(stack == NULL) {
+                    return CODE_ERROR_SYNTAX;
+                }
+
+            ExpressionData *stackTop = popExpressionData(&stack);
+            if(stackTop->tokenType != EXPRESSION) {
+                return CODE_ERROR_SYNTAX;
+            }
+
+            destination = stackTop->symbol;
+            break;
+
+
+            default:
+                returnCode = CODE_ERROR_SYNTAX;
+            break;
+        }
+
+        if(currentTokenType != TOKEN_TYPE_NONE) {
+            //TODO: FIX IT!! free(currentToken);
+        }
+    } while(returnCode == CODE_OK && !(stackTop(stack) == NULL && stackTop(tokens) == NULL));
+
+    if(result) {
+        *result = destination;
+    }
+
+    stackClear(&stack);
+
     return true;
 }
 

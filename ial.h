@@ -47,9 +47,9 @@ typedef struct {
 		Variable* first;
 } Scope;
 
-// HashTable is an array of scopes with
-// maximum size of MAX_HTSIZE
-typedef Scope HashTable[MAX_HTSIZE];
+// Global variable for the symbol table
+// in which will be stored all scopes
+Scope* SymbolTable;
 
 // Hash table functions
 unsigned long Hash(unsigned char* what);
