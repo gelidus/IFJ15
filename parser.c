@@ -392,46 +392,46 @@ bool parse_expression(struct ast_node* node) {
                     // get first source
                     source1 = StackPop(&stack);
 
+                    // add leafs to the result
+
                 } else if(current != NULL && current->type == RIGHT_BRACKET) {
                     //// E -> (E) ////
-                    currentData = popExpressionData(&stack);
-                    if(currentData == NULL || currentData->tokenType != EXPRESSION) {
-                        //returnCode = CODE_ERROR_SYNTAX;
-                        break;
+                    current = StackPop(&stack);
+                    if(current == NULL || current->type != AST_EXPRESSION) {
+                        throw_error(CODE_ERROR_SYNTAX);
                     }
 
-                    destination = currentData->symbol;
+                    result = current;
 
-                    currentData = popExpressionData(&stack);
-                    if(currentData == NULL || currentData->tokenType != LEFT_BRACKET) {
-                        returnCode = CODE_ERROR_SYNTAX;
-                        break;
+                    current = StackPop(&stack);
+                    if(current == NULL || current->type != AST_LEFT_BRACKET) {
+                        throw_error(CODE_ERROR_SYNTAX);
                     }
                 } else {
-                    return CODE_ERROR_SYNTAX;
+                    throw_error(CODE_ERROR_SYNTAX);
                 }
 
-                if(!pushExpressionData(&stack, NULL, EXPRESSION, &destination, function, global)) {
-                    return CODE_ERROR_SEMANTIC;
-                }
+                //if(!StackPush(&stack, NULL, EXPRESSION, &destination, function, global)) {
+                //    throw_error(CODE_ERROR_SYNTAX);
+                //}
             break;
 
             case '$':
-                if(stack == NULL) {
-                    return CODE_ERROR_SYNTAX;
+                if(StackTop(&stack) == NULL) {
+                    throw_error(CODE_ERROR_SYNTAX);
                 }
 
-            ExpressionData *stackTop = popExpressionData(&stack);
-            if(stackTop->tokenType != EXPRESSION) {
-                return CODE_ERROR_SYNTAX;
-            }
+            //ExpressionData *stackTop = popExpressionData(&stack);
+            //if(stackTop->tokenType != EXPRESSION) {
+            //    return CODE_ERROR_SYNTAX;
+            //}
 
-            destination = stackTop->symbol;
+            //destination = stackTop->symbol;
             break;
 
 
             default:
-                returnCode = CODE_ERROR_SYNTAX;
+                throw_error(CODE_ERROR_SYNTAX);
             break;
         }
 
