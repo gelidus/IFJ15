@@ -370,7 +370,7 @@ bool parse_expression(struct ast_node* node) {
             case '<':
                 //TODO: push data about expression to stack
 
-            if(StackTop(&tokens) == NULLs) {
+            if(StackTop(&stack) == NULL) {
                 d->token->type = NO_TYPE;
             } else {
                 get_token();
@@ -378,10 +378,10 @@ bool parse_expression(struct ast_node* node) {
             }
             break;
 
-            case '>':
-                struct ast_node* current = StackPop(&stack);
+            case '>': {
+                struct ast_node *current = StackPop(&stack);
 
-                if(current != NULL && current->type == AST_EXPRESSION) {
+                if (current != NULL && current->type == AST_EXPRESSION) {
                     //// E -> E1 op E2 ////
 
                     // get second source
@@ -395,31 +395,31 @@ bool parse_expression(struct ast_node* node) {
 
                     // add leafs to the result
 
-                } else if(current != NULL && current->type == AST_RIGHT_BRACKET) {
+                } else if (current != NULL && current->type == AST_RIGHT_BRACKET) {
                     //// E -> (E) ////
                     current = StackPop(&stack);
-                    if(current == NULL || current->type != AST_EXPRESSION) {
-                        throw_error(CODE_ERROR_SYNTAX);
+                    if (current == NULL || current->type != AST_EXPRESSION) {
+                        throw_error(CODE_ERROR_SYNTAX, "");
                     }
 
                     result = current;
 
                     current = StackPop(&stack);
-                    if(current == NULL || current->type != AST_LEFT_BRACKET) {
-                        throw_error(CODE_ERROR_SYNTAX);
+                    if (current == NULL || current->type != AST_LEFT_BRACKET) {
+                        throw_error(CODE_ERROR_SYNTAX, "");
                     }
                 } else {
-                    throw_error(CODE_ERROR_SYNTAX);
+                    throw_error(CODE_ERROR_SYNTAX, "");
                 }
 
                 //if(!StackPush(&stack, NULL, EXPRESSION, &destination, function, global)) {
                 //    throw_error(CODE_ERROR_SYNTAX);
                 //}
-            break;
-
+                break;
+            }
             case '$':
                 if(StackTop(&stack) == NULL) {
-                    throw_error(CODE_ERROR_SYNTAX);
+                    throw_error(CODE_ERROR_SYNTAX, "");
                 }
 
             //ExpressionData *stackTop = popExpressionData(&stack);
@@ -432,14 +432,14 @@ bool parse_expression(struct ast_node* node) {
 
 
             default:
-                throw_error(CODE_ERROR_SYNTAX);
+                throw_error(CODE_ERROR_SYNTAX, "");
             break;
         }
 
         //if(current->type != TOKEN_TYPE_NONE) {
             //TODO: FIX IT!! free(currentToken)
         //}
-    } while(true);
+    } while(StackTop(&stack) != NULL);
 
     //if(result) {
     //    *result = destination;
