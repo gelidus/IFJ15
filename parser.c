@@ -4,6 +4,7 @@
 #include "gc.h"
 #include "scanner.h"
 #include "ast.h"
+#include "stack.h"
 
 #define PRINT 1
 
@@ -348,10 +349,10 @@ const char PrecendenceTable[OPERATORS][OPERATORS] = {
 
 bool parse_expression(struct ast_node* node) {
 
-    Stack expStack;
-    StackInit(&expStack);
+    Stack stack;
+    StackInit(&stack);
 
-    enum lex_type currentTokenType, nextTokenType;
+    enum lex_type currentTokenType, stackType;
     struct ast_node* source1, *source2, *result;
     ERROR_CODE returnCode = CODE_OK;
 
@@ -359,10 +360,10 @@ bool parse_expression(struct ast_node* node) {
     do { // until $ on all stacks
         // ak nepatri lexem do expression lexemov, potom priradit typ unknown
         if (false) {
-          first.type = NO_TYPE;
+          stackType = NO_TYPE;
         }
 
-        char precendenceCharacter = PrecendenceTable[d->token.type][first.type];
+        char precendenceCharacter = PrecendenceTable[d->token->type][stackType];
 
         switch(precendenceCharacter) {
             case '=':
@@ -370,7 +371,7 @@ bool parse_expression(struct ast_node* node) {
                 //TODO: push data about expression to stack
 
             if(StackTop(&tokens) == NULLs) {
-                d->token.type = NO_TYPE;
+                d->token->type = NO_TYPE;
             } else {
                 get_token();
                 currentTokenType = d->token->type;
@@ -378,7 +379,7 @@ bool parse_expression(struct ast_node* node) {
             break;
 
             case '>':
-                struct ast_node *current = StackPop(&stack);
+                struct ast_node* current = StackPop(&stack);
 
                 if(current != NULL && current->type == AST_EXPRESSION) {
                     //// E -> E1 op E2 ////
@@ -394,7 +395,7 @@ bool parse_expression(struct ast_node* node) {
 
                     // add leafs to the result
 
-                } else if(current != NULL && current->type == RIGHT_BRACKET) {
+                } else if(current != NULL && current->type == AST_RIGHT_BRACKET) {
                     //// E -> (E) ////
                     current = StackPop(&stack);
                     if(current == NULL || current->type != AST_EXPRESSION) {
@@ -435,16 +436,14 @@ bool parse_expression(struct ast_node* node) {
             break;
         }
 
-        if(currentTokenType != TOKEN_TYPE_NONE) {
+        //if(current->type != TOKEN_TYPE_NONE) {
             //TODO: FIX IT!! free(currentToken)
-        }
+        //}
+    } while(true);
 
-        first = d->token;
-    } while(returnCode == CODE_OK && !(stackTop(stack) == NULL && stackTop(tokens) == NULL));
-
-    if(result) {
-        *result = destination;
-    }
+    //if(result) {
+    //    *result = destination;
+    //}
 
     return true;
 }
