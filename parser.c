@@ -544,7 +544,7 @@ bool token_datatype()
     if (PRINT) printf("\tparser: accepting datatype\n");
     // tohle je hnusny, ale v navrhu jsem s tim nepocital
     // a zas tak moc me to nestve
-    return (accept(KW_INT) || accept(KW_STRING) || accept(KW_DOUBLE));
+    return (accept(KW_INT) || accept(KW_STRING) || accept(KW_DOUBLE) accept(KW_AUTO));
 }
 
 bool parse_datatype(enum ast_var_type* var_type)
