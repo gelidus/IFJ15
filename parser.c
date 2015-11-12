@@ -41,7 +41,7 @@ bool parse_expression(struct ast_node* node);
 bool parse_if(struct ast_node* node);
 bool parse_return(struct ast_node* node);
 bool parse_for(struct ast_node* node);
-
+bool handle_id(struct ast_node* node);
 
 struct data* d;
 
@@ -127,6 +127,8 @@ bool parse_statement(struct ast_node* node, bool in_root)
         EXPECT(parse_cin(node));
     } else if (accept(KW_FOR)) {
         EXPECT(parse_for(node));
+    } else if (accept(IDENTIFIER)) {
+        EXPECT(handle_id(node));
     // tyhle jsou uz fallback!
     } else if (token_empty()) {
         // prazdny statement je validni
@@ -310,6 +312,9 @@ bool parse_function_arguments(struct ast_node* node)
     // dokud argumenty neskonci
     while (! accept(RPAR)) {
         if ( PRINT ) printf("\tparser: function argument parsing\n");
+        // nejdriv datatyp, potom promenna
+        enum ast_var_type* var_type = malloc(sizeof(enum ast_var_type));
+        EXPECT(parse_datatype(var_type));
         EXPECT(parse_id(var_name));
         // vytvorime promennou
         struct ast_node* variable = ast_create_node();
@@ -499,9 +504,50 @@ bool parse_return(struct ast_node* node)
     return true;
 }
 
+bool handle_id(struct ast_node* node)
+{
+    if (PRINT) printf("\tparser: found ID as statement beginning!\n");
+    struct ast_node* id = ast_create_node();
+    string* var_name = NULL;
+    EXPECT(parse_id(var_name));
+    id->d.string_data = var_name;
+    // pokud se nic nestane, tak je to promenna
+    id->type = AST_VAR;
+
+    // leva zavorka za idckem znaci, ze slo o funkci
+    if (accept(LPAR)) {
+        id->type = AST_CALL;
+        EXPECT(token_left_par());
+        // nacteme parametry volani
+        while (! accept(RPAR)) {
+            if ( PRINT ) printf("\tparser: fn call argument parsing\n");
+            EXPECT(parse_id(var_name));
+            // vytvorime promennou
+            struct ast_node* variable = ast_create_node();
+            variable->type = AST_VAR;
+            variable->d.string_data = var_name;
+            // zalozime do seznamu argumentu
+            ast_list_insert(id->d.list, variable);
+            if (! accept(RPAR)) {
+                EXPECT(token_comma());
+            }
+        }
+        node = id;
+    // byla to promenna
+    } else if (accept(EQUALS)) {
+        node->type = AST_ASSIGN;
+        node->left = id;
+
+        struct ast_node* expr = ast_create_node();
+        EXPECT(parse_expression(expr));
+
+        node->right = expr;
+    }
+}
+
 bool parse_var_creation(struct ast_node* node)
 {
-    if (PRINT) printf("\tparser: parsing variable creation!\n");
+    if (PRINT) printf("\tparser: parsing var creation!\n");
     struct ast_node* var = ast_create_node();
     struct ast_node* datatype = ast_create_node();
     enum ast_var_type* var_type = malloc(sizeof(enum ast_var_type));
@@ -517,7 +563,24 @@ bool parse_var_creation(struct ast_node* node)
 
     node->right = var;
 
-    if (PRINT) printf("\tparser: parsed variable creation! the type is %i\n", datatype->var_type);
+    if (PRINT) printf("\tparser: parsed var creation\n");
+
+    // je tam jeste rovnase, tudiz zparsujem prirazeni
+    if (accept(EQUALS)) {
+        // trosku na hulvata predelame strukturu - vracet ted musime assign
+        struct ast_node* var_creation = ast_create_node();
+        var_creation->type = AST_VAR_CREATION;
+        var_creation->right = var;
+        var_creation->left = node;
+
+        node->left = var_creation;
+        node->type = AST_ASSIGN;
+
+        struct ast_node* expr = ast_create_node();
+        EXPECT(parse_expression(expr));
+
+        node->right = expr;
+    }
 
     return true;
 }
@@ -544,7 +607,7 @@ bool token_datatype()
     if (PRINT) printf("\tparser: accepting datatype\n");
     // tohle je hnusny, ale v navrhu jsem s tim nepocital
     // a zas tak moc me to nestve
-    return (accept(KW_INT) || accept(KW_STRING) || accept(KW_DOUBLE) accept(KW_AUTO));
+    return (accept(KW_INT) || accept(KW_STRING) || accept(KW_DOUBLE) || accept(KW_AUTO));
 }
 
 bool parse_datatype(enum ast_var_type* var_type)
