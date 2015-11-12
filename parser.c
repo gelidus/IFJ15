@@ -349,6 +349,8 @@ const char PrecendenceTable[OPERATORS][OPERATORS] = {
 
 bool parse_expression(struct ast_node* node) {
 
+    if ( PRINT ) printf("\tparser: parsing expression\n");
+
     Stack stack;
     StackInit(&stack);
 
