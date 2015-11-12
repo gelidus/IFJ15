@@ -446,6 +446,8 @@ bool parse_expression(struct ast_node* node) {
     //    *result = destination;
     //}
 
+    if ( PRINT ) printf("\tparser: finished parsing expression\n");
+
     return true;
 }
 
