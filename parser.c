@@ -374,6 +374,9 @@ int GetCorrectTokenValue(enum lex_type type) {
         case IDENTIFIER:
             return 12;
 
+        case NO_TYPE:
+            return 13;
+
         default:
             // return 12, throw error or whatever is wrong
             return 12;
@@ -404,7 +407,7 @@ bool parse_expression(struct ast_node* node) {
             stackType = NO_TYPE;
         }
 
-        char precendenceCharacter = GetPrecendence(d->token->type, stackType);
+        char precendenceCharacter = GetPrecendence(stackType, d->token->type);
 
         switch(precendenceCharacter) {
             case '=':
