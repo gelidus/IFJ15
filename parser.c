@@ -410,7 +410,7 @@ bool parse_expression(struct ast_node* node) {
     Stack stack;
     StackInit(&stack);
 
-    enum lex_type stackType = NO_TYPE;
+    enum ast_node_type stackType = NO_TYPE;
     struct ast_node* source1 = NULL, *source2 = NULL, *result = NULL;
 
     get_token();
@@ -420,10 +420,10 @@ bool parse_expression(struct ast_node* node) {
         if (false) {
         }
 
-        if (StackTop(&stack) == NULL || d->token->type == SEMICOLON) {
-            stackType = NO_TYPE;
+        if (StackTop(&stack) == NULL) {
+            stackType = AST_NONE;
         } else {
-            stackType = ((struct lexeme*)StackTop(&stack))->type;
+            stackType = ((struct ast_node*)StackTop(&stack))->type;
         }
 
         char precendenceCharacter = GetPrecendence(stackType, d->token->type);

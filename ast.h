@@ -19,6 +19,7 @@ void ast_node_print(struct ast_node* n);
 // po libosti upravujte
 enum ast_node_type
 {
+    AST_NONE, // potrebny pre expression parser
     AST_STATEMENT, // v sobe obsahuje cokoliv
     AST_ASSIGN, // prirazeni do promenne
     AST_WHILE, // cyklus while
