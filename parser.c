@@ -383,6 +383,22 @@ int GetCorrectTokenValue(enum lex_type type) {
     }
 }
 
+int GetExpressionStackType(Stack *stack) {
+
+    Element *el = StackTop(stack);
+
+    while(el != NULL) {
+        struct ast_node* node = el->value;
+        if (node->type != AST_EXPRESSION) {
+            // return the type of the top stack token
+        }
+
+        el = el->next;
+    }
+
+    return 13; // no type
+}
+
 char GetPrecendence(enum lex_type first, enum lex_type second) {
     return PrecendenceTable[GetCorrectTokenValue(first)][GetCorrectTokenValue(second)];
 }
@@ -395,7 +411,7 @@ bool parse_expression(struct ast_node* node) {
     StackInit(&stack);
 
     enum lex_type stackType = NO_TYPE;
-    struct ast_node* source1 = NULL, *source2 = NULL, *result = NULL;
+    struct lexeme* source1 = NULL, *source2 = NULL, *result = NULL;
 
     get_token();
 
@@ -416,42 +432,36 @@ bool parse_expression(struct ast_node* node) {
             case '=':
             case '<': {
                 //TODO: push data about expression to stack
-                struct ast_node *E = ast_create_node();
-                E->type = AST_EXPRESSION;
-
-                StackPush(&stack, d->token);
+                StackPush(&stack, NULL);
 
                 get_token();
                 break;
             }
             case '>': {
-                struct ast_node *current = StackPop(&stack);
+                struct ast_node* current = StackPop(&stack)->value;
 
-                if (current != NULL && current->type == AST_EXPRESSION) {
+                if (current != NULL && current->type != RPAR) {
                     //// E -> E1 op E2 ////
 
                     // get second source
                     source2 = current;
 
                     // get operation
-                    result = StackPop(&stack);
+                    result = StackPop(&stack)->value;
 
                     // get first source
-                    source1 = StackPop(&stack);
+                    source1 = StackPop(&stack)->value;
 
                     // add leafs to the result
 
-                } else if (current != NULL && current->type == AST_RIGHT_BRACKET) {
+                } else if (current != NULL) {
                     //// E -> (E) ////
-                    current = StackPop(&stack);
-                    if (current == NULL || current->type != AST_EXPRESSION) {
-                        throw_error(CODE_ERROR_SYNTAX, "");
-                    }
+                    current = StackPop(&stack)->value;
 
                     result = current;
 
-                    current = StackPop(&stack);
-                    if (current == NULL || current->type != AST_LEFT_BRACKET) {
+                    current = StackPop(&stack)->value;
+                    if (current == NULL || current->type != RPAR) {
                         throw_error(CODE_ERROR_SYNTAX, "");
                     }
                 } else {
@@ -485,7 +495,7 @@ bool parse_expression(struct ast_node* node) {
         //if(current->type != TOKEN_TYPE_NONE) {
             //TODO: FIX IT!! free(currentToken)
         //}
-    } while(StackTop(&stack) != NULL);
+    } while(!StackEmpty(&stack));
 
     //if(result) {
     //    *result = destination;
