@@ -17,7 +17,7 @@ int StackEmpty(Stack *s);
 void StackInit(Stack *s);
 void StackFree(Stack *s);
 void StackPush(Stack *s, void *ch);
-void*StackPop(Stack *s);
-void*StackTop(Stack *s);
+Element* StackPop(Stack *s);
+Element* StackTop(Stack *s);
 
 #endif

@@ -33,12 +33,12 @@ void StackPush(Stack *s, void *elem)
 	s->head = s->node;
 }
 
-void*StackPop(Stack *s)
+Element* StackPop(Stack *s)
 {
 	if(s->head == NULL)
 		return NULL;
 
-	string* tmp = s->head->value;
+	Element* tmp = s->head->value;
 	s->node = s->head;
 	s->head = s->head->next;
 	s->node = NULL;
@@ -46,10 +46,10 @@ void*StackPop(Stack *s)
 	return tmp;
 }
 
-void*StackTop(Stack *s)
+Element* StackTop(Stack *s)
 {
 	if (s->head) {
-		return s->head->value;
+		return s->head;
 	} else
 		return NULL;
 }
