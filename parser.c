@@ -394,34 +394,36 @@ bool parse_expression(struct ast_node* node) {
     Stack stack;
     StackInit(&stack);
 
-    enum lex_type currentTokenType = NO_TYPE, stackType = NO_TYPE;
+    enum lex_type stackType = NO_TYPE;
     struct ast_node* source1 = NULL, *source2 = NULL, *result = NULL;
 
     get_token();
+
     do { // until $ on all stacks
         // ak nepatri lexem do expression lexemov, potom priradit typ unknown
         if (false) {
         }
 
-        if (StackTop(&stack) == NULL) {
+        if (StackTop(&stack) == NULL || d->token->type == SEMICOLON) {
             stackType = NO_TYPE;
+        } else {
+            stackType = ((struct lexeme*)StackTop(&stack))->type;
         }
 
         char precendenceCharacter = GetPrecendence(stackType, d->token->type);
 
         switch(precendenceCharacter) {
             case '=':
-            case '<':
+            case '<': {
                 //TODO: push data about expression to stack
+                struct ast_node *E = ast_create_node();
+                E->type = AST_EXPRESSION;
 
-            if(StackTop(&stack) == NULL) {
-                d->token->type = NO_TYPE;
-            } else {
+                StackPush(&stack, d->token);
+
                 get_token();
-                currentTokenType = d->token->type;
+                break;
             }
-            break;
-
             case '>': {
                 struct ast_node *current = StackPop(&stack);
 
