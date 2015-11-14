@@ -411,7 +411,7 @@ bool parse_expression(struct ast_node* node) {
     StackInit(&stack);
 
     enum lex_type stackType = NO_TYPE;
-    struct lexeme* source1 = NULL, *source2 = NULL, *result = NULL;
+    struct ast_node* source1 = NULL, *source2 = NULL, *result = NULL;
 
     get_token();
 
