@@ -352,6 +352,38 @@ const char PrecendenceTable[OPERATORS][OPERATORS] = {
     /*$*/ {'<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<' , 0 , '<', '$'}
 };
 
+int GetCorrectTokenValue(enum lex_type type) {
+    switch(type) {
+        case PLUS: return 0;
+        case MINUS: return 1;
+        case MULT: return 2;
+        case DIVIDE: return 3;
+        case LT: return 4;
+        case GT: return 5;
+        case LTE: return 6;
+        case GTE: return 7;
+        case NEQ: return 8;
+        // = ... assignment is not handled by us
+        case LPAR: return 10;
+        case RPAR: return 11;
+
+        // IDS
+        case INTEGER:
+        case DOUBLE:
+        case STRING:
+        case IDENTIFIER:
+            return 12;
+
+        default:
+            // return 12, throw error or whatever is wrong
+            return 12;
+    }
+}
+
+char GetPrecendence(enum lex_type first, enum lex_type second) {
+    return PrecendenceTable[GetCorrectTokenValue(first)][GetCorrectTokenValue(second)];
+}
+
 bool parse_expression(struct ast_node* node) {
 
     if ( PRINT ) printf("\tparser: parsing expression\n");
@@ -366,10 +398,13 @@ bool parse_expression(struct ast_node* node) {
     do { // until $ on all stacks
         // ak nepatri lexem do expression lexemov, potom priradit typ unknown
         if (false) {
-          stackType = NO_TYPE;
         }
 
-        char precendenceCharacter = PrecendenceTable[d->token->type][stackType];
+        if (StackTop(&stack) == NULL) {
+            stackType = NO_TYPE;
+        }
+
+        char precendenceCharacter = GetPrecendence(d->token->type, stackType);
 
         switch(precendenceCharacter) {
             case '=':
