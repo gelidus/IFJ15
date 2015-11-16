@@ -10,14 +10,14 @@ typedef struct element {
 
 typedef struct stack {
 	Element* head;
-	Element* node;
 } Stack;
 
 int StackEmpty(Stack *s);
 void StackInit(Stack *s);
 void StackFree(Stack *s);
 void StackPush(Stack *s, void *ch);
-Element* StackPop(Stack *s);
-Element* StackTop(Stack *s);
+void* StackPop(Stack *s);
+void* StackTop(Stack *s);
+Element* StackTopElement(Stack *s);
 
 #endif

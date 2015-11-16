@@ -7,7 +7,6 @@
 void StackInit(Stack *s)
 {
 	s->head = NULL;
-	s->node = NULL;
 }
 
 int StackEmpty(Stack *s)
@@ -25,32 +24,35 @@ void StackFree(Stack *s)
 
 void StackPush(Stack *s, void *elem)
 {
-	if((s->node = (Element*) gc_malloc(sizeof(Element))) == NULL)
+	Element* node;
+	if((node = (Element*) gc_malloc(sizeof(Element))) == NULL)
 		return;
 
-	s->node->value = elem;
-	s->node->next = s->head;
-	s->head = s->node;
+	node->value = elem;
+	node->next = s->head;
+	s->head = node;
 }
 
-Element* StackPop(Stack *s)
+void* StackPop(Stack *s)
 {
 	if(s->head == NULL)
 		return NULL;
 
-	Element* tmp = s->head->value;
-	s->node = s->head;
+	Element* node = s->head;
 	s->head = s->head->next;
-	s->node = NULL;
 
-	return tmp;
+	return node->value;
 }
 
-Element* StackTop(Stack *s)
+void* StackTop(Stack *s)
 {
 	if (s->head) {
-		return s->head;
+		return s->head->value;
 	} else
 		return NULL;
 }
 
+
+Element *StackTopElement(Stack *s) {
+	return s->head;
+}
