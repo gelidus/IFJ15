@@ -9,8 +9,26 @@
 
 enum lex_type
 {
-  NO_TYPE, //0
+    // + - * / =
+  PLUS, //15
+  MINUS, //16
+  MULT, //17
+  DIVIDE, //18
+    // < > <= >= == != << >>
+  LT, //20
+  GT, //21
+  LTE, //22
+  GTE, //23
+  NEQ, //25
+  EQ, //24
+
+  LPAR, //28
+  RPAR, //29
+
   IDENTIFIER, //1
+  NO_TYPE, //0
+
+  EQUALS, //19
   //auto, cin, cout, double, else, for, if, int, return, string
   KW_AUTO, //2
   KW_CIN, //3
@@ -26,24 +44,10 @@ enum lex_type
   INTEGER, //12
   DOUBLE, //13
   STRING, //14
-  // + - * / =
-  PLUS, //15
-  MINUS, //16
-  MULT, //17
-  DIVIDE, //18
-  EQUALS, //19
-  // < > <= >= == != << >>
-  LT, //20
-  GT, //21
-  LTE, //22
-  GTE, //23
-  EQ, //24
-  NEQ, //25
+
   INSOP, //26
   EXTOP,  //27
   // ( ) { }
-  LPAR, //28
-  RPAR, //29
   LBR, //30
   RBR, //31
   // ; ,

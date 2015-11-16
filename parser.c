@@ -375,7 +375,7 @@ int GetCorrectTokenValue(enum lex_type type) {
             return 12;
 
         case NO_TYPE:
-            return 13;
+            return AST_NONE;
 
         default:
             // return 12, throw error or whatever is wrong
@@ -383,9 +383,9 @@ int GetCorrectTokenValue(enum lex_type type) {
     }
 }
 
-int GetExpressionStackType(Stack *stack) {
+enum ast_node_type GetExpressionStackType(Stack *stack) {
 
-    Element *el = StackTop(stack);
+    Element *el = StackTopElement(stack);
 
     while(el != NULL) {
         struct ast_node* node = el->value;
@@ -396,7 +396,7 @@ int GetExpressionStackType(Stack *stack) {
         el = el->next;
     }
 
-    return 13; // no type
+    return AST_NONE; // no type
 }
 
 char GetPrecendence(enum lex_type first, enum lex_type second) {
@@ -410,20 +410,21 @@ bool parse_expression(struct ast_node* node) {
     Stack stack;
     StackInit(&stack);
 
-    enum ast_node_type stackType = NO_TYPE;
+    enum ast_node_type stackType = AST_NONE;
     struct ast_node* source1 = NULL, *source2 = NULL, *result = NULL;
 
     get_token();
 
     do { // until $ on all stacks
         // ak nepatri lexem do expression lexemov, potom priradit typ unknown
-        if (false) {
+        if (d->token->type == SEMICOLON) {
+            return true;
         }
 
         if (StackTop(&stack) == NULL) {
             stackType = AST_NONE;
         } else {
-            stackType = ((struct ast_node*)StackTop(&stack))->type;
+            stackType = GetExpressionStackType(&stack);
         }
 
         char precendenceCharacter = GetPrecendence(stackType, d->token->type);
@@ -431,36 +432,40 @@ bool parse_expression(struct ast_node* node) {
         switch(precendenceCharacter) {
             case '=':
             case '<': {
-                //TODO: push data about expression to stack
-                StackPush(&stack, NULL);
+                //TODO: node should be correctly categorized
+                struct ast_node* push = ast_create_node();
+                push->type = AST_EXPRESSION;
 
+                StackPush(&stack, push);
+
+                // get next token
                 get_token();
                 break;
             }
             case '>': {
-                struct ast_node* current = StackPop(&stack)->value;
+                struct ast_node* current = StackPop(&stack);
 
-                if (current != NULL && current->type != RPAR) {
+                if (current != NULL && current->type != AST_RIGHT_BRACKET) {
                     //// E -> E1 op E2 ////
 
                     // get second source
                     source2 = current;
 
                     // get operation
-                    result = StackPop(&stack)->value;
+                    result = StackPop(&stack);
 
                     // get first source
-                    source1 = StackPop(&stack)->value;
+                    source1 = StackPop(&stack);
 
                     // add leafs to the result
 
                 } else if (current != NULL) {
                     //// E -> (E) ////
-                    current = StackPop(&stack)->value;
+                    current = StackPop(&stack);
 
                     result = current;
 
-                    current = StackPop(&stack)->value;
+                    current = StackPop(&stack);
                     if (current == NULL || current->type != RPAR) {
                         throw_error(CODE_ERROR_SYNTAX, "");
                     }
