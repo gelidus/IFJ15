@@ -28,7 +28,8 @@ bool token_cout();
 bool token_cin();
 bool token_for();
 
-bool parse_id(string* name);
+bool parse_decision(struct ast_node* node);
+bool parse_id(string** name);
 bool parse_datatype(enum ast_var_type* var_type);
 bool parse_var_creation(struct ast_node* node);
 bool parse_function_definition(struct ast_node* node);
@@ -36,7 +37,7 @@ bool parse_function_arguments(struct ast_node* node);
 bool parse_cout(struct ast_node* node);
 bool parse_cin(struct ast_node* cin);
 bool parse_program_body();
-bool parse_statement(struct ast_node* instr, bool in_root);
+bool parse_statement(struct ast_node* instr);
 bool parse_expression(struct ast_node* node);
 bool parse_if(struct ast_node* node);
 bool parse_return(struct ast_node* node);
@@ -61,7 +62,8 @@ void get_token()
 struct data* parser_run()
 {
     if (PRINT) printf("\tparser: run\n");
-    int result = expect(parse_program_body());
+    int result = parse_program_body();
+    if (PRINT) printf("\tparser: run finished\n");
     if (! result) {
         if (PRINT) printf("\tparser: SETTING ERROR VALUE\n");
         d->error = CODE_ERROR_SYNTAX;
@@ -111,7 +113,7 @@ bool expect(enum lex_type t)
     return true;
 }
 
-bool parse_statement(struct ast_node* node, bool in_root)
+bool parse_statement(struct ast_node* node)
 {
     // doplnit, az bude jasne, co jak vypada
     if (PRINT) printf("\tparser: handling statement\n");
@@ -145,7 +147,37 @@ bool parse_statement(struct ast_node* node, bool in_root)
     return true;
 }
 
-bool parse_program_block(struct ast_node* node, bool in_root)
+bool parse_decision(struct ast_node* node)
+{
+    if (PRINT) printf("\tparser: handling decision\n");
+
+    struct ast_node* new_node;
+    while(true) {
+        // posledni token v rootu je poslednim tokenem
+        if (token_empty()) {
+            if (PRINT) printf("\tparser: eof detected\n");
+            break;
+        }
+
+        new_node = ast_create_node();
+        // v rootu jsou jen deklarace funkci
+        EXPECT(parse_function_definition(new_node));
+        if (PRINT) printf("\tparser: finished parsing function definition\n");
+        ast_list_insert(node->d.list, new_node);
+
+        // tohle by asi chtelo prepsat
+        if (token_empty()) {
+            if (PRINT) printf("\tparser: eof detected\n");
+            break;
+        }
+    }
+
+    if (PRINT) printf("\tparser: parsed decision\n");
+
+    return true;
+}
+
+bool parse_program_block(struct ast_node* node)
 {
     if (PRINT) printf("\tparser: handling program block\n");
     // priprav seznam instrukci bloku
@@ -154,13 +186,10 @@ bool parse_program_block(struct ast_node* node, bool in_root)
     struct ast_node* new_node;
     while(true) {
         // posledni token ale nejsme v bloku?
-        if (!in_root && token_empty()) {
+        if (token_empty()) {
             if (PRINT) printf("\tparser: SETTING ERROR VALUE\n");
             d->error = CODE_ERROR_SYNTAX;
             return false;
-        // posledni token v mainu programu je poslednim tokenem
-        } else if (in_root && token_empty()) {
-            break;
         // zavrena zavorka v bloku je konec bloku
         } else if (accept(RBR)) {
             break;
@@ -168,22 +197,11 @@ bool parse_program_block(struct ast_node* node, bool in_root)
 
         // soucasna instrukce
         new_node = ast_create_node();
-
-        // v rootu se obevi jen deklarace funkci
-        if (in_root) {
-            EXPECT(parse_function_definition(new_node));
-        // vsude jinde to budou statementy
-        } else {
-            EXPECT(parse_statement(new_node, in_root))
-        }
+        // vsude to budou statementy
+        EXPECT(parse_statement(new_node))
 
         // vloz do seznamu
         ast_list_insert(node->d.list, new_node);
-
-        // mozna jde prepsat?
-        if (token_empty()) {
-            break;
-        }
     }
 
     return true;
@@ -195,7 +213,9 @@ bool parse_program_body()
 
     EXPECT(no_errors());
 
-    EXPECT(parse_program_block(d->tree, true));
+    EXPECT(parse_decision(d->tree));
+
+    if (PRINT) printf("\tparser: parsed program body\n");
 
     return true;
 }
@@ -219,7 +239,7 @@ bool parse_for(struct ast_node* node)
     EXPECT(parse_expression(third_field));
 
     EXPECT(token_left_brace())
-    EXPECT(parse_program_block(block, false));
+    EXPECT(parse_program_block(block));
     EXPECT(token_right_brace());
 
     node->d.list = ast_create_list();
@@ -265,7 +285,7 @@ bool parse_cin(struct ast_node* node)
     while (! accept(SEMICOLON)) {
         EXPECT(token_extop());
         string* var = NULL;
-        EXPECT(parse_id(var));
+        EXPECT(parse_id(&var));
         struct ast_node* variable = ast_create_node();
         variable->type = AST_VAR;
         variable->d.string_data = var;
@@ -287,12 +307,12 @@ bool parse_function_definition(struct ast_node* node)
     EXPECT(parse_datatype(var_type));
 
     string* function_name = NULL;
-    EXPECT(parse_id(function_name));
+    EXPECT(parse_id(&function_name));
 
     EXPECT(parse_function_arguments(arguments));
 
     EXPECT(token_left_brace());
-    EXPECT(parse_program_block(body, false));
+    EXPECT(parse_program_block(body));
     EXPECT(token_right_brace());
 
     // poskladame
@@ -315,7 +335,7 @@ bool parse_function_arguments(struct ast_node* node)
         // nejdriv datatyp, potom promenna
         enum ast_var_type* var_type = malloc(sizeof(enum ast_var_type));
         EXPECT(parse_datatype(var_type));
-        EXPECT(parse_id(var_name));
+        EXPECT(parse_id(&var_name));
         // vytvorime promennou
         struct ast_node* variable = ast_create_node();
         variable->type = AST_VAR;
@@ -527,13 +547,13 @@ bool parse_if(struct ast_node* node)
 
     // if blok
     EXPECT(token_left_brace());
-    EXPECT(parse_program_block(if_body, false));
+    EXPECT(parse_program_block(if_body));
     EXPECT(token_right_brace());
 
     // else blok
     EXPECT(token_else());
     EXPECT(token_left_brace())
-    EXPECT(parse_program_block(else_body, false));
+    EXPECT(parse_program_block(else_body));
     EXPECT(token_right_brace());
 
     // poskladame
@@ -564,7 +584,7 @@ bool handle_id(struct ast_node* node)
     if (PRINT) printf("\tparser: found ID as statement beginning!\n");
     struct ast_node* id = ast_create_node();
     string* var_name = NULL;
-    EXPECT(parse_id(var_name));
+    EXPECT(parse_id(&var_name));
     id->d.string_data = var_name;
     // pokud se nic nestane, tak je to promenna
     id->type = AST_VAR;
@@ -576,7 +596,7 @@ bool handle_id(struct ast_node* node)
         // nacteme parametry volani
         while (! accept(RPAR)) {
             if ( PRINT ) printf("\tparser: fn call argument parsing\n");
-            EXPECT(parse_id(var_name));
+            EXPECT(parse_id(&var_name));
             // vytvorime promennou
             struct ast_node* variable = ast_create_node();
             variable->type = AST_VAR;
@@ -614,7 +634,7 @@ bool parse_var_creation(struct ast_node* node)
     node->left = datatype;
 
     string* var_name = NULL;
-    EXPECT(parse_id(var_name));
+    EXPECT(parse_id(&var_name));
     var->d.string_data = var_name;
     var->type = AST_VAR;
 
@@ -649,12 +669,12 @@ bool token_empty()
     return accept(END_OF_FILE);
 }
 
-bool parse_id(string* id)
+bool parse_id(string** id)
 {
     if (PRINT) printf("\tparser: ID\n");
     EXPECT(expect(IDENTIFIER));
 
-    id = new_str(d->token->value.string);
+    *id = new_str(d->token->value.string);
 
     return true;
 }
