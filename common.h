@@ -63,15 +63,6 @@ enum literal_type
     LITERAL_INT
 };
 
-typedef struct instruction {
-    enum instruction_type type;
-    struct symbol_table *source1;
-    struct symbol_table *source2;
-    void *destination;
-
-    struct instruction *next;
-} instruction;
-
 //structura lexemu
 struct lexeme {
   enum lex_type type; //typ
