@@ -454,7 +454,7 @@ struct ast_node* GetStackTopOperator(Stack *stack) {
     // find the top operator on the stack
     while(el != NULL) {
         struct ast_node* node = el->value;
-        if (node->type != AST_EXPRESSION) {
+        if (GetASTNodePrecendenceValue(node) != AST_EXPRESSION) {
             return node;
         }
 
@@ -474,12 +474,12 @@ bool parse_expression(struct ast_node* node) {
     enum ast_node_type stackType = AST_NONE;
     struct ast_node* source1 = NULL, *source2 = NULL, *result = NULL, *next_node = NULL;
 
-    get_token();
-    next_node = GetASTNodeFromToken(d->token);
+    // get the first token of the expression and convert it
+    get_token(); next_node = GetASTNodeFromToken(d->token);
 
     do { // until $ on all stacks
         // next_node is not in the
-        if (next_node == NULL) {
+        if (next_node == NULL && StackEmpty(&stack)) {
             return true;
         }
 
@@ -489,14 +489,10 @@ bool parse_expression(struct ast_node* node) {
             case '=':
             case '<': {
                 //TODO: node should be correctly categorized
-                struct ast_node* push = ast_create_node();
-                push->type = AST_EXPRESSION;
+                StackPush(&stack, next_node);
 
-                StackPush(&stack, push);
-
-                // get next token
-                get_token();
-                next_node = GetASTNodeFromToken(d->token);
+                // prepare the next token of the expression
+                get_token(); next_node = GetASTNodeFromToken(d->token);
                 break;
             }
             case '>': {
@@ -557,7 +553,7 @@ bool parse_expression(struct ast_node* node) {
         //if(current->type != TOKEN_TYPE_NONE) {
             //TODO: FIX IT!! free(currentToken)
         //}
-    } while(!StackEmpty(&stack) && next_node != NULL);
+    } while(!StackEmpty(&stack) || next_node != NULL);
 
     //if(result) {
     //    *result = destination;
