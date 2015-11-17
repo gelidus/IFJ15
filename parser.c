@@ -355,7 +355,7 @@ bool parse_function_arguments(struct ast_node* node)
 
 #define OPERATORS 14
 const char PrecendenceTable[OPERATORS][OPERATORS] = {
-    /////   +    -    *    /    <    >   <=   >=   <>    =    (    )   ID    $
+    /////   +    -    *    /    <    >   <=   >=   <>   ==    (    )   ID    $
     /*+*/ {'>', '>', '<', '<', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
     /*-*/ {'>', '>', '<', '<', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
     /***/ {'>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '>', '<', '>'},
@@ -372,55 +372,96 @@ const char PrecendenceTable[OPERATORS][OPERATORS] = {
     /*$*/ {'<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<' , 0 , '<', '$'}
 };
 
-int GetCorrectTokenValue(enum lex_type type) {
-    switch(type) {
-        case PLUS: return 0;
-        case MINUS: return 1;
-        case MULT: return 2;
-        case DIVIDE: return 3;
-        case LT: return 4;
-        case GT: return 5;
-        case LTE: return 6;
-        case GTE: return 7;
-        case NEQ: return 8;
-        // = ... assignment is not handled by us
-        case LPAR: return 10;
-        case RPAR: return 11;
+// GetASTNodeFromToken converts given lexeme into the ast_node
+// with the corresponding values.
+// Warning: This function is only for the expression. If it's
+// populated with the non-expression token, it will return
+// null instead
+struct ast_node* GetASTNodeFromToken(struct lexeme* lex) {
+    struct ast_node* node = ast_create_node();
 
-        // IDS
-        case INTEGER:
+    switch(lex->type) {
         case DOUBLE:
-        case STRING:
-        case IDENTIFIER:
-            return 12;
-
-        case NO_TYPE:
-            return AST_NONE;
+            node->type = AST_LITERAL;
+            node->literal = AST_LITERAL_REAL;
+            node->d.numeric_data = lex->value.real;
+        break;
+        case INTEGER:
+            node->type = AST_LITERAL;
+            node->literal = AST_LITERAL_INT;
+            node->d.numeric_data = lex->value.integer;
+        break;
+        case PLUS:
+            node->type = AST_BINARY_OP;
+            node->d.binary = AST_BINARY_PLUS;
+        break;
+        case MINUS:
+            node->type = AST_BINARY_OP;
+            node->d.binary = AST_BINARY_MINUS;
+        break;
+        case MULT:
+            node->type = AST_BINARY_OP;
+            node->d.binary = AST_BINARY_TIMES;
+        break;
+        case DIVIDE:
+            node->type = AST_BINARY_OP;
+            node->d.binary = AST_BINARY_DIVIDE;
+        break;
 
         default:
-            // return 12, throw error or whatever is wrong
-            return 12;
+            return NULL; // token is not from the expression tokens
+    }
+
+    return node;
+}
+
+// GetASTNodePrecendenceValue will return the exact precendence
+// value from the ast_node. This function is needed because of
+// the ast_node subtyping
+int GetASTNodePrecendenceValue(struct ast_node* node) {
+    if (node == NULL) {
+        return AST_NONE;
+    }
+
+    switch(node->type) {
+        case AST_BINARY_OP:
+            return node->d.binary;
+        case AST_LITERAL:
+        case AST_VAR:
+            return AST_EXPRESSION;
+        default:
+            return node->type;
     }
 }
 
-enum ast_node_type GetExpressionStackType(Stack *stack) {
+// GetPrecendence accepts two ast_node pointers: stack ast node and
+// matching next node on the input. This will return the precendence
+// character from the precendence table based on the types of thse
+// two ast_node types.
+char GetPrecendence(struct ast_node* stacked, struct ast_node* next) {
+    return PrecendenceTable[GetASTNodePrecendenceValue(stacked)][GetASTNodePrecendenceValue(next)];
+}
 
+// GetStackTopOperator returns top-most operator from the
+// given stack of ast_node. This must be implemented because
+// of the precendence matching mechanism and due to missing
+// output stack (as we are creating ast tree instead)
+struct ast_node* GetStackTopOperator(Stack *stack) {
+
+    // get the top element from the stack so we can interate over it
     Element *el = StackTopElement(stack);
 
+    // find the top operator on the stack
     while(el != NULL) {
         struct ast_node* node = el->value;
         if (node->type != AST_EXPRESSION) {
-            // return the type of the top stack token
+            return node;
         }
 
         el = el->next;
     }
 
-    return AST_NONE; // no type
-}
-
-char GetPrecendence(enum lex_type first, enum lex_type second) {
-    return PrecendenceTable[GetCorrectTokenValue(first)][GetCorrectTokenValue(second)];
+    return NULL; // no type
 }
 
 bool parse_expression(struct ast_node* node) {
@@ -431,23 +472,18 @@ bool parse_expression(struct ast_node* node) {
     StackInit(&stack);
 
     enum ast_node_type stackType = AST_NONE;
-    struct ast_node* source1 = NULL, *source2 = NULL, *result = NULL;
+    struct ast_node* source1 = NULL, *source2 = NULL, *result = NULL, *next_node = NULL;
 
     get_token();
+    next_node = GetASTNodeFromToken(d->token);
 
     do { // until $ on all stacks
-        // ak nepatri lexem do expression lexemov, potom priradit typ unknown
-        if (d->token->type == SEMICOLON) {
+        // next_node is not in the
+        if (next_node == NULL) {
             return true;
         }
 
-        if (StackTop(&stack) == NULL) {
-            stackType = AST_NONE;
-        } else {
-            stackType = GetExpressionStackType(&stack);
-        }
-
-        char precendenceCharacter = GetPrecendence(stackType, d->token->type);
+        char precendenceCharacter = GetPrecendence(GetStackTopOperator(&stack), next_node);
 
         switch(precendenceCharacter) {
             case '=':
@@ -460,6 +496,7 @@ bool parse_expression(struct ast_node* node) {
 
                 // get next token
                 get_token();
+                next_node = GetASTNodeFromToken(d->token);
                 break;
             }
             case '>': {
@@ -520,7 +557,7 @@ bool parse_expression(struct ast_node* node) {
         //if(current->type != TOKEN_TYPE_NONE) {
             //TODO: FIX IT!! free(currentToken)
         //}
-    } while(!StackEmpty(&stack));
+    } while(!StackEmpty(&stack) && next_node != NULL);
 
     //if(result) {
     //    *result = destination;

@@ -63,23 +63,6 @@ enum literal_type
     LITERAL_INT
 };
 
-// doplnim postupne
-enum instruction_type {
-    INST_ASSIGN,
-    // odlisna od prirazeni!
-    INST_VAR_CREATE,
-    INST_WHILE,
-    INST_IF,
-    INST_FN_CALL,
-    INST_RETURN,
-    INST_COUT,
-    INST_CIN,
-    INST_FN_DEFINITION,
-    INST_FOR,
-    // binarni operace
-    INST_BIN_OP,
-};
-
 typedef struct instruction {
     enum instruction_type type;
     struct symbol_table *source1;

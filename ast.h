@@ -19,7 +19,6 @@ void ast_node_print(struct ast_node* n);
 // po libosti upravujte
 enum ast_node_type
 {
-    AST_NONE = 13, // potrebny pre expression parser
     AST_STATEMENT, // v sobe obsahuje cokoliv
     AST_ASSIGN, // prirazeni do promenne
     AST_WHILE, // cyklus while
@@ -35,9 +34,11 @@ enum ast_node_type
     AST_COUT,
     AST_CIN,
     AST_FOR,
-    AST_EXPRESSION,
-    AST_LEFT_BRACKET,
-    AST_RIGHT_BRACKET
+    AST_LEFT_BRACKET = 10,
+    AST_RIGHT_BRACKET = 11,
+    AST_EXPRESSION = 12,
+
+    AST_NONE = 13, // potrebny pre expression parser
 };
 
 enum ast_literal_type
@@ -45,25 +46,23 @@ enum ast_literal_type
     AST_LITERAL_FALSE,
     AST_LITERAL_TRUE,
     AST_LITERAL_NULL,
-    AST_LITERAL_NUMERIC,
+    AST_LITERAL_INT,
+    AST_LITERAL_REAL,
     AST_LITERAL_STRING
 };
 
 enum ast_binary_op_type
 {
-    AST_BINARY_PLUS = 0, //0
-    AST_BINARY_MINUS, //1
-    AST_BINARY_TIMES, //2
-    AST_BINARY_DIVIDE, //3
-    AST_BINARY_LESS, //4
-    AST_BINARY_MORE, //5
-    AST_BINARY_LESS_EQUALS, //6
-    AST_BINARY_MORE_EQUALS, //7
-    AST_BINARY_NOT_EQUALS, //8
-    AST_BINARY_EQUALS, //9
-    AST_BINARY_STRICT_EQUALS, //10
-    AST_BINARY_STRICT_NOT_EQUALS, //11
-	  AST_BINARY_STRING_CONCATENATION //12
+    AST_BINARY_PLUS = 0,
+    AST_BINARY_MINUS = 1,
+    AST_BINARY_TIMES = 2,
+    AST_BINARY_DIVIDE = 3,
+    AST_BINARY_LESS = 4,
+    AST_BINARY_MORE = 6,
+    AST_BINARY_LESS_EQUALS = 6,
+    AST_BINARY_MORE_EQUALS = 7,
+    AST_BINARY_NOT_EQUALS = 8,
+    AST_BINARY_EQUALS = 9,
 };
 
 
