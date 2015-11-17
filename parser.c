@@ -598,6 +598,8 @@ bool handle_id(struct ast_node* node)
 
         node->right = expr;
     }
+
+    return true;
 }
 
 bool parse_var_creation(struct ast_node* node)

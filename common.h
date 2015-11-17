@@ -10,43 +10,43 @@
 enum lex_type
 {
     // + - * / =
-  PLUS, //15
-  MINUS, //16
-  MULT, //17
-  DIVIDE, //18
+  PLUS, //0
+  MINUS, //1
+  MULT, //2
+  DIVIDE, //3
     // < > <= >= == != << >>
-  LT, //20
-  GT, //21
-  LTE, //22
-  GTE, //23
-  NEQ, //25
-  EQ, //24
+  LT, //4
+  GT, //5
+  LTE, //6
+  GTE, //7
+  NEQ, //8
+  EQ, //9
 
-  LPAR, //28
-  RPAR, //29
+  LPAR, //10
+  RPAR, //11
 
-  IDENTIFIER, //1
-  NO_TYPE, //0
+  IDENTIFIER, //12
+  NO_TYPE, //13
 
-  EQUALS, //19
+  EQUALS, //14
   //auto, cin, cout, double, else, for, if, int, return, string
-  KW_AUTO, //2
-  KW_CIN, //3
-  KW_COUT, //4
-  KW_DOUBLE, //5
-  KW_ELSE, //6
-  KW_FOR, //7
-  KW_IF, //8
-  KW_INT, //9
-  KW_RETURN, //10
-  KW_STRING, //11
+  KW_AUTO, //15
+  KW_CIN, //16
+  KW_COUT, //17
+  KW_DOUBLE, //18
+  KW_ELSE, //19
+  KW_FOR, //20
+  KW_IF, //21
+  KW_INT, //22
+  KW_RETURN, //23
+  KW_STRING, //24
   //literaly
-  INTEGER, //12
-  DOUBLE, //13
-  STRING, //14
+  INTEGER, //25
+  DOUBLE, //26
+  STRING, //27
 
-  INSOP, //26
-  EXTOP,  //27
+  INSOP, //28
+  EXTOP,  //29
   // ( ) { }
   LBR, //30
   RBR, //31
