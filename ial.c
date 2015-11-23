@@ -112,11 +112,33 @@ Variable* ScopeAddVariable(Scope* scope, struct ast_node* node) {
   var->var = node;
   var->next = NULL;
 
-  return NULL;
+  if (scope->first == NULL) {
+    scope->first = var;
+  } else {
+    Variable* insert = scope->first;
+    while(insert->next != NULL) {
+      insert = insert->next;
+    }
+
+    insert->next = var;
+  }
+
+  return var;
 }
 
 Variable* ScopeFindVariable(Scope* scope, string* var_name) {
+  Variable* var = scope->first;
 
+  while (var != NULL) {
+    // match the variable by name
+    if (equals(var->var->d.string_data, var_name)) {
+      break;
+    }
+
+    var = var->next;
+  }
+
+  return var;
 }
 
 int length(char* s) {
