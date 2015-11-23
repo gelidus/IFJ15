@@ -90,6 +90,18 @@ Scope* SymbolTableCreateScope(string* scope_name) {
 
   unsigned long hash = Hash(scope_name->str);
 
+  Scope* insert = SymbolTable[hash];
+  if (insert == NULL) {
+    // insert the first scope
+    SymbolTable[hash] = scope;
+  } else {
+    // interate to the end of the list
+    while (insert->next != NULL) {
+      insert = insert->next;
+    }
+    // insert to the end of the list
+    insert->next = scope;
+  }
 
   return scope; // no error
 }
