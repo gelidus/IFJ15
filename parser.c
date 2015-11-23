@@ -526,6 +526,8 @@ bool parse_expression(struct ast_node* node) {
                     throw_error(CODE_ERROR_SYNTAX, "");
                 }
 
+                StackPush(&stack, result);
+
                 //if(!StackPush(&stack, NULL, EXPRESSION, &destination, function, global)) {
                 //    throw_error(CODE_ERROR_SYNTAX);
                 //}

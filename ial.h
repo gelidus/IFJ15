@@ -6,6 +6,7 @@
 #include "string.h"
 # include <stdio.h>
 #include "common.h"
+#include "ast.h"
 
 /******************** HASH TABLE ********************/
 
@@ -36,26 +37,35 @@ typedef struct FuncForm {
 // Variable is linked list of Symbols which
 // represents variable.
 typedef struct Variable {
+		struct ast_node* var;
 		struct Variable* next;
 } Variable;
 
 // Scope is the registered scope of the function
 // which contains linked list of available vairbales
 // inside the function (scope)
-typedef struct {
+// This variable provides the list scope by keeping the
+// next scope variable.
+typedef struct Scope {
 		string* name;
 		Variable* first;
+
+		struct Scope * next;
 } Scope;
 
 // Global variable for the symbol table
 // in which will be stored all scopes
-Scope* SymbolTable;
+Scope** SymbolTable;
 
 // Hash table functions
-unsigned long Hash(unsigned char* what);
-void HashTableInit();
-void HashTableAddVariable(string* scope, string* var_name, enum ast_var_type type);
-Variable* HashTableFindVariable(string* scope, string* var_name);
+unsigned long Hash(char* what);
+void SymbolTableInit();
+Variable* SymbolTableAddVariable(string* scope_name, struct ast_node* var);
+Variable* SymbolTableFindVariable(string* scope_name, string* var_name);
+Scope* SymbolTableFindScope(string *scope_name);
+Scope* SymbolTableCreateScope(string *scope_name);
+Variable* ScopeAddVariable(Scope* scope, struct ast_node* var);
+Variable* ScopeFindVariable(Scope* scope, string* var_name);
 
 int length(char* s);
 char* substr(char* s, int i, int n);

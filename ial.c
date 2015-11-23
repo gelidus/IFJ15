@@ -5,11 +5,12 @@
 #include "errors.h"
 #include "common.h"
 #include "string.h"
+#include "gc.h"
 
 int HTSIZE = MAX_HTSIZE;
 
 // hash table functions
-unsigned long Hash(unsigned char *what) {
+unsigned long Hash(char* what) {
   unsigned long hash = 5381;
   int c;
 
@@ -20,15 +21,89 @@ unsigned long Hash(unsigned char *what) {
   return hash % HTSIZE;
 }
 
-void HashTableInit() {
-  SymbolTable = (Scope*)malloc(sizeof(Scope*) * MAX_HTSIZE);
+void SymbolTableInit() {
+  // initialize the array of pointers. Each pointer
+  // will be then initialized by the table when created
+  SymbolTable = (Scope**)gc_malloc(sizeof(Scope**));
+
+  // NULL all the pointers in the symbol table, so we
+  // can work with null pointers (remove trash)
+  for (int i = 0; i < MAX_HTSIZE; i++) {
+    SymbolTable[i] = NULL;
+  }
 }
 
-void HashTableAddVariable(string *scope, string *var_name, enum ast_var_type type) {
+Variable* SymbolTableAddVariable(string* scope_name, struct ast_node* var) {
+  unsigned long hash = Hash(scope_name->str);
 
+  Scope* scope = SymbolTableFindScope(scope_name);
+  if (scope == NULL) {
+    scope = SymbolTableCreateScope(scope_name);
+    if (scope == NULL) {
+      throw_error(CODE_ERROR_INTERNAL, "[SymbolTable] Scope could not be created");
+    }
+  }
+
+  // add variable to the scope that was created
+  return ScopeAddVariable(scope, var);
 }
 
-Variable* HashTableFindVariable(string *scope, string *var_name) {
+Variable* SymbolTableFindVariable(string* scope_name, string* var_name) {
+  unsigned long hash = Hash(scope_name->str);
+
+  Scope* scope = SymbolTableFindScope(scope_name);
+  if (scope == NULL) {
+     return NULL; // not even scope for the variable was found
+  }
+
+  // try to search the scope for the variable
+  return ScopeFindVariable(scope, var_name);
+}
+
+Scope* SymbolTableFindScope(string* scope_name) {
+  unsigned long hash = Hash(scope_name->str);
+
+  Scope* scope_list = SymbolTable[hash];
+  // the scope list was not found
+  if (scope_list == NULL) {
+    return NULL;
+  }
+
+  Scope* scope = scope_list;
+  while (scope != NULL) {
+    if (equals(scope->name, scope_name) == true) {
+      break; // found scope
+    }
+
+    // else continue finding
+    scope = scope->next;
+  }
+
+  return scope;
+}
+
+Scope* SymbolTableCreateScope(string* scope_name) {
+  Scope* scope = (Scope*)gc_malloc(sizeof(Scope*));
+  scope->name = scope_name;
+  scope->first = NULL;
+  scope->next = NULL;
+
+  unsigned long hash = Hash(scope_name->str);
+
+
+  return scope; // no error
+}
+
+Variable* ScopeAddVariable(Scope* scope, struct ast_node* node) {
+
+  Variable* var = (Variable*)gc_malloc(sizeof(Variable*));
+  var->var = node;
+  var->next = NULL;
+
+  return NULL;
+}
+
+Variable* ScopeFindVariable(Scope* scope, string* var_name) {
 
 }
 
