@@ -18,6 +18,8 @@ void make_data_structure();
 // and build interpret
 int main() {
 	StartUnitTests();
+
+	return 0;
 }
 #else
 // Main entry to the interpret. No tests will be launched, only

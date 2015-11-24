@@ -24,7 +24,7 @@ unsigned long Hash(char* what) {
 void SymbolTableInit() {
   // initialize the array of pointers. Each pointer
   // will be then initialized by the table when created
-  SymbolTable = (Scope**)gc_malloc(sizeof(Scope**));
+  SymbolTable = (Scope**)gc_malloc(MAX_HTSIZE * sizeof(Scope*));
 
   // NULL all the pointers in the symbol table, so we
   // can work with null pointers (remove trash)

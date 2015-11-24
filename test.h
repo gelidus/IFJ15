@@ -8,5 +8,3 @@
 #include "common.h"
 
 void StartUnitTests();
-
-void TestNothing();
