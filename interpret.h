@@ -6,19 +6,23 @@
 #define ASTNode struct ast_node
 #define ASTList struct ast_list
 
-void InterpretList(ASTList* tree);
+void InterpretNode(ASTNode *node);
 
-void InterpretStatement(ASTNode *statement);
+void InterpretList(ASTList *list);
 
-void InterpretAssign(ASTNode *statement);
+void InterpretStatement(ASTNode* statement);
 
-void InterpretReturn(ASTNode *ret);
+void InterpretAssign(ASTNode* statement);
 
-void InterpretIf(ASTNode *ifstatement);
+void InterpretReturn(ASTNode* ret);
 
-void InterpretFunctionCall(ASTNode *func);
+void InterpretIf(ASTNode* ifstatement);
 
-void InterpretBinaryOperation(ASTNode *op);
+void InterpretFunctionCall(ASTNode* func);
+
+void InterpretExpression(ASTNode* expr);
+
+void InterpretBinaryOperation(ASTNode* op);
 
 #undef ASTNode // cleanup style definition for ast node
 #undef ASTList
