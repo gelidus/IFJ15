@@ -407,6 +407,27 @@ struct ast_node* GetASTNodeFromToken(struct lexeme* lex) {
             node->type = AST_BINARY_OP;
             node->d.binary = AST_BINARY_DIVIDE;
         break;
+        case LT:
+            node->type = AST_BINARY_OP;
+            node->d.binary = AST_BINARY_LESS;
+        break;
+        case GT:
+            node->type = AST_BINARY_OP;
+            node->d.binary = AST_BINARY_MORE;
+        break;
+        case LTE:
+            node->type = AST_BINARY_OP;
+            node->d.binary = AST_BINARY_LESS_EQUALS;
+        break;
+        case GTE:
+            node->type = AST_BINARY_OP;
+            node->d.binary = AST_BINARY_MORE_EQUALS;
+        break;
+
+        case IDENTIFIER:
+            node->type = AST_VAR;
+            node->d.string_data = new_str(lex->value.string);
+        break;
 
         default:
             return NULL; // token is not from the expression tokens

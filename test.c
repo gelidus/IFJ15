@@ -9,10 +9,6 @@
 #include "string.h"
 #include <string.h>
 
-void TestNothing(){
-	assert(1 != 2);
-}
-
 void TestString() {
 	string* str = new_str("hello");
 	assert(str != NULL);
@@ -54,8 +50,8 @@ void TestSymbolTableVariable() {
 // Call only your testing funcitons in this function
 void StartUnitTests(){
 	// Add calls to testing functions here
-	TestNothing();
 	TestString();
+
 	TestSymbolTableInit();
 	TestSymbolTableScope();
 	TestSymbolTableVariable();

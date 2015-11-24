@@ -19,26 +19,28 @@ void ast_node_print(struct ast_node* n);
 // po libosti upravujte
 enum ast_node_type
 {
-    AST_STATEMENT, // v sobe obsahuje cokoliv
-    AST_ASSIGN, // prirazeni do promenne
-    AST_WHILE, // cyklus while
-    AST_RETURN, // return
-    AST_LITERAL, // string, cisla, false, true, null
-    AST_IF, // ze by if?
-    AST_VAR_CREATION, //deklarace promenne
+    AST_STATEMENT = 1, // v sobe obsahuje cokoliv
+    AST_ASSIGN = 2, // prirazeni do promenne
+    AST_WHILE = 3, // cyklus while
+    AST_RETURN = 4, // return
+    AST_LITERAL = 5, // string, cisla, false, true, null
+    AST_IF = 6, // ze by if?
+    AST_VAR_CREATION = 7, //deklarace promenne
 
-    AST_FUNCTION, //vytvareni funkce
-    AST_CALL, //volani fce
-    AST_VAR, //promenna
-    AST_BINARY_OP, //binarni operace +-*/,
-    AST_COUT,
-    AST_CIN,
-    AST_FOR,
+    AST_FUNCTION = 8, //vytvareni funkce
+    AST_CALL = 9, //volani fce
+
     AST_LEFT_BRACKET = 10,
     AST_RIGHT_BRACKET = 11,
     AST_EXPRESSION = 12,
 
     AST_NONE = 13, // potrebny pre expression parser
+
+    AST_VAR, //promenna
+    AST_BINARY_OP, //binarni operace +-*/,
+    AST_COUT,
+    AST_CIN,
+    AST_FOR
 };
 
 enum ast_literal_type
