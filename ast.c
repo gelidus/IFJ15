@@ -18,8 +18,16 @@ struct ast_list* ast_create_list()
     return list;
 }
 
-bool ast_list_insert(struct ast_list* l, struct ast_node* n)
-{
-    //TODO:: insert!!!!
+bool ast_list_insert(struct ast_list* l, struct ast_node* n) {
+    if (l->elem == NULL) {
+        l->elem = n;
+    } else {
+        while(l->next != NULL) {
+            l = l->next;
+        }
+        l->next = ast_create_list();
+        l->next->elem = n;
+    }
+
     return true;
 }
