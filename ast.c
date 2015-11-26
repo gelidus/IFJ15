@@ -14,6 +14,7 @@ struct ast_list* ast_create_list()
 {
     struct ast_list* list = (struct ast_list*) malloc(sizeof(struct ast_list));
     list->next = NULL;
+    list->elem = NULL;
 
     return list;
 }
