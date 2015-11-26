@@ -105,7 +105,7 @@ void * get_item(struct hash_table * hashtable, string * key)
 	int index = make_hash(hashtable, key);
     struct hash_item * ptr = NULL;
     // hledame v seznamu
-	pair = hashtable->table[index];
+	ptr = hashtable->table[index];
 	while(ptr && ptr->key && strcmp(key->str, ptr->key->str) > 0) {
 		ptr = ptr->next;
 	}

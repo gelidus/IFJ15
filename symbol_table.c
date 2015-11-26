@@ -6,6 +6,9 @@
 #include "common.h"
 #include "string.h"
 #include "gc.h"
+#include "stack.h"
+#include "symbol_table.h"
+
 
 // init zavolat na zacatku, drzet v GLOBALNI PROMENNE a predavat vsem volanim
 struct symbol_table * init_table()
@@ -13,6 +16,8 @@ struct symbol_table * init_table()
     struct symbol_table * table = malloc(sizeof(struct symbol_table));
     table->stack = malloc(sizeof(Stack));
     StackInit(table->stack);
+
+    return table;
 }
 
 // zavolat kdyz se zacne novy scope - v kazdem bloku instrukci (AST_LIST)!
@@ -26,7 +31,7 @@ void scope_start(struct symbol_table * symbol_table)
 // zavolat kdyz skonci scope - typicky po posledni zpracovane instrukci v AST_LIST
 void scope_end(struct symbol_table * table)
 {
-    StackPop(symbol_table->stack);
+    StackPop(table->stack);
 }
 
 // vrati to co sis ulozil se symbolem
@@ -34,7 +39,7 @@ void scope_end(struct symbol_table * table)
 void * get_symbol(struct symbol_table * table, string * key)
 {
     Element * hash_table_carry = StackTopElement(table->stack);
-    if (! Element) {
+    if (! hash_table_carry) {
         throw_error(CODE_ERROR_INTERNAL, "na zasobniku tabulek symbolu neni zadna!");
     }
 
@@ -61,7 +66,7 @@ void * get_symbol(struct symbol_table * table, string * key)
 void set_symbol(struct symbol_table * table, string * key, void * value)
 {
     Element * hash_table_carry = StackTopElement(table->stack);
-    if (! Element) {
+    if (! hash_table_carry) {
         throw_error(CODE_ERROR_INTERNAL, "na zasobniku tabulek symbolu neni zadna!");
     }
 
