@@ -10,6 +10,7 @@ typedef struct element {
 
 typedef struct stack {
 	Element* head;
+	int size;
 } Stack;
 
 int StackEmpty(Stack *s);
@@ -18,6 +19,7 @@ void StackFree(Stack *s);
 void StackPush(Stack *s, void *ch);
 void* StackPop(Stack *s);
 void* StackTop(Stack *s);
+int StackSize(Stack *s);
 Element* StackTopElement(Stack *s);
 
 #endif

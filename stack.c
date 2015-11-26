@@ -7,6 +7,7 @@
 void StackInit(Stack *s)
 {
 	s->head = NULL;
+	s->size = 0;
 }
 
 int StackEmpty(Stack *s)
@@ -31,6 +32,8 @@ void StackPush(Stack *s, void *elem)
 	node->value = elem;
 	node->next = s->head;
 	s->head = node;
+
+	s->size++;
 }
 
 void* StackPop(Stack *s)
@@ -40,6 +43,8 @@ void* StackPop(Stack *s)
 
 	Element* node = s->head;
 	s->head = s->head->next;
+
+	s->size--;
 
 	return node->value;
 }
@@ -52,6 +57,10 @@ void* StackTop(Stack *s)
 		return NULL;
 }
 
+
+int StackSize(Stack *s) {
+	return s->size;
+}
 
 Element *StackTopElement(Stack *s) {
 	return s->head;

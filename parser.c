@@ -372,6 +372,16 @@ const char PrecendenceTable[OPERATORS][OPERATORS] = {
     /*$*/ {'<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<' , 0 , '<', '$'}
 };
 
+bool IsExpressionNode(struct ast_node* node) {
+    switch(node->type) {
+        case AST_BINARY_OP:
+        case AST_LITERAL:
+            return true;
+        default:
+            return false;
+    }
+}
+
 // GetASTNodeFromToken converts given lexeme into the ast_node
 // with the corresponding values.
 // Warning: This function is only for the expression. If it's
@@ -390,6 +400,11 @@ struct ast_node* GetASTNodeFromToken(struct lexeme* lex) {
             node->type = AST_LITERAL;
             node->literal = AST_LITERAL_INT;
             node->d.numeric_data = lex->value.integer;
+        break;
+        case STRING:
+            node->type = AST_LITERAL;
+            node->literal = AST_LITERAL_STRING;
+            node->d.string_data = new_str(lex->value.string);
         break;
         case PLUS:
             node->type = AST_BINARY_OP;
@@ -485,9 +500,13 @@ struct ast_node* GetStackTopOperator(Stack *stack) {
     return NULL; // no type
 }
 
+// Node passed to this function will automacially become
+// expression node, which will store the expression in the
+// left leaf. This is beacause of empty expressions parsing
 bool parse_expression(struct ast_node* node) {
-
     if ( PRINT ) printf("\tparser: parsing expression\n");
+
+    node->type = AST_EXPRESSION;
 
     Stack stack;
     StackInit(&stack);
@@ -496,7 +515,8 @@ bool parse_expression(struct ast_node* node) {
     struct ast_node* source1 = NULL, *source2 = NULL, *result = NULL, *next_node = NULL;
 
     // get the first token of the expression and convert it
-    get_token(); next_node = GetASTNodeFromToken(d->token);
+    //get_token(); - we already have the first token (was not returned)
+    next_node = GetASTNodeFromToken(d->token);
 
     do { // until $ on all stacks
         // next_node is not in the
@@ -548,15 +568,16 @@ bool parse_expression(struct ast_node* node) {
                 }
 
                 StackPush(&stack, result);
-
-                //if(!StackPush(&stack, NULL, EXPRESSION, &destination, function, global)) {
-                //    throw_error(CODE_ERROR_SYNTAX);
-                //}
                 break;
             }
             case '$':
-                if(StackTop(&stack) == NULL) {
+                if (StackTop(&stack) == NULL || StackSize(&stack) > 1) {
                     throw_error(CODE_ERROR_SYNTAX, "");
+                }
+
+                // save the result to the left node of the expression
+                if (IsExpressionNode(StackTop(&stack))) {
+                    node->left = StackPop(&stack);
                 }
 
             //ExpressionData *stackTop = popExpressionData(&stack);
