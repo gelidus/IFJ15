@@ -3,10 +3,36 @@
 #include "interpret.h"
 #include "string.h"
 #include "errors.h"
+#include "stack.h"
 
 #define ASTNode struct ast_node // definition of ast node for definition file
 #define ASTList struct ast_list
 
+Stack stack;
+
+void CreateScope() {
+
+}
+
+void CreateVariable(ASTNode *node) {
+
+}
+
+void GetVariable(string *name) {
+
+}
+
+void SetVariable(string *name, union ast_node_data node_data) {
+
+}
+
+bool HasVariable(string *name) {
+	return false;
+}
+
+void InterpretVarCreation(ASTNode *var) {
+
+}
 
 // InterpretRun will search for the main funciton
 // in the given function list node. This function
@@ -50,6 +76,9 @@ void InterpretNode(ASTNode *node) {
 			break;
 		case AST_COUT:
 			InterpretCout(node);
+			break;
+		case AST_VAR_CREATION:
+			InterpretVarCreation(node);
 			break;
 		case AST_NONE:
 			// Empty Statement can happen from trailing semicolons after the expressions.
@@ -124,10 +153,17 @@ void EvaluateExpression(ASTNode *result) {
 		result->d = expr->d;
 		return;
 	}
-}
 
-void InterpretBinaryOperation(ASTNode *op) {
+	if (expr->type == AST_EXPRESSION) {
+		EvaluateExpression(expr);
+	}
 
+	if (expr->type == AST_BINARY_OP) {
+		switch (expr->d.binary) {
+			case AST_BINARY_PLUS:
+				break;
+		}
+	}
 }
 
 // cout node is a list of expressions that should be
