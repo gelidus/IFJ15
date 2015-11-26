@@ -380,8 +380,22 @@ const char PrecendenceTable[OPERATORS][OPERATORS] = {
 
 bool IsExpressionNode(struct ast_node* node) {
     switch(node->type) {
+        case AST_EXPRESSION:
         case AST_BINARY_OP:
         case AST_LITERAL:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool IsOperatorNode(struct ast_node* node) {
+    if (node == NULL) {
+        return false;
+    }
+
+    switch (node->type) {
+        case AST_BINARY_OP:
             return true;
         default:
             return false;
@@ -496,7 +510,7 @@ struct ast_node* GetStackTopOperator(Stack *stack) {
     // find the top operator on the stack
     while(el != NULL) {
         struct ast_node* node = el->value;
-        if (GetASTNodePrecendenceValue(node) != AST_EXPRESSION) {
+        if (IsOperatorNode(node)) {
             return node;
         }
 
@@ -535,7 +549,6 @@ bool parse_expression(struct ast_node* node) {
         switch(precendenceCharacter) {
             case '=':
             case '<': {
-                //TODO: node should be correctly categorized
                 StackPush(&stack, next_node);
 
                 // prepare the next token of the expression
@@ -552,12 +565,17 @@ bool parse_expression(struct ast_node* node) {
                     source2 = current;
 
                     // get operation
-                    result = StackPop(&stack);
+                    result = ast_create_node();
+                    result->type = AST_EXPRESSION; // the result will be bound to the left leaf
+
+                    result->left = StackPop(&stack);
 
                     // get first source
                     source1 = StackPop(&stack);
 
                     // add leafs to the result
+                    result->left->left = source1;
+                    result->left->right = source2;
 
                 } else if (current != NULL) {
                     //// E -> (E) ////

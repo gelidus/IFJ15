@@ -102,12 +102,16 @@ void InterpretFunctionCall(ASTNode *func) {
 
 void EvaluateExpression(ASTNode *expr) {
 	// empty expression
-	if (expr == NULL) {
+	if (expr == NULL || expr->left == NULL) {
 		return;
 	}
 
-	// if the expression is literal, we dont evaluate anything
-	if (expr->type == AST_LITERAL) {
+	// if the left expression is literal, all we do
+	// is copy the literal to the top node as a result
+	if (expr->left->type == AST_LITERAL) {
+		expr->type = expr->left->type;
+		expr->literal = expr->literal;
+		expr->d = expr->d;
 		return;
 	}
 }
@@ -122,7 +126,7 @@ void InterpretCout(ASTNode *cout) {
 	ASTList* list = cout->d.list;
 	do {
 		// this is the list of expressions
-		ASTNode* elem = list->elem->left;
+		ASTNode* elem = list->elem;
 		EvaluateExpression(elem);
 
 		switch (elem->type) {
