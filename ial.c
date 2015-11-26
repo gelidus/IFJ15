@@ -7,6 +7,120 @@
 #include "string.h"
 #include "gc.h"
 
+
+// nova hashova tabulka co pisu ve ctvrtek den pred odevzdanim
+// pak nekdo promazte tu starou
+
+// vytvori novou tabulku
+struct hash_table * create_table()
+{
+	struct hash_table * table = NULL;
+
+	if(!(table = malloc(sizeof(struct hash_table)))) {
+        throw_error(CODE_ERROR_INTERNAL, "malloc failure");
+	}
+
+	if(!(table->table = malloc(sizeof(struct hash_item *) * MAX_HTSIZE))) {
+        throw_error(CODE_ERROR_INTERNAL, "malloc failure");
+	}
+
+    table->size = MAX_HTSIZE;
+
+	for(int i = 0; i < table->size; i++) {
+		table->table[i] = NULL;
+	}
+	return table;
+}
+
+// vrati hash
+int make_hash(struct hash_table * hashtable, string* key)
+{
+	unsigned long int hashval;
+	int i = 0;
+    char* key_as_string = key->str;
+
+    // string na integer
+	while(hashval < ULONG_MAX && i < key->len) {
+		hashval = hashval << 8;
+		hashval += key_as_string[i];
+		i++;
+	}
+
+	return hashval % hashtable->size;
+}
+
+// vytvori novej hash_item na vlozeni
+struct hash_item * make_item(string * key, void * value)
+{
+	struct hash_item * new;
+
+	if(!(new = malloc(sizeof(struct hash_item)))) {
+        throw_error(CODE_ERROR_INTERNAL, "malloc failure");
+	}
+
+	new->key = new_str(key->str);
+    new->value = value;
+	new->next = NULL;
+
+	return new;
+}
+
+// vlozi item
+void add_item(struct hash_table * hashtable, string * key, void * value)
+{
+    int index = make_hash(hashtable, key);
+    struct hash_item * next = hashtable->table[index];
+    struct hash_item * last = NULL;
+    // najdem posledni
+	while(next && next->key && strcmp(key->str, next->key->str) > 0 ) {
+		last = next;
+		next = next->next;
+	}
+	// klic sedi, prepisem hodnotu
+	if(next && next->key && strcmp(key->str, next->key->str) == 0 ) {
+        // na free kaslem, ale kdyby nahodou :D
+		// free(next->value);
+		next->value = value;
+    // nenasli jsme, zalozime novy
+	} else {
+		struct hash_item * new = make_item(key,value);
+        // jsme na zacatku
+		if(next == hashtable->table[index]) {
+			new->next = next;
+			hashtable->table[index] = new;
+		// jsme na konci seznamu
+		} else if (next == NULL) {
+			last->next = new;
+		// jsme nekde uprostred
+		} else  {
+			new->next = next;
+			last->next = new;
+		}
+	}
+}
+
+// vrati hodnotu
+void * get_item(struct hash_table * hashtable, string * key)
+{
+	int index = make_hash(hashtable, key);
+    struct hash_item * ptr = NULL;
+    // hledame v seznamu
+	ptr = hashtable->table[index];
+	while(ptr && ptr->key && strcmp(key->str, ptr->key->str) > 0) {
+		ptr = ptr->next;
+	}
+    // nasli radcove?
+	if(ptr == NULL || ptr->key == NULL || strcmp(key->str, ptr->key->str) != 0 ) {
+		return NULL;
+	} else {
+		return ptr->value;
+	}
+
+}
+
+
+// konec enterprise hash tabulky co sem psal ve ctvrtek den pred odevzdanim
+
 int HTSIZE = MAX_HTSIZE;
 
 // hash table functions

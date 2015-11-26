@@ -2,11 +2,29 @@
 #define _IAL_H_
 
 #include <stdbool.h>
-# include <limits.h>
+#include <limits.h>
 #include "string.h"
-# include <stdio.h>
+#include <stdio.h>
 #include "common.h"
 #include "ast.h"
+
+// nova hashova tabulka co pisu ve ctvrtek pred odevzdanim
+struct hash_item {
+	string* key;
+	void* value;
+	struct hash_item* next;
+};
+
+struct hash_table {
+	int size;
+	struct hash_item** table;
+};
+
+struct hash_table * create_table();
+int make_hash(struct hash_table * hashtable, string* key);
+struct hash_item * make_item(string * key, void * value);
+void add_item(struct hash_table * hashtable, string * key, void * value);
+void * get_item(struct hash_table * hashtable, string * key);
 
 /******************** HASH TABLE ********************/
 
