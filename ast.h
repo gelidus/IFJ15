@@ -40,7 +40,9 @@ enum ast_node_type
     AST_BINARY_OP, //binarni operace +-*/,
     AST_COUT,
     AST_CIN,
-    AST_FOR
+    AST_FOR,
+
+    AST_FUNCTION_LIST,
 };
 
 enum ast_literal_type

@@ -79,6 +79,9 @@ void parser_prepare(struct data* data)
     d = data;
     // inicializace stromu
     d->tree = ast_create_node();
+    d->tree->type = AST_FUNCTION_LIST;
+
+    d->tree->d.list = ast_create_list();
 }
 
 bool no_errors()

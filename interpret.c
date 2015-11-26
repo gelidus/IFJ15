@@ -25,6 +25,11 @@ void InterpretNode(ASTNode *node) {
 }
 
 void InterpretList(ASTList* list) {
+	// no interpretation for empty list needed
+	if (list->elem == NULL) {
+		return;
+	}
+
 	do {
 		// interpret node on current leaf
 		InterpretNode(list->elem);
