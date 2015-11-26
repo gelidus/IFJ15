@@ -137,9 +137,11 @@ bool parse_statement(struct ast_node* node)
     // tyhle jsou uz fallback!
     } else if (token_empty()) {
         // prazdny statement je validni
+        node->type = AST_NONE;
         return true;
     } else if (accept(SEMICOLON)) {
         EXPECT(token_semicolon());
+        node->type = AST_NONE;
     } else {
         // vsechno ostatni je pro me vyraz
         EXPECT(parse_expression(node));
