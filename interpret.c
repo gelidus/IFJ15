@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 #include "interpret.h"
 #include "string.h"
 #include "errors.h"
@@ -100,18 +101,23 @@ void InterpretFunctionCall(ASTNode *func) {
 	} while (list != NULL);
 }
 
-void EvaluateExpression(ASTNode *expr) {
-	// empty expression
-	if (expr == NULL || expr->left == NULL) {
+void EvaluateExpression(ASTNode *result) {
+	assert(result);
+	// empty expression. result should never
+	// be null, only it's left side
+	if (result->left == NULL) {
 		return;
 	}
 
+	// this is needed, as the expressions are packed
+	ASTNode* expr = result->left;
+
 	// if the left expression is literal, all we do
 	// is copy the literal to the top node as a result
-	if (expr->left->type == AST_LITERAL) {
-		expr->type = expr->left->type;
-		expr->literal = expr->literal;
-		expr->d = expr->d;
+	if (expr->type == AST_LITERAL) {
+		result->type = expr->type;
+		result->literal = expr->literal;
+		result->d = expr->d;
 		return;
 	}
 }
@@ -139,6 +145,8 @@ void InterpretCout(ASTNode *cout) {
 						printf("%d", (int)elem->d.numeric_data);
 						break;
 				}
+				break;
+			case AST_EXPRESSION: // TODO: just for testing, remove this when everything should be ok
 				break;
 			default:
 				throw_error(CODE_ERROR_SEMANTIC, "Cout cant interpret given value");

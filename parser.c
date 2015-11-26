@@ -604,12 +604,6 @@ bool parse_expression(struct ast_node* node) {
                     node->left = StackPop(&stack);
                 }
 
-            //ExpressionData *stackTop = popExpressionData(&stack);
-            //if(stackTop->tokenType != EXPRESSION) {
-            //    return CODE_ERROR_SYNTAX;
-            //}
-
-            //destination = stackTop->symbol;
             break;
 
 
@@ -618,14 +612,8 @@ bool parse_expression(struct ast_node* node) {
             break;
         }
 
-        //if(current->type != TOKEN_TYPE_NONE) {
-            //TODO: FIX IT!! free(currentToken)
-        //}
     } while(!StackEmpty(&stack) || next_node != NULL);
 
-    //if(result) {
-    //    *result = destination;
-    //}
 
     if ( PRINT ) printf("\tparser: finished parsing expression\n");
 
