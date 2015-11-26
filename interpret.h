@@ -6,6 +6,10 @@
 #define ASTNode struct ast_node
 #define ASTList struct ast_list
 
+/*Helpers and converters*/
+
+/*Interpret functions*/
+
 void InterpretRun(struct ast_node* func_list);
 
 void InterpretNode(ASTNode *node);
@@ -22,9 +26,11 @@ void InterpretIf(ASTNode* ifstatement);
 
 void InterpretFunctionCall(ASTNode* func);
 
-void InterpretExpression(ASTNode* expr);
+void EvaluateExpression(ASTNode* expr);
 
 void InterpretBinaryOperation(ASTNode* op);
+
+void InterpretCout(ASTNode* cout);
 
 #undef ASTNode // cleanup style definition for ast node
 #undef ASTList

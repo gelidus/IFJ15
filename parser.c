@@ -305,6 +305,7 @@ bool parse_function_definition(struct ast_node* node)
 
     struct ast_node* arguments = ast_create_node();
     struct ast_node* body = ast_create_node();
+    body->type = AST_BODY;
 
     enum ast_var_type* var_type = malloc(sizeof(enum ast_var_type));
     EXPECT(parse_datatype(var_type));
@@ -330,6 +331,8 @@ bool parse_function_definition(struct ast_node* node)
 bool parse_function_arguments(struct ast_node* node)
 {
     node->d.list = ast_create_list();
+    node->type = AST_FUNCTION_ARGUMENTS;
+
     EXPECT(token_left_par());
     string* var_name = NULL;
     // dokud argumenty neskonci

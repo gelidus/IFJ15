@@ -45,7 +45,10 @@ void InterpretNode(ASTNode *node) {
 			break;
 		case AST_EXPRESSION:
 			// first expression node is in the left leaf of the expression (see expression parser)
-			InterpretExpression(node->left);
+			EvaluateExpression(node->left);
+			break;
+		case AST_COUT:
+			InterpretCout(node);
 			break;
 		default:
 			throw_error(CODE_ERROR_RUNTIME_OTHER, "Provided ASTNode type not recognized");
@@ -87,21 +90,56 @@ void InterpretFunctionCall(ASTNode *func) {
 		return; // function is empty
 	}
 
-	ASTList* list = func->d.list;
+	// list of statements that should be interpreted
+	// is in the right leaf of the function
+	ASTList* list = func->right->d.list;
 	do {
 		InterpretNode(list->elem);
 
 		list = list->next;
-	} while(list != NULL);
+	} while (list != NULL);
 }
 
-void InterpretExpression(ASTNode *expr) {
+void EvaluateExpression(ASTNode *expr) {
 	// empty expression
 	if (expr == NULL) {
+		return;
+	}
+
+	// if the expression is literal, we dont evaluate anything
+	if (expr->type == AST_LITERAL) {
 		return;
 	}
 }
 
 void InterpretBinaryOperation(ASTNode *op) {
 
+}
+
+// cout node is a list of expressions that should be
+// printed to the screen
+void InterpretCout(ASTNode *cout) {
+	ASTList* list = cout->d.list;
+	do {
+		// this is the list of expressions
+		ASTNode* elem = list->elem->left;
+		EvaluateExpression(elem);
+
+		switch (elem->type) {
+			case AST_LITERAL:
+				switch (elem->literal) {
+					case AST_LITERAL_STRING:
+						printf("%s", elem->d.string_data->str);
+						break;
+					case AST_LITERAL_INT:
+						printf("%d", (int)elem->d.numeric_data);
+						break;
+				}
+				break;
+			default:
+				throw_error(CODE_ERROR_SEMANTIC, "Cout cant interpret given value");
+		}
+
+		list = list->next;
+	} while (list != NULL);
 }
