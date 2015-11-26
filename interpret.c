@@ -30,10 +30,6 @@ bool HasVariable(string *name) {
 	return false;
 }
 
-void InterpretVarCreation(ASTNode *var) {
-
-}
-
 // InterpretRun will search for the main funciton
 // in the given function list node. This function
 // will be called afterwards
@@ -87,6 +83,10 @@ void InterpretNode(ASTNode *node) {
 		default:
 			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
+}
+
+void InterpretVarCreation(ASTNode *var) {
+
 }
 
 void InterpretList(ASTList* list) {
@@ -158,6 +158,7 @@ void EvaluateExpression(ASTNode *result) {
 		EvaluateExpression(expr);
 	}
 
+	// TODO
 	if (expr->type == AST_BINARY_OP) {
 		switch (expr->d.binary) {
 			case AST_BINARY_PLUS:

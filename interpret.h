@@ -6,7 +6,7 @@
 #define ASTNode struct ast_node
 #define ASTList struct ast_list
 
-union ast_node_data
+union variable_data
 {
     enum ast_binary_op_type binary; // typ binarni operace
     string* string_data; // nazev fce, nebo promenne, text
@@ -17,7 +17,7 @@ union ast_node_data
 
 typedef struct {
     enum ast_var_type data_type;
-    union ast_node_data data;
+    union variable_data data;
 } Variable;
 
 /*Helpers*/
