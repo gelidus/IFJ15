@@ -6,6 +6,8 @@
 #define ASTNode struct ast_node
 #define ASTList struct ast_list
 
+void InterpretRun(struct ast_node* func_list);
+
 void InterpretNode(ASTNode *node);
 
 void InterpretList(ASTList *list);

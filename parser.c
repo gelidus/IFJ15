@@ -752,9 +752,8 @@ bool token_empty()
 bool parse_id(string** id)
 {
     if (PRINT) printf("\tparser: ID\n");
-    EXPECT(expect(IDENTIFIER));
-
     *id = new_str(d->token->value.string);
+    EXPECT(expect(IDENTIFIER));
 
     return true;
 }

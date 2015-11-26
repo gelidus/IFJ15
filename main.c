@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 	d = parser_run();
 
 	// interpret the list
-	InterpretList(d->tree->d.list);
+	InterpretRun(d->tree);
 
 	return 0;
 }
