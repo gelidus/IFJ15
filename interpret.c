@@ -83,7 +83,16 @@ void InterpretIf(ASTNode *ifstatement) {
 }
 
 void InterpretFunctionCall(ASTNode *func) {
+	if (func->d.list == NULL || func->d.list->elem == NULL) {
+		return; // function is empty
+	}
 
+	ASTList* list = func->d.list;
+	do {
+		InterpretNode(list->elem);
+
+		list = list->next;
+	} while(list != NULL);
 }
 
 void InterpretExpression(ASTNode *expr) {
