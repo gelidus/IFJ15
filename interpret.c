@@ -260,9 +260,11 @@ void EvaluateExpression(ASTNode *result) {
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
+					EvaluateExpression(result);
 				}
 				else if(expr->right->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->right);
+					EvaluateExpression(result);
 				}
 				break;
 			case AST_BINARY_MORE:
@@ -280,9 +282,11 @@ void EvaluateExpression(ASTNode *result) {
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
+					EvaluateExpression(result);
 				}
 				else if(expr->right->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->right);
+					EvaluateExpression(result);
 				}
 				break;
 			case AST_BINARY_EQUALS:
@@ -300,9 +304,11 @@ void EvaluateExpression(ASTNode *result) {
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
+					EvaluateExpression(result);
 				}
 				else if(expr->right->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->right);
+					EvaluateExpression(result);
 				}
 				break;
 			case AST_BINARY_NOT_EQUALS:
@@ -320,9 +326,11 @@ void EvaluateExpression(ASTNode *result) {
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
+					EvaluateExpression(result);
 				}
 				else if(expr->right->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->right);
+					EvaluateExpression(result);
 				}
 				break;
 			case AST_BINARY_LESS_EQUALS:
@@ -340,9 +348,11 @@ void EvaluateExpression(ASTNode *result) {
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
+					EvaluateExpression(result);
 				}
 				else if(expr->right->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->right);
+					EvaluateExpression(result);
 				}
 				break;
 			case AST_BINARY_MORE_EQUALS:
@@ -360,9 +370,11 @@ void EvaluateExpression(ASTNode *result) {
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
+					EvaluateExpression(result);
 				}
 				else if(expr->right->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->right);
+					EvaluateExpression(result);
 				}
 				break;
 		}
