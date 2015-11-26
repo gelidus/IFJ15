@@ -99,6 +99,27 @@ void add_item(struct hash_table * hashtable, string * key, void * value)
 	}
 }
 
+// vrati hodnotu
+void * get_item(struct hash_table * hashtable, string * key)
+{
+	int index = make_hash(hashtable, key);
+    struct hash_item * ptr = NULL;
+    // hledame v seznamu
+	pair = hashtable->table[index];
+	while(ptr && ptr->key && strcmp(key->str, ptr->key->str) > 0) {
+		ptr = ptr->next;
+	}
+    // nasli radcove?
+	if(ptr == NULL || ptr->key == NULL || strcmp(key->str, ptr->key->str) != 0 ) {
+		return NULL;
+	} else {
+		return ptr->value;
+	}
+
+}
+
+
+// konec enterprise hash tabulky co sem psal ve ctvrtek den pred odevzdanim
 
 int HTSIZE = MAX_HTSIZE;
 

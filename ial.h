@@ -20,6 +20,12 @@ struct hash_table {
 	struct hash_item** table;
 };
 
+struct hash_table * create_table();
+int make_hash(struct hash_table * hashtable, string* key);
+struct hash_item * make_item(string * key, void * value);
+void add_item(struct hash_table * hashtable, string * key, void * value);
+void * get_item(struct hash_table * hashtable, string * key);
+
 /******************** HASH TABLE ********************/
 
 #define MAX_HTSIZE 701
