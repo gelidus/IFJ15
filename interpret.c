@@ -14,7 +14,7 @@
 void InterpretRun(struct ast_node *func_list) {
 	ASTList* list = func_list->d.list;
 	if (list == NULL) {
-		// what?
+		throw_error(CODE_ERROR_INTERNAL, "[Interpret] List of provided functions is null");
 		return;
 	}
 
@@ -51,8 +51,12 @@ void InterpretNode(ASTNode *node) {
 		case AST_COUT:
 			InterpretCout(node);
 			break;
+		case AST_NONE:
+			// Empty Statement can happen from trailing semicolons after the expressions.
+			// Warn: This is hotfix
+			return;
 		default:
-			throw_error(CODE_ERROR_RUNTIME_OTHER, "Provided ASTNode type not recognized");
+			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
 }
 
