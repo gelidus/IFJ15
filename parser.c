@@ -397,6 +397,8 @@ bool IsOperatorNode(struct ast_node* node) {
     }
 
     switch (node->type) {
+        case AST_LEFT_BRACKET:
+        case AST_RIGHT_BRACKET:
         case AST_BINARY_OP:
             return true;
         default:
@@ -439,6 +441,12 @@ struct ast_node* GetASTNodeFromToken(struct lexeme* lex) {
         case MULT:
             node->type = AST_BINARY_OP;
             node->d.binary = AST_BINARY_TIMES;
+        break;
+        case LPAR:
+            node->type = AST_LEFT_BRACKET;
+        break;
+        case RPAR:
+            node->type = AST_RIGHT_BRACKET;
         break;
         case DIVIDE:
             node->type = AST_BINARY_OP;
@@ -581,12 +589,11 @@ bool parse_expression(struct ast_node* node) {
 
                 } else if (current != NULL) {
                     //// E -> (E) ////
-                    current = StackPop(&stack);
-
-                    result = current;
+                    result = StackPop(&stack);
 
                     current = StackPop(&stack);
-                    if (current == NULL || current->type != RPAR) {
+                    // last bracket must be left
+                    if (current == NULL || current->type != AST_LEFT_BRACKET) {
                         throw_error(CODE_ERROR_SYNTAX, "");
                     }
                 } else {
