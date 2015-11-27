@@ -3,6 +3,7 @@
 #include "interpret.h"
 #include "errors.h"
 #include "symbol_table.h"
+#include "gc.h"
 
 #define ASTNode struct ast_node // definition of ast node for definition file
 #define ASTList struct ast_list
@@ -73,7 +74,15 @@ void InterpretNode(ASTNode *node) {
 }
 
 void InterpretVarCreation(ASTNode *var) {
+	if (get_symbol(scopes, var->right->d.string_data) != NULL) {
+		throw_error(CODE_ERROR_SEMANTIC, "Variable redefinition");
+	}
 
+	Variable *variable = gc_malloc(sizeof(Variable));
+	variable->data_type = var->left->var_type;
+	variable->data.numeric_data = 0; // null the data
+
+	set_symbol(scopes, var->right->d.string_data, variable);
 }
 
 void InterpretList(ASTList* list) {
@@ -168,7 +177,6 @@ void EvaluateExpression(ASTNode *result) {
 						}
 						result->type = AST_LITERAL;
 						result->d.numeric_data = expr->left->d.numeric_data + expr->right->d.numeric_data;
-						return;
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
@@ -189,7 +197,6 @@ void EvaluateExpression(ASTNode *result) {
 						}
 						result->type = AST_LITERAL;
 						result->d.numeric_data = expr->left->d.numeric_data - expr->right->d.numeric_data;
-						return;
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
@@ -210,7 +217,6 @@ void EvaluateExpression(ASTNode *result) {
 						}
 						result->type = AST_LITERAL;
 						result->d.numeric_data = expr->left->d.numeric_data * expr->right->d.numeric_data;
-						return;
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
@@ -231,7 +237,6 @@ void EvaluateExpression(ASTNode *result) {
 						}
 						result->type = AST_LITERAL;
 						result->d.numeric_data = expr->left->d.numeric_data / expr->right->d.numeric_data;
-						return;
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
@@ -253,7 +258,6 @@ void EvaluateExpression(ASTNode *result) {
 							result->d.numeric_data = 0;
 						}
 						result->type = AST_LITERAL;
-						return;
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
@@ -275,7 +279,6 @@ void EvaluateExpression(ASTNode *result) {
 							result->d.numeric_data = 0;
 						}
 						result->type = AST_LITERAL;
-						return;
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
@@ -297,7 +300,6 @@ void EvaluateExpression(ASTNode *result) {
 							result->d.numeric_data = 0;
 						}
 						result->type = AST_LITERAL;
-						return;
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
@@ -319,7 +321,6 @@ void EvaluateExpression(ASTNode *result) {
 							result->d.numeric_data = 0;
 						}
 						result->type = AST_LITERAL;
-						return;
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
@@ -341,7 +342,6 @@ void EvaluateExpression(ASTNode *result) {
 							result->d.numeric_data = 0;
 						}
 						result->type = AST_LITERAL;
-						return;
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
@@ -363,7 +363,6 @@ void EvaluateExpression(ASTNode *result) {
 							result->d.numeric_data = 0;
 						}
 						result->type = AST_LITERAL;
-						return;
 				}
 				else if(expr->left->type == AST_EXPRESSION) {
 					EvaluateExpression(expr->left);
