@@ -40,8 +40,9 @@ int main(int argc, char *argv[]) {
 	parser_prepare(d);
 	d = parser_run();
 
+	InterpretInit(d->tree->d.list);
 	// interpret the list
-	InterpretRun(d->tree);
+	InterpretRun();
 
 	return 0;
 }

@@ -22,6 +22,8 @@ set(SOURCE_FILES
         input.c
         errors.h
         errors.c
+        symbol_table.h
+        symbol_table.c
         gc.c
         gc.h ial.c ial.h test.c test.h)
 

@@ -20,21 +20,17 @@ typedef struct {
     union variable_data data;
 } Variable;
 
-/*Helpers*/
-
-void CreateScope();
-
-void CreateVariable(ASTNode* node);
-
-void GetVariable(string* name);
-
-void SetVariable(string* name, union ast_node_data);
-
-bool HasVariable(string* name);
-
 /*Interpret functions*/
 
-void InterpretRun(struct ast_node* func_list);
+// FindFunction will search for the given function
+ASTNode* FindFunction(string* name);
+
+void InterpretInit(ASTList* functions);
+
+// InterpretRun will search for the main funciton
+// in the given function list node. This function
+// will be called afterwards
+void InterpretRun();
 
 void InterpretNode(ASTNode *node);
 
@@ -51,6 +47,8 @@ void InterpretReturn(ASTNode* ret);
 void InterpretIf(ASTNode* ifstatement);
 
 void InterpretFunctionCall(ASTNode* func);
+
+void InterpretFor(ASTNode* node);
 
 void EvaluateExpression(ASTNode* expr);
 

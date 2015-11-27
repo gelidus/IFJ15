@@ -1,57 +1,41 @@
 #include <stdio.h>
 #include <assert.h>
 #include "interpret.h"
-#include "string.h"
 #include "errors.h"
-#include "stack.h"
+#include "symbol_table.h"
 
 #define ASTNode struct ast_node // definition of ast node for definition file
 #define ASTList struct ast_list
 
-Stack stack;
+struct symbol_table* scopes;
+ASTList* functions;
 
-void CreateScope() {
-
-}
-
-void CreateVariable(ASTNode *node) {
-
-}
-
-void GetVariable(string *name) {
-
-}
-
-void SetVariable(string *name, union ast_node_data node_data) {
-
-}
-
-bool HasVariable(string *name) {
-	return false;
-}
-
-// InterpretRun will search for the main funciton
-// in the given function list node. This function
-// will be called afterwards
-void InterpretRun(struct ast_node *func_list) {
-	ASTList* list = func_list->d.list;
-	if (list == NULL) {
-		throw_error(CODE_ERROR_INTERNAL, "[Interpret] List of provided functions is null");
-		return;
-	}
-
+ASTNode *FindFunction(string *name) {
+	ASTList* list = functions;
 	do {
 		ASTNode* func = list->elem;
-		if (equals(func->d.string_data, new_str("main"))) {
+		if (equals(func->d.string_data, name)) {
 			// interpret definition of main
-			InterpretFunctionCall(func);
-			return;
+			return func;
 		}
 
 		list = list->next;
 	} while(list != NULL);
 
-	throw_error(CODE_ERROR_SEMANTIC, "Main function could not be found");
+	return NULL;
+}
+
+void InterpretInit(ASTList* fcns) {
+	scopes = init_table();
+	functions = fcns;
+}
+
+void InterpretRun() {
+	ASTNode* func = FindFunction(new_str("main"));
+	if (func == NULL) {
+		throw_error(CODE_ERROR_SEMANTIC, "Main function could not be found");
+	}
+	InterpretFunctionCall(func);
 }
 
 void InterpretNode(ASTNode *node) {
@@ -75,6 +59,9 @@ void InterpretNode(ASTNode *node) {
 			break;
 		case AST_VAR_CREATION:
 			InterpretVarCreation(node);
+			break;
+		case AST_FOR:
+			InterpretFor(node);
 			break;
 		case AST_NONE:
 			// Empty Statement can happen from trailing semicolons after the expressions.
@@ -124,6 +111,9 @@ void InterpretFunctionCall(ASTNode *func) {
 		return; // function is empty
 	}
 
+	scope_start(scopes);
+	// TODO: copy passed arguemnts to our scope
+
 	// list of statements that should be interpreted
 	// is in the right leaf of the function
 	ASTList* list = func->right->d.list;
@@ -132,6 +122,13 @@ void InterpretFunctionCall(ASTNode *func) {
 
 		list = list->next;
 	} while (list != NULL);
+
+	scope_end(scopes);
+}
+
+
+void InterpretFor(ASTNode *node) {
+
 }
 
 void EvaluateExpression(ASTNode *result) {
