@@ -251,6 +251,7 @@ bool parse_for(struct ast_node* node)
     EXPECT(token_semicolon());
     // posledni dilecek je assign - tedy metoda handle_id (co resi assign a fn cally)
     EXPECT(handle_id(third_field));
+    EXPECT(token_right_par());
 
     EXPECT(token_left_brace())
     EXPECT(parse_program_block(block));
@@ -281,6 +282,7 @@ bool parse_cout(struct ast_node* node)
         struct ast_node* expression = ast_create_node();
         EXPECT(parse_expression(expression));
 
+        if (PRINT) printf("\tparser: COUT GOT ANOTHER\n");
         ast_list_insert(node->d.list, expression);
     }
     node->type = AST_COUT;
@@ -562,6 +564,11 @@ bool parse_expression(struct ast_node* node) {
         // next_node is not in the
         if (next_node == NULL && StackEmpty(&stack)) {
             return true;
+        }
+
+        if (GetStackTopOperator(&stack) == NULL && accept(RPAR)) {
+            if (PRINT) printf("\texpr parser: found right par next_node is null\n");
+            next_node = NULL;
         }
 
         char precendenceCharacter = GetPrecendence(GetStackTopOperator(&stack), next_node);

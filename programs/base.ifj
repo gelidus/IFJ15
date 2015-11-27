@@ -20,7 +20,7 @@ int main()
 		{
 			vysl = vysl * a;
 		}
-		cout << "Vysledek je: " << vysl << "\n";
+		// cout << "Vysledek je: " << vysl << "\n";
 	}
 	return 0;
 }
