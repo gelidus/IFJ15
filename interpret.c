@@ -136,17 +136,35 @@ void InterpretIf(ASTNode *ifstatement) {
 	InterpretList(block->d.list);
 }
 
-void InterpretFunctionCall(ASTNode *func) {
-	if (func->d.list == NULL || func->d.list->elem == NULL) {
+void InterpretFunctionCall(ASTNode *call) {
+	if (call->d.list == NULL || call->d.list->elem == NULL) {
 		return; // function is empty
 	}
 
+	ASTNode* func = FindFunction(call->d.string_data);
+	if (func == NULL) {
+		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Calling function that was not defined");
+	}
+
+	// TODO Evaluate expressions that were passed
+	// TODO check if the input arguments are the same size as function arguments
+
 	scope_start(scopes);
-	// TODO: copy passed arguemnts to our scope
+	ASTList* arg = func->left->d.list;
+	for(ASTList* it = call->d.list; it != NULL; it = it->next, arg = arg->next) {
+		// this is the symbol that is bein passed to the function
+		Variable* symbol = get_symbol(scopes, it->elem->d.string_data);
+		// we need to copy this symbol to the current scope with name provided by function
+		Variable* this_symbol = gc_malloc(sizeof(Variable));
+		this_symbol->data = symbol->data;
+		this_symbol->data_type = symbol->data_type;
+
+		set_symbol(scopes, arg->elem->d.string_data, this_symbol);
+	}
 
 	// list of statements that should be interpreted
 	// is in the right leaf of the function
-	InterpretList(func->right->d.list);
+	InterpretList(call->right->d.list);
 
 	scope_end(scopes);
 }

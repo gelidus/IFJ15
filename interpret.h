@@ -35,7 +35,7 @@ void InterpretReturn(ASTNode* ret);
 
 void InterpretIf(ASTNode* ifstatement);
 
-void InterpretFunctionCall(ASTNode* func);
+void InterpretFunctionCall(ASTNode*call);
 
 void InterpretFor(ASTNode* node);
 
