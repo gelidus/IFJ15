@@ -399,8 +399,9 @@ bool IsOperatorNode(struct ast_node* node) {
     switch (node->type) {
         case AST_LEFT_BRACKET:
         case AST_RIGHT_BRACKET:
-        case AST_BINARY_OP:
             return true;
+        case AST_BINARY_OP:
+            return node->left == NULL && node->right == NULL;
         default:
             return false;
     }
@@ -574,18 +575,15 @@ bool parse_expression(struct ast_node* node) {
                     // get second source
                     source2 = current;
 
-                    // get operation
-                    result = ast_create_node();
-                    result->type = AST_EXPRESSION; // the result will be bound to the left leaf
-
-                    result->left = StackPop(&stack);
+                    // pop operator from the stack
+                    result = StackPop(&stack);
 
                     // get first source
                     source1 = StackPop(&stack);
 
                     // add leafs to the result
-                    result->left->left = source1;
-                    result->left->right = source2;
+                    result->left = source1;
+                    result->right = source2;
 
                 } else if (current != NULL) {
                     //// E -> (E) ////
