@@ -203,6 +203,14 @@ Variable* EvaluateExpression(ASTNode *expr) {
 				break;
 			case AST_BINARY_DIVIDE:
 				break;
+			case AST_BINARY_LESS:
+				break;
+			case AST_BINARY_MORE:
+				break;
+			case AST_BINARY_LESS_EQUALS:
+				break;
+			case AST_BINARY_MORE_EQUALS:
+				break;
 		}
 	} else if (expr->type == AST_VAR) {
 		// the expression is variable, return the variable value
