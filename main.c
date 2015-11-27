@@ -40,6 +40,10 @@ int main(int argc, char *argv[]) {
 	parser_prepare(d);
 	d = parser_run();
 
+	if (d->error != CODE_OK) {
+		return d->error;
+	}
+
 	InterpretInit(d->tree->d.list);
 	// interpret the list
 	InterpretRun();

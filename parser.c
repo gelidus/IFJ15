@@ -27,6 +27,7 @@ bool token_datatype();
 bool token_cout();
 bool token_cin();
 bool token_for();
+bool token_equals();
 
 bool parse_decision(struct ast_node* node);
 bool parse_id(string** name);
@@ -236,12 +237,20 @@ bool parse_for(struct ast_node* node)
 
     EXPECT(token_for());
     // podminky
-    EXPECT(token_left_par())
-    EXPECT(parse_expression(first_field));
+    EXPECT(token_left_par());
+    // prvni vyraz muze zacinat var creation
+    if (token_datatype()) {
+        parse_var_creation(first_field);
+        first_field->type = AST_VAR_CREATION;
+    // nebo je to jen vyraz
+    } else {
+        EXPECT(parse_expression(first_field));
+    }
     EXPECT(token_semicolon());
     EXPECT(parse_expression(second_field))
     EXPECT(token_semicolon());
-    EXPECT(parse_expression(third_field));
+    // posledni dilecek je assign - tedy metoda handle_id (co resi assign a fn cally)
+    EXPECT(handle_id(third_field));
 
     EXPECT(token_left_brace())
     EXPECT(parse_program_block(block));
@@ -742,6 +751,7 @@ bool parse_var_creation(struct ast_node* node)
 
     // je tam jeste rovnase, tudiz zparsujem prirazeni
     if (accept(EQUALS)) {
+        EXPECT(token_equals());
         // trosku na hulvata predelame strukturu - vracet ted musime assign
         struct ast_node* var_creation = ast_create_node();
         var_creation->type = AST_VAR_CREATION;
@@ -894,4 +904,10 @@ bool token_comma()
 {
     if (PRINT) printf("\tparser: comma\n");
     return expect(COLON);
+}
+
+bool token_equals()
+{
+    if (PRINT) printf("\tparser: equals\n");
+    return expect(EQUALS);
 }

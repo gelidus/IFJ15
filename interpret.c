@@ -610,7 +610,7 @@ Variable *EvaluateBinaryEqual(Variable *left, Variable *right) {
 			break;
 
 		case AST_VAR_STRING:
-			result->data.numeric_data = equal(left->data.string_data, right->data.string_data);
+			result->data.numeric_data = equals(left->data.string_data, right->data.string_data);
 			result->data_type = AST_VAR_INT;
 			break;
 		case AST_VAR_BOOL:
@@ -661,7 +661,7 @@ Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right) {
 			break;
 
 		case AST_VAR_STRING:
-			result->data.numeric_data = equal(left->data.string_data, right->data.string_data);
+			result->data.numeric_data = equals(left->data.string_data, right->data.string_data);
 			result->data_type = AST_VAR_INT;
 			break;
 
