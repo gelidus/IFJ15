@@ -24,7 +24,7 @@ struct symbol_table * init_table()
 void scope_start(struct symbol_table * symbol_table)
 {
     // vytvorime novou hash tabulku a placnem ji na konec stacku
-    struct hash_table * table = malloc(sizeof(struct hash_table));
+    struct hash_table * table = create_table(); //malloc(sizeof(struct hash_table));
     StackPush(symbol_table->stack, table);
 }
 
