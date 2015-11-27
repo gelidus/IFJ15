@@ -78,6 +78,7 @@ union ast_node_data
     double numeric_data;
     struct ast_node* condition; //pro podminku u if
     struct ast_list* list; // pro uchovavani agumentu, statement body, function body, if body, else body..
+    bool bool_data;
 };
 
 // po libosti upravujte, kdyz vam neco nesedi!

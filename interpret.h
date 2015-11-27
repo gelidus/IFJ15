@@ -6,18 +6,9 @@
 #define ASTNode struct ast_node
 #define ASTList struct ast_list
 
-union variable_data
-{
-    enum ast_binary_op_type binary; // typ binarni operace
-    string* string_data; // nazev fce, nebo promenne, text
-    double numeric_data;
-    struct ast_node* condition; //pro podminku u if
-    struct ast_list* list; // pro uchovavani agumentu, statement body, function body, if body, else body..
-};
-
 typedef struct {
     enum ast_var_type data_type;
-    union variable_data data;
+    union ast_node_data data;
 } Variable;
 
 /*Interpret functions*/
@@ -50,7 +41,17 @@ void InterpretFunctionCall(ASTNode* func);
 
 void InterpretFor(ASTNode* node);
 
-void EvaluateExpression(ASTNode* expr);
+enum ast_var_type GetVarTypeFromLiteral(enum ast_literal_type type);
+
+Variable* EvaluateExpression(ASTNode* node);
+
+Variable* EvaluateBinaryPlus(Variable* left, Variable* right);
+
+Variable* EvaluateBinaryMinus(Variable* left, Variable* right);
+
+Variable* EvaluateBinaryMult(Variable* left, Variable* right);
+
+Variable* EvaluateBinaryDivide(Variable* left, Variable* right);
 
 void InterpretCout(ASTNode* cout);
 

@@ -4,6 +4,7 @@
 #include "errors.h"
 #include "symbol_table.h"
 #include "gc.h"
+#include "string.h"
 
 #define ASTNode struct ast_node // definition of ast node for definition file
 #define ASTList struct ast_list
@@ -13,6 +14,10 @@ ASTList* functions;
 
 ASTNode *FindFunction(string *name) {
 	ASTList* list = functions;
+	if (list->elem == NULL) {
+		throw_error(CODE_ERROR_SEMANTIC, "No function was defined");
+	}
+
 	do {
 		ASTNode* func = list->elem;
 		if (equals(func->d.string_data, name)) {
@@ -135,273 +140,119 @@ void InterpretFunctionCall(ASTNode *func) {
 	scope_end(scopes);
 }
 
-
 void InterpretFor(ASTNode *node) {
 
 }
 
-void EvaluateExpression(ASTNode *result) {
-	assert(result);
-	// empty expression. result should never
-	// be null, only it's left side
-	if (result->left == NULL) {
-		return;
+
+enum ast_var_type GetVarTypeFromLiteral(enum ast_literal_type type) {
+	switch (type) {
+		case AST_LITERAL_INT:
+			return AST_VAR_INT;
+		case AST_LITERAL_STRING:
+			return AST_VAR_STRING;
+		case AST_LITERAL_REAL:
+			return AST_VAR_DOUBLE;
+		case AST_LITERAL_NULL:
+			return AST_VAR_NULL;
+		case AST_LITERAL_TRUE:
+		case AST_LITERAL_FALSE:
+			return AST_VAR_BOOL;
+	}
+}
+
+Variable* EvaluateExpression(ASTNode *expr) {
+	assert(expr);
+	// unpack if the expression is packed
+	if (expr->type == AST_EXPRESSION) {
+		expr = expr->left;
 	}
 
-	// this is needed, as the expressions are packed
-	ASTNode* expr = result->left;
+	// empty epxression
+	if (expr == NULL) {
+		return NULL;
+	}
+
+	Variable* result = NULL;
 
 	// if the left expression is literal, all we do
-	// is copy the literal to the top node as a result
+	// is copy the literal to the top node as a start
 	if (expr->type == AST_LITERAL) {
-		result->type = expr->type;
-		result->literal = expr->literal;
-		result->d = expr->d;
-		return;
-	}
+		// expression is literal. Just get the literal type and return value
+		result = gc_malloc(sizeof(Variable));;
+		result->data_type = GetVarTypeFromLiteral(expr->literal);
+		result->data = expr->d;
+	} else if (expr->type == AST_BINARY_OP) {
+		// evaluate expressions on both sides
+		Variable *left = EvaluateExpression(expr->left);
+		Variable *right = EvaluateExpression(expr->right);
 
-	if (expr->type == AST_EXPRESSION) {
-		EvaluateExpression(expr);
-	}
+		if (left->data_type != right->data_type) {
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret][Expression] Provided values are of different types");
+		}
 
-	// TODO
-	if (expr->type == AST_BINARY_OP) {
+		// expression is binary operation, calculate based on the operator
 		switch (expr->d.binary) {
 			case AST_BINARY_PLUS:
-				if(expr->left->type == AST_LITERAL && expr->right->type == AST_LITERAL) {
-						if(expr->left->literal == expr->right->literal) {
-							result->literal = expr->left->literal;
-						}
-						else { // if literal is not the same then it has to be real
-							result->literal = AST_LITERAL_REAL;
-						}
-						result->type = AST_LITERAL;
-						result->d.numeric_data = expr->left->d.numeric_data + expr->right->d.numeric_data;
-				}
-				else if(expr->left->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->left);
-					EvaluateExpression(result);
-				}
-				else if(expr->right->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->right);
-					EvaluateExpression(result);
-				}
+				result = EvaluateBinaryPlus(left, right);
 				break;
 			case AST_BINARY_MINUS:
-				if(expr->left->type == AST_LITERAL && expr->right->type == AST_LITERAL) {
-						if(expr->left->literal == expr->right->literal) {
-							result->literal = expr->left->literal;
-						}
-						else { // if literal is not the same then it has to be real
-							result->literal = AST_LITERAL_REAL;
-						}
-						result->type = AST_LITERAL;
-						result->d.numeric_data = expr->left->d.numeric_data - expr->right->d.numeric_data;
-				}
-				else if(expr->left->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->left);
-					EvaluateExpression(result);
-				}
-				else if(expr->right->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->right);
-					EvaluateExpression(result);
-				}
+				result = EvaluateBinaryMinus(left, right);
 				break;
 			case AST_BINARY_TIMES:
-				if(expr->left->type == AST_LITERAL && expr->right->type == AST_LITERAL) {
-						if(expr->left->literal == expr->right->literal) {
-							result->literal = expr->left->literal;
-						}
-						else { // if literal is not the same then it has to be real
-							result->literal = AST_LITERAL_REAL;
-						}
-						result->type = AST_LITERAL;
-						result->d.numeric_data = expr->left->d.numeric_data * expr->right->d.numeric_data;
-				}
-				else if(expr->left->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->left);
-					EvaluateExpression(result);
-				}
-				else if(expr->right->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->right);
-					EvaluateExpression(result);
-				}
 				break;
 			case AST_BINARY_DIVIDE:
-				if(expr->left->type == AST_LITERAL && expr->right->type == AST_LITERAL) {
-						if(expr->left->literal == expr->right->literal) {
-							result->literal = expr->left->literal;
-						}
-						else { // if literal is not the same then it has to be real
-							result->literal = AST_LITERAL_REAL;
-						}
-						result->type = AST_LITERAL;
-						result->d.numeric_data = expr->left->d.numeric_data / expr->right->d.numeric_data;
-				}
-				else if(expr->left->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->left);
-					EvaluateExpression(result);
-				}
-				else if(expr->right->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->right);
-					EvaluateExpression(result);
-				}
-				break;
-			case AST_BINARY_LESS:
-				if(expr->left->type == AST_LITERAL && expr->right->type == AST_LITERAL) {
-						if(expr->left->d.numeric_data < expr->right->d.numeric_data) {
-							result->literal = AST_LITERAL_TRUE;
-							result->d.numeric_data = 1;
-						}
-						else {
-							result->literal = AST_LITERAL_FALSE;
-							result->d.numeric_data = 0;
-						}
-						result->type = AST_LITERAL;
-				}
-				else if(expr->left->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->left);
-					EvaluateExpression(result);
-				}
-				else if(expr->right->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->right);
-					EvaluateExpression(result);
-				}
-				break;
-			case AST_BINARY_MORE:
-				if(expr->left->type == AST_LITERAL && expr->right->type == AST_LITERAL) {
-						if(expr->left->d.numeric_data > expr->right->d.numeric_data) {
-							result->literal = AST_LITERAL_TRUE;
-							result->d.numeric_data = 1;
-						}
-						else {
-							result->literal = AST_LITERAL_FALSE;
-							result->d.numeric_data = 0;
-						}
-						result->type = AST_LITERAL;
-				}
-				else if(expr->left->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->left);
-					EvaluateExpression(result);
-				}
-				else if(expr->right->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->right);
-					EvaluateExpression(result);
-				}
-				break;
-			case AST_BINARY_EQUALS:
-				if(expr->left->type == AST_LITERAL && expr->right->type == AST_LITERAL) {
-						if(expr->left->d.numeric_data == expr->right->d.numeric_data) {
-							result->literal = AST_LITERAL_TRUE;
-							result->d.numeric_data = 1;
-						}
-						else {
-							result->literal = AST_LITERAL_FALSE;
-							result->d.numeric_data = 0;
-						}
-						result->type = AST_LITERAL;
-				}
-				else if(expr->left->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->left);
-					EvaluateExpression(result);
-				}
-				else if(expr->right->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->right);
-					EvaluateExpression(result);
-				}
-				break;
-			case AST_BINARY_NOT_EQUALS:
-				if(expr->left->type == AST_LITERAL && expr->right->type == AST_LITERAL) {
-						if(expr->left->d.numeric_data != expr->right->d.numeric_data) {
-							result->literal = AST_LITERAL_TRUE;
-							result->d.numeric_data = 1;
-						}
-						else {
-							result->literal = AST_LITERAL_FALSE;
-							result->d.numeric_data = 0;
-						}
-						result->type = AST_LITERAL;
-				}
-				else if(expr->left->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->left);
-					EvaluateExpression(result);
-				}
-				else if(expr->right->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->right);
-					EvaluateExpression(result);
-				}
-				break;
-			case AST_BINARY_LESS_EQUALS:
-				if(expr->left->type == AST_LITERAL && expr->right->type == AST_LITERAL) {
-						if(expr->left->d.numeric_data <= expr->right->d.numeric_data) {
-							result->literal = AST_LITERAL_TRUE;
-							result->d.numeric_data = 1;
-						}
-						else {
-							result->literal = AST_LITERAL_FALSE;
-							result->d.numeric_data = 0;
-						}
-						result->type = AST_LITERAL;
-				}
-				else if(expr->left->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->left);
-					EvaluateExpression(result);
-				}
-				else if(expr->right->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->right);
-					EvaluateExpression(result);
-				}
-				break;
-			case AST_BINARY_MORE_EQUALS:
-				if(expr->left->type == AST_LITERAL && expr->right->type == AST_LITERAL) {
-						if(expr->left->d.numeric_data >= expr->right->d.numeric_data) {
-							result->literal = AST_LITERAL_TRUE;
-							result->d.numeric_data = 1;
-						}
-						else {
-							result->literal = AST_LITERAL_FALSE;
-							result->d.numeric_data = 0;
-						}
-						result->type = AST_LITERAL;
-				}
-				else if(expr->left->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->left);
-					EvaluateExpression(result);
-				}
-				else if(expr->right->type == AST_EXPRESSION) {
-					EvaluateExpression(expr->right);
-					EvaluateExpression(result);
-				}
 				break;
 		}
+	} else if (expr->type == AST_VAR) {
+		// the expression is variable, return the variable value
+		result = gc_malloc(sizeof(Variable));
+		// TODO: lookup value in the table
 	}
+
+	return result;
 }
 
-/*
-void standartBinaryOperation(ASTNode * left, ASTNode* right, ast_binary_op_type op_type, ASTNode* result) {
-	if(left->type == AST_LITERAL && righ->type == AST_LITERAL) {
-			if(left->literal == rigth->literal) {
-				result->literal = left->literal;
-			}
-			else { // if literal is not the same then it has to be real
-				result->literal = AST_LITERAL_REAL;
-			}
-			result->type = AST_LITERAL
-			switch (op_type) {
-				case AST_BINARY_PLUS:
-					result->d.numeric_data = left.d.numeric_data + right.d.numeric_data;
-					break;
-			}
-			return;
+Variable *EvaluateBinaryPlus(Variable *left, Variable *right) {
+	Variable *result = gc_malloc(sizeof(Variable));
+
+	switch (left->data_type) {
+		case AST_VAR_INT:
+			result->data.numeric_data = (int)(left->data.numeric_data + right->data.numeric_data);
+			result->data_type = AST_VAR_INT;
+			break;
+		case AST_VAR_DOUBLE:
+			result->data.numeric_data = (left->data.numeric_data + right->data.numeric_data);
+			result->data_type = AST_VAR_DOUBLE;
+			break;
+		case AST_VAR_STRING:
+			result->data.string_data = cat_str(left->data.string_data, right->data.string_data);
+			result->data_type = AST_VAR_STRING;
+			break;
+		case AST_VAR_BOOL:
+			result->data.bool_data = left->data.bool_data + right->data.bool_data;
+			result->data_type = AST_VAR_BOOL;
+			break;
+		case AST_VAR_NULL:
+			result->data_type = AST_VAR_NULL;
+			break;
 	}
-	else if(left->type == AST_EXPRESSION) {
-		EvaluateExpression(left);
-	}
-	else if(right->type == AST_EXPRESSION) {
-		EvaluateExpression(right);
-	}
+
+	return result;
 }
-*/
+
+Variable *EvaluateBinaryMinus(Variable *left, Variable *right) {
+	return NULL;
+}
+
+Variable *EvaluateBinaryMult(Variable *left, Variable *right) {
+	return NULL;
+}
+
+Variable *EvaluateBinaryDivide(Variable *left, Variable *right) {
+	return NULL;
+}
+
 // cout node is a list of expressions that should be
 // printed to the screen
 void InterpretCout(ASTNode *cout) {
@@ -409,23 +260,27 @@ void InterpretCout(ASTNode *cout) {
 	do {
 		// this is the list of expressions
 		ASTNode* elem = list->elem;
-		EvaluateExpression(elem);
+		Variable* result = EvaluateExpression(elem);
+		if (result == NULL) {
+			continue; // empty expression
+		}
 
-		switch (elem->type) {
-			case AST_LITERAL:
-				switch (elem->literal) {
-					case AST_LITERAL_STRING:
-						printf("%s", elem->d.string_data->str);
-						break;
-					case AST_LITERAL_INT:
-						printf("%d", (int)elem->d.numeric_data);
-						break;
-				}
+		switch (result->data_type) {
+			case AST_VAR_INT:
+				printf("%d", (int)result->data.numeric_data);
 				break;
-			case AST_EXPRESSION: // TODO: just for testing, remove this when everything should be ok
+			case AST_VAR_DOUBLE:
+				printf("%f", result->data.numeric_data);
 				break;
-			default:
-				throw_error(CODE_ERROR_SEMANTIC, "Cout cant interpret given value");
+			case AST_VAR_NULL:
+				printf("NULL");
+				break;
+			case AST_VAR_STRING:
+				printf("%s", result->data.string_data->str);
+				break;
+			case AST_VAR_BOOL:
+				printf(result->data.bool_data ? "true" : "false");
+				break;
 		}
 
 		list = list->next;
