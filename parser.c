@@ -709,6 +709,8 @@ bool handle_id(struct ast_node* node)
         node->type = AST_ASSIGN;
         node->left = id;
 
+        expect(EQUALS);
+
         struct ast_node* expr = ast_create_node();
         EXPECT(parse_expression(expr));
 
