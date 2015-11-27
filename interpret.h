@@ -49,7 +49,20 @@ Variable* EvaluateBinaryMinus(Variable* left, Variable* right);
 
 Variable* EvaluateBinaryMult(Variable* left, Variable* right);
 
+Variable* EvaluateBinaryMore(Variable *left, Variable* right);
+
 Variable* EvaluateBinaryDivide(Variable* left, Variable* right);
+
+Variable* EvaluateBinaryLess(Variable *left, Variable *right);
+
+Variable *EvaluateBinaryLessEqual(Variable *left, Variable *right);
+
+Variable *EvaluateBinaryMoreEqual(Variable *left, Variable *right);
+
+Variable *EvaluateBinaryEqual(Variable *left, Variable *right);
+
+Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right);
+
 
 void InterpretCout(ASTNode* cout);
 

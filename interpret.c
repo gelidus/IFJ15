@@ -235,16 +235,28 @@ Variable* EvaluateExpression(ASTNode *expr) {
 				result = EvaluateBinaryMinus(left, right);
 				break;
 			case AST_BINARY_TIMES:
+				result = EvaluateBinaryMult(left, right);
 				break;
 			case AST_BINARY_DIVIDE:
+				result = EvaluateBinaryDivide(left, right);
 				break;
 			case AST_BINARY_LESS:
+				result = EvaluateBinaryLess(left, right);
 				break;
 			case AST_BINARY_MORE:
+				result = EvaluateBinaryMore(left, right);
 				break;
 			case AST_BINARY_LESS_EQUALS:
+				result = EvaluateBinaryLessEqual(left, right);
 				break;
 			case AST_BINARY_MORE_EQUALS:
+				result = EvaluateBinaryMoreEqual(left, right);
+				break;
+			case AST_BINARY_EQUALS:
+				result = EvaluateBinaryEqual(left,right);
+				break;
+			case AST_BINARY_NOT_EQUALS:
+				result = EvaluateBinaryNotEqual(left, right);
 				break;
 		}
 	} else if (expr->type == AST_VAR) {
@@ -261,10 +273,19 @@ Variable *EvaluateBinaryPlus(Variable *left, Variable *right) {
 
 	switch (left->data_type) {
 		case AST_VAR_INT:
-			result->data.numeric_data = (int)(left->data.numeric_data + right->data.numeric_data);
-			result->data_type = AST_VAR_INT;
+			if (right->data_type == AST_VAR_DOUBLE) {
+				result->data_type = AST_VAR_DOUBLE;
+			}
+			else {
+				result->data_type = AST_VAR_INT;
+			}
+			result->data.numeric_data = (left->data.numeric_data + right->data.numeric_data);
 			break;
+
 		case AST_VAR_DOUBLE:
+			if (right->data_type == AST_VAR_INT) {
+				right->data.numeric_data = (double)(right->data.numeric_data);
+			}
 			result->data.numeric_data = (left->data.numeric_data + right->data.numeric_data);
 			result->data_type = AST_VAR_DOUBLE;
 			break;
@@ -285,15 +306,380 @@ Variable *EvaluateBinaryPlus(Variable *left, Variable *right) {
 }
 
 Variable *EvaluateBinaryMinus(Variable *left, Variable *right) {
-	return NULL;
+	Variable *result = gc_malloc(sizeof(Variable));
+
+	switch (left->data_type) {
+		case AST_VAR_INT:
+			if(right->data_type == AST_VAR_DOUBLE) {
+				result->data_type = AST_VAR_DOUBLE;
+			}
+			else {
+				result->data_type = AST_VAR_INT;
+			}
+			result->data.numeric_data = (left->data.numeric_data - right->data.numeric_data);
+			break;
+		case AST_VAR_DOUBLE:
+			if(right->data_type == AST_VAR_INT) {
+				right->data.numeric_data = (double)(right->data.numeric_data);
+			}
+			result->data.numeric_data = (left->data.numeric_data - right->data.numeric_data);
+			result->data_type = AST_VAR_DOUBLE;
+			break;
+		case AST_VAR_STRING:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari minus operation on string");
+			break;
+		case AST_VAR_BOOL:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari minus operation on bool");
+			break;
+		case AST_VAR_NULL:
+			result->data_type = AST_VAR_NULL;
+			break;
+	}
+
+	return result;
 }
 
 Variable *EvaluateBinaryMult(Variable *left, Variable *right) {
-	return NULL;
+	Variable *result = gc_malloc(sizeof(Variable));
+
+	switch (left->data_type) {
+		case AST_VAR_INT:
+			if(right->data_type == AST_VAR_DOUBLE) {
+				result->data_type = AST_VAR_DOUBLE;
+			}
+			else {
+				result->data_type = AST_VAR_INT;
+			}
+			result->data.numeric_data = (left->data.numeric_data * right->data.numeric_data);
+			break;
+
+		case AST_VAR_DOUBLE:
+			result->data.numeric_data = (left->data.numeric_data * right->data.numeric_data);
+			result->data_type = AST_VAR_DOUBLE;
+			break;
+		case AST_VAR_STRING:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari multiple operation on string");
+			break;
+		case AST_VAR_BOOL:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari multiple operation on bool");
+			break;
+		case AST_VAR_NULL:
+			result->data_type = AST_VAR_NULL;
+			break;
+	}
+
+	return result;
 }
 
-Variable *EvaluateBinaryDivide(Variable *left, Variable *right) {
-	return NULL;
+Variable* EvaluateBinaryDivide(Variable* left, Variable* right) {
+	Variable *result = gc_malloc(sizeof(Variable));
+
+	switch (left->data_type) {
+		case AST_VAR_INT:
+			if(right->data_type == AST_VAR_DOUBLE){
+				result->data_type = AST_VAR_DOUBLE;
+			}
+			else {
+				result->data_type = AST_VAR_INT;
+			}
+			result->data.numeric_data = (left->data.numeric_data / right->data.numeric_data);
+			break;
+
+		case AST_VAR_DOUBLE:
+			result->data.numeric_data = (left->data.numeric_data / right->data.numeric_data);
+			result->data_type = AST_VAR_DOUBLE;
+			break;
+		case AST_VAR_STRING:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari divide operation on string");
+			break;
+		case AST_VAR_BOOL:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari divide operation on bool");
+			break;
+		case AST_VAR_NULL:
+			result->data_type = AST_VAR_NULL;
+			break;
+	}
+
+	return result;
+}
+
+Variable *EvaluateBinaryLess(Variable *left, Variable *right) {
+	Variable *result = gc_malloc(sizeof(Variable));
+
+	switch (left->data_type) {
+		case AST_VAR_INT:
+			if(right->data_type == AST_VAR_DOUBLE) {
+				left->data.numeric_data = (double)(left->data.numeric_data);
+			}
+			if(left->data.numeric_data < right->data.numeric_data) {
+				result->data.numeric_data = 1;
+			}
+			else {
+				result->data.numeric_data = 0;
+			}
+			result->data_type = AST_VAR_INT;
+			break;
+
+		case AST_VAR_DOUBLE:
+		if(right->data_type == AST_VAR_INT) {
+			right->data.numeric_data = (double)(right->data.numeric_data);
+		}
+		if(left->data.numeric_data < right->data.numeric_data) {
+			result->data.numeric_data = 1;
+		}
+		else {
+			result->data.numeric_data = 0;
+		}
+		result->data_type = AST_VAR_INT;
+			break;
+
+		case AST_VAR_STRING:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari less operation on string");
+			break;
+		case AST_VAR_BOOL:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari less operation on bool");
+			break;
+		case AST_VAR_NULL:
+			result->data_type = AST_VAR_NULL;
+			break;
+	}
+
+	return result;
+}
+
+Variable *EvaluateBinaryMore(Variable *left, Variable *right) {
+	Variable *result = gc_malloc(sizeof(Variable));
+
+	switch (left->data_type) {
+		case AST_VAR_INT:
+			if(right->data_type == AST_VAR_DOUBLE) {
+				left->data.numeric_data = (double)(left->data.numeric_data);
+			}
+			if(left->data.numeric_data > right->data.numeric_data) {
+				result->data.numeric_data = 1;
+			}
+			else {
+				result->data.numeric_data = 0;
+			}
+			result->data_type = AST_VAR_INT;
+			break;
+
+		case AST_VAR_DOUBLE:
+		if(right->data_type == AST_VAR_INT) {
+			right->data.numeric_data = (double)(right->data.numeric_data);
+		}
+		if(left->data.numeric_data > right->data.numeric_data) {
+			result->data.numeric_data = 1;
+		}
+		else {
+			result->data.numeric_data = 0;
+		}
+		result->data_type = AST_VAR_INT;
+			break;
+
+		case AST_VAR_STRING:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari more operation on string");
+			break;
+		case AST_VAR_BOOL:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari more operation on bool");
+			break;
+		case AST_VAR_NULL:
+			result->data_type = AST_VAR_NULL;
+			break;
+	}
+
+	return result;
+}
+
+Variable *EvaluateBinaryLessEqual(Variable *left, Variable *right) {
+	Variable *result = gc_malloc(sizeof(Variable));
+
+	switch (left->data_type) {
+		case AST_VAR_INT:
+			if(right->data_type == AST_VAR_DOUBLE) {
+				left->data.numeric_data = (double)(left->data.numeric_data);
+			}
+			if(left->data.numeric_data <= right->data.numeric_data) {
+				result->data.numeric_data = 1;
+			}
+			else {
+				result->data.numeric_data = 0;
+			}
+			result->data_type = AST_VAR_INT;
+			break;
+
+		case AST_VAR_DOUBLE:
+		if(right->data_type == AST_VAR_INT) {
+			right->data.numeric_data = (double)(right->data.numeric_data);
+		}
+		if(left->data.numeric_data <= right->data.numeric_data) {
+			result->data.numeric_data = 1;
+		}
+		else {
+			result->data.numeric_data = 0;
+		}
+		result->data_type = AST_VAR_INT;
+			break;
+
+		case AST_VAR_STRING:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari less or equal operation on string");
+			break;
+		case AST_VAR_BOOL:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari less or equal operation on bool");
+			break;
+		case AST_VAR_NULL:
+			result->data_type = AST_VAR_NULL;
+			break;
+	}
+
+	return result;
+}
+
+Variable *EvaluateBinaryMoreEqual(Variable *left, Variable *right) {
+	Variable *result = gc_malloc(sizeof(Variable));
+
+	switch (left->data_type) {
+		case AST_VAR_INT:
+			if(right->data_type == AST_VAR_DOUBLE) {
+				left->data.numeric_data = (double)(left->data.numeric_data);
+			}
+			if(left->data.numeric_data >= right->data.numeric_data) {
+				result->data.numeric_data = 1;
+			}
+			else {
+				result->data.numeric_data = 0;
+			}
+			result->data_type = AST_VAR_INT;
+			break;
+
+		case AST_VAR_DOUBLE:
+		if(right->data_type == AST_VAR_INT) {
+			right->data.numeric_data = (double)(right->data.numeric_data);
+		}
+		if(left->data.numeric_data >= right->data.numeric_data) {
+			result->data.numeric_data = 1;
+		}
+		else {
+			result->data.numeric_data = 0;
+		}
+		result->data_type = AST_VAR_INT;
+			break;
+
+		case AST_VAR_STRING:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari less or equal operation on string");
+			break;
+		case AST_VAR_BOOL:
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari less or equal operation on bool");
+			break;
+		case AST_VAR_NULL:
+			result->data_type = AST_VAR_NULL;
+			break;
+	}
+
+	return result;
+}
+
+Variable *EvaluateBinaryEqual(Variable *left, Variable *right) {
+	Variable *result = gc_malloc(sizeof(Variable));
+
+	switch (left->data_type) {
+		case AST_VAR_INT:
+			if(right->data_type == AST_VAR_DOUBLE) {
+				left->data.numeric_data = (double)(left->data.numeric_data);
+			}
+			if(left->data.numeric_data == right->data.numeric_data) {
+				result->data.numeric_data = 1;
+			}
+			else {
+				result->data.numeric_data = 0;
+			}
+			result->data_type = AST_VAR_BOOL;
+			break;
+
+		case AST_VAR_DOUBLE:
+		if(right->data_type == AST_VAR_INT) {
+			right->data.numeric_data = (double)(right->data.numeric_data);
+		}
+		if(left->data.numeric_data == right->data.numeric_data) {
+			result->data.numeric_data = 1;
+		}
+		else {
+			result->data.numeric_data = 0;
+		}
+		result->data_type = AST_VAR_INT;
+			break;
+
+		case AST_VAR_STRING:
+			result->data.numeric_data = equal(left->data.string_data, right->data.string_data);
+			result->data_type = AST_VAR_INT;
+			break;
+		case AST_VAR_BOOL:
+			if(left->data.bool_data == right->data.bool_data) {
+				result->data.numeric_data = 1;
+			}
+			else {
+				result->data.numeric_data = 0;
+			}
+			result->data_type = AST_VAR_INT;
+			break;
+		case AST_VAR_NULL:
+			result->data_type = AST_VAR_INT;
+			break;
+	}
+
+	return result;
+}
+
+Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right) {
+	Variable *result = gc_malloc(sizeof(Variable));
+
+	switch (left->data_type) {
+		case AST_VAR_INT:
+			if(right->data_type == AST_VAR_DOUBLE) {
+				left->data.numeric_data = (double)(left->data.numeric_data);
+			}
+			if(left->data.numeric_data == right->data.numeric_data) {
+				result->data.numeric_data = 1;
+			}
+			else {
+				result->data.numeric_data = 0;
+			}
+			result->data_type = AST_VAR_BOOL;
+			break;
+
+		case AST_VAR_DOUBLE:
+		if(right->data_type == AST_VAR_INT) {
+			right->data.numeric_data = (double)(right->data.numeric_data);
+		}
+		if(left->data.numeric_data == right->data.numeric_data) {
+			result->data.numeric_data = 1;
+		}
+		else {
+			result->data.numeric_data = 0;
+		}
+		result->data_type = AST_VAR_INT;
+			break;
+
+		case AST_VAR_STRING:
+			result->data.numeric_data = equal(left->data.string_data, right->data.string_data);
+			result->data_type = AST_VAR_INT;
+			break;
+
+		case AST_VAR_BOOL:
+			if(left->data.bool_data == right->data.bool_data) {
+				result->data.numeric_data = 1;
+			}
+			else {
+				result->data.numeric_data = 0;
+			}
+			result->data_type = AST_VAR_INT;
+			break;
+		case AST_VAR_NULL:
+			result->data_type = AST_VAR_INT;
+			break;
+	}
+
+	return result;
 }
 
 // cout node is a list of expressions that should be
