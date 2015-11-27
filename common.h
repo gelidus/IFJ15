@@ -109,7 +109,8 @@ enum ast_var_type
     AST_VAR_INT,
     AST_VAR_DOUBLE,
     AST_VAR_STRING,
-    AST_VAR_NULL  // pouze hodnota null
+    AST_VAR_NULL,  // pouze hodnota null
+    AST_VAR_BOOL
 };
 
 /*
