@@ -63,6 +63,9 @@ void InterpretNode(ASTNode *node) {
 		case AST_COUT:
 			InterpretCout(node);
 			break;
+		case AST_CIN:
+			InterpretCin(node);
+			break;
 		case AST_VAR_CREATION:
 			InterpretVarCreation(node);
 			break;
@@ -141,18 +144,19 @@ void InterpretFunctionCall(ASTNode *func) {
 
 	// list of statements that should be interpreted
 	// is in the right leaf of the function
-	ASTList* list = func->right->d.list;
-	do {
-		InterpretNode(list->elem);
-
-		list = list->next;
-	} while (list != NULL);
+	InterpretList(func->right->d.list);
 
 	scope_end(scopes);
 }
 
 void InterpretFor(ASTNode *node) {
+	scope_start(scopes);
+	// retrieve the fields from the node->d.list and execute
 
+	// block is in the left node
+	InterpretList(node->left->d.list);
+
+	scope_end(scopes);
 }
 
 
@@ -289,7 +293,7 @@ void InterpretCout(ASTNode *cout) {
 				printf("%d", (int)result->data.numeric_data);
 				break;
 			case AST_VAR_DOUBLE:
-				printf("%f", result->data.numeric_data);
+				printf("%g", result->data.numeric_data);
 				break;
 			case AST_VAR_NULL:
 				printf("NULL");
@@ -304,4 +308,38 @@ void InterpretCout(ASTNode *cout) {
 
 		list = list->next;
 	} while (list != NULL);
+}
+
+void InterpretCin(ASTNode *cin) {
+	ASTList* list = cin->d.list; // id list
+
+	do {
+		ASTNode* elem = list->elem;
+		// find the variable that should get the input
+		Variable *variable = get_symbol(scopes, elem->d.string_data);
+		if (variable == NULL) {
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot assign input to non existing variable");
+		}
+
+		switch (variable->data_type) {
+			case AST_VAR_INT:
+				scanf("%d", &((int)variable->data.numeric_data));
+				break;
+			case AST_VAR_DOUBLE:
+				scanf("%g", &((float)variable->data.numeric_data));
+				break;
+			case AST_VAR_STRING: {
+				string *input = new_str("");
+				char char_input[10];
+				while (gets(char_input) != NULL) {
+					for (int i = 0; i < 10, char_input[i] != '\0'; i++) {
+						add_char(input, char_input[i]);
+					}
+				}
+				variable->data.string_data = input;
+			}
+		}
+
+		list = list->next;
+	} while(list != NULL);
 }

@@ -55,6 +55,8 @@ Variable* EvaluateBinaryDivide(Variable* left, Variable* right);
 
 void InterpretCout(ASTNode* cout);
 
+void InterpretCin(ASTNode* cin);
+
 #undef ASTNode // cleanup style definition for ast node
 #undef ASTList
 
