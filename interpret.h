@@ -29,8 +29,6 @@ void InterpretVarCreation(ASTNode* var);
 
 void InterpretList(ASTList *list);
 
-void InterpretStatement(ASTNode* statement);
-
 void InterpretAssign(ASTNode* statement);
 
 void InterpretReturn(ASTNode* ret);

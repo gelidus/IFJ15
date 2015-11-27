@@ -60,6 +60,9 @@ void InterpretNode(ASTNode *node) {
 			// first expression node is in the left leaf of the expression (see expression parser)
 			EvaluateExpression(node->left);
 			break;
+		case AST_IF:
+			InterpretIf(node);
+			break;
 		case AST_COUT:
 			InterpretCout(node);
 			break;
@@ -107,10 +110,6 @@ void InterpretList(ASTList* list) {
 	} while (list != NULL);
 }
 
-void InterpretStatement(ASTNode *statement) {
-
-}
-
 void InterpretAssign(ASTNode *statement) {
 	// left is id with name and type
 	// right is expression assigned
@@ -131,7 +130,10 @@ void InterpretReturn(ASTNode *ret) {
 }
 
 void InterpretIf(ASTNode *ifstatement) {
+	Variable* condition_result = EvaluateExpression(ifstatement->d.condition);
 
+	ASTNode *block = condition_result->data.bool_data? ifstatement->left, ifstatement->right;
+	InterpretList(block->d.list);
 }
 
 void InterpretFunctionCall(ASTNode *func) {
@@ -158,7 +160,6 @@ void InterpretFor(ASTNode *node) {
 
 	scope_end(scopes);
 }
-
 
 enum ast_var_type GetVarTypeFromLiteral(enum ast_literal_type type) {
 	switch (type) {
