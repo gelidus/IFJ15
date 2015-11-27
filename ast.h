@@ -71,20 +71,21 @@ enum ast_binary_op_type
     AST_BINARY_EQUALS = 10,
 };
 
+union ast_node_data
+{
+    enum ast_binary_op_type binary; // typ binarni operace
+    string* string_data; // nazev fce, nebo promenne, text
+    double numeric_data;
+    struct ast_node* condition; //pro podminku u if
+    struct ast_list* list; // pro uchovavani agumentu, statement body, function body, if body, else body..
+};
 
 // po libosti upravujte, kdyz vam neco nesedi!
 struct ast_node
 {
     enum ast_node_type type;
 
-    union ast_node_data
-    {
-        enum ast_binary_op_type binary; // typ binarni operace
-        string* string_data; // nazev fce, nebo promenne, text
-        double numeric_data;
-        struct ast_node* condition; //pro podminku u if
-        struct ast_list* list; // pro uchovavani agumentu, statement body, function body, if body, else body..
-    } d;
+    union ast_node_data d;
 
     enum ast_var_type var_type;
     enum ast_literal_type literal; // typ konstanty
