@@ -109,7 +109,18 @@ void InterpretStatement(ASTNode *statement) {
 }
 
 void InterpretAssign(ASTNode *statement) {
+	// left is id with name and type
+	// right is expression assigned
+	Variable *result = EvaluateExpression(statement->right);
+	Variable* current = get_symbol(scopes, statement->left->d.string_data);
+	if (current == NULL) {
+		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Variable assigning failed due to missing variable");
+	}
+	if (current->data_type != result->data_type) {
+		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Assigning bad value to the variable");
+	}
 
+	current->data = result->data;
 }
 
 void InterpretReturn(ASTNode *ret) {
