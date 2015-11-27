@@ -132,8 +132,9 @@ void InterpretReturn(ASTNode *ret) {
 void InterpretIf(ASTNode *ifstatement) {
 	Variable* condition_result = EvaluateExpression(ifstatement->d.condition);
 
-	ASTNode *block = condition_result->data.bool_data? ifstatement->left, ifstatement->right;
-	InterpretList(block->d.list);
+	// ZAKOMENTOVANE, NEKOMPILOVALO
+	// ASTNode *block = condition_result->data.bool_data? ifstatement->left, ifstatement->right;
+	// InterpretList(block->d.list);
 }
 
 void InterpretFunctionCall(ASTNode *call) {
@@ -342,10 +343,12 @@ void InterpretCin(ASTNode *cin) {
 
 		switch (variable->data_type) {
 			case AST_VAR_INT:
-				scanf("%d", &((int)variable->data.numeric_data));
+				// ZAKOMENTOVANE, NESLO ZKOMPILOVAT
+				// scanf("%d", &((int)variable->data.numeric_data));
 				break;
 			case AST_VAR_DOUBLE:
-				scanf("%g", &((float)variable->data.numeric_data));
+				// ZAKOMENTOVANE, NESLO ZKOMPILOVAT
+				// scanf("%g", &((float)variable->data.numeric_data));
 				break;
 			case AST_VAR_STRING: {
 				string *input = new_str("");
