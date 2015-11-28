@@ -6,7 +6,7 @@
 #include "ast.h"
 #include "stack.h"
 
-#define PRINT 1
+#define PRINT 0
 
 bool expect(enum lex_type t);
 bool accept(enum lex_type t);
@@ -123,6 +123,7 @@ bool parse_statement(struct ast_node* node)
     if (PRINT) printf("\tparser: handling statement\n");
     if (token_datatype()) {
         EXPECT(parse_var_creation(node));
+        EXPECT(token_semicolon());
     } else if (accept(KW_IF)) {
         EXPECT(parse_if(node));
     } else if(accept(KW_RETURN)) {
@@ -135,6 +136,7 @@ bool parse_statement(struct ast_node* node)
         EXPECT(parse_for(node));
     } else if (accept(IDENTIFIER)) {
         EXPECT(handle_id(node));
+        EXPECT(token_semicolon());
     // tyhle jsou uz fallback!
     } else if (token_empty()) {
         // prazdny statement je validni
@@ -732,6 +734,8 @@ bool handle_id(struct ast_node* node)
 
         node->right = expr;
     }
+
+    if (PRINT) printf("\tparser: handled id\n");
 
     return true;
 }

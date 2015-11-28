@@ -24,10 +24,13 @@ do
     else
         expected=0
     fi
+    echo "abot to test $file"
     ./release $file &> /dev/null
     actual=$?
     if [[ $actual -ne $expected ]]; then
         echo "TEST $file FAILED: result was $expected, actual was $actual"
+    else
+        echo "TEST $file PASSED!!"
     fi
 
 done

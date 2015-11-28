@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 	d = parser_run();
 
 	if (d->error != CODE_OK) {
-		return d->error;
+		return 2;
 	}
 
 	InterpretInit(d->tree->d.list);
