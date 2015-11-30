@@ -36,7 +36,6 @@ string* new_str(char* txt)
 	}
 
 	return s;
-	return NULL;
 }
 
 // funkce vymaze obsah retezce
