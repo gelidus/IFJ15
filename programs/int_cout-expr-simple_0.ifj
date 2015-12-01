@@ -1,0 +1,8 @@
+// @outputs
+//"10 2"
+
+int main() {
+  cout << 4 + 3 * 2 << " ";
+  cout << 4 * 2 / 4;
+  return 0;
+}
