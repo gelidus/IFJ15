@@ -1,0 +1,12 @@
+//@outputs
+//"bubububu
+// huhu
+// ahoj
+//"
+
+int main()
+{
+    cout << "bubububu\n";
+    cout << "huhu\n";
+    cout << "ahoj\n";
+}

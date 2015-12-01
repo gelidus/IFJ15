@@ -1,5 +1,9 @@
 #! /bin/bash
 
+
+# vzor na nazev souborus
+filename="lex_uvozovky-ve-stringu_1.ifj"
+
 echo "##### FANCY FUCKING TESTS #####"
 
 files="programs/*"
