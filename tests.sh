@@ -27,9 +27,7 @@ do
         return_value="${BASH_REMATCH[2]}"
         input_flag="${BASH_REMATCH[3]}"
         output_flag="${BASH_REMATCH[4]}"
-
-        echo "running $test_name with expected return $return_value, input: $input_flag, output: $output_flag"
-
+        # echo "running $test_name with expected return $return_value, input: $input_flag, output: $output_flag"
         if [[ $output_flag = "_output" ]]; then
             value=$(<$file)
             if [[ $value =~ $outputs_regex ]]; then
@@ -39,6 +37,8 @@ do
                 echo "TEST SPECIFIED OUTPUT VALUE BUT I DID NOT FIND IT"
                 echo -e "\033[0m"
             fi
+        else
+            expected_output=""
         fi
 
         if [[ $input_flag = "_input" ]]; then
@@ -50,6 +50,8 @@ do
                 echo "TEST SPECIFIED INPUT VALUE BUT I DID NOT FIND IT"
                 echo -e "\033[0m"
             fi
+        else
+            expected_input=""
         fi
 
         correct_return="yes"
@@ -80,12 +82,6 @@ do
                 fi
                 echo -e "\033[0m"
         fi
-
-        #
-        #     echo "TEST $test_name FAILED: result was $return_value, actual was $actual_return_value"
-        # else
-        #     echo "TEST $test_name PASSED!!"
-
     else
         echo "SKIPPING $file BECAUSE IT HAS A WRONG NAME"
     fi
