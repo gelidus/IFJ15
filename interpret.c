@@ -4,7 +4,6 @@
 #include "errors.h"
 #include "symbol_table.h"
 #include "gc.h"
-#include "string.h"
 
 #define ASTNode struct ast_node // definition of ast node for definition file
 #define ASTList struct ast_list
@@ -41,7 +40,11 @@ void InterpretRun() {
 	if (func == NULL) {
 		throw_error(CODE_ERROR_SEMANTIC, "Main function could not be found");
 	}
-	InterpretFunctionCall(func);
+
+	scope_start(scopes);
+	// TODO: interpret main function directly, not as function call (fcall is other node type)
+
+	scope_end(scopes);
 }
 
 void InterpretNode(ASTNode *node) {
@@ -53,7 +56,7 @@ void InterpretNode(ASTNode *node) {
 		case AST_RETURN:
 			InterpretReturn(node);
 			break;
-		case AST_FUNCTION:
+		case AST_CALL:
 			InterpretFunctionCall(node);
 			break;
 		case AST_EXPRESSION:
@@ -126,15 +129,16 @@ void InterpretAssign(ASTNode *statement) {
 }
 
 void InterpretReturn(ASTNode *ret) {
-
+	// TODO: return the value to the stack
 }
 
 void InterpretIf(ASTNode *ifstatement) {
 	Variable* condition_result = EvaluateExpression(ifstatement->d.condition);
 
-	// ZAKOMENTOVANE, NEKOMPILOVALO
-	// ASTNode *block = condition_result->data.bool_data? ifstatement->left, ifstatement->right;
-	// InterpretList(block->d.list);
+	ASTNode *block = condition_result->data.bool_data? ifstatement->left: ifstatement->right;
+	InterpretList(block->d.list);
+
+	// TODO: what's next after this this list?
 }
 
 void InterpretFunctionCall(ASTNode *call) {
@@ -172,7 +176,8 @@ void InterpretFunctionCall(ASTNode *call) {
 
 void InterpretFor(ASTNode *node) {
 	scope_start(scopes);
-	// retrieve the fields from the node->d.list and execute
+	// TODO: retrieve the fields from the node->d.list and execute
+	// TODO: do the list interpratation based on these fields
 
 	// block is in the left node
 	InterpretList(node->left->d.list);
@@ -194,6 +199,9 @@ enum ast_var_type GetVarTypeFromLiteral(enum ast_literal_type type) {
 		case AST_LITERAL_FALSE:
 			return AST_VAR_BOOL;
 	}
+
+	// this should not be necessary, but compilers ...
+	return AST_VAR_NULL;
 }
 
 Variable* EvaluateExpression(ASTNode *expr) {
@@ -374,6 +382,7 @@ Variable *EvaluateBinaryMult(Variable *left, Variable *right) {
 Variable* EvaluateBinaryDivide(Variable* left, Variable* right) {
 	Variable *result = gc_malloc(sizeof(Variable));
 
+	// TODO: division by zero check
 	switch (left->data_type) {
 		case AST_VAR_INT:
 			if(right->data_type == AST_VAR_DOUBLE){
@@ -740,11 +749,15 @@ void InterpretCin(ASTNode *cin) {
 				string *input = new_str("");
 				char char_input[10];
 				while (gets(char_input) != NULL) {
-					for (int i = 0; i < 10, char_input[i] != '\0'; i++) {
+					for (int i = 0; i < 10 && char_input[i] != '\0'; i++) {
 						add_char(input, char_input[i]);
 					}
 				}
 				variable->data.string_data = input;
+			case AST_VAR_BOOL:
+				break;
+			case AST_VAR_NULL:
+				 break;
 			}
 		}
 
