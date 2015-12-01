@@ -1,4 +1,6 @@
-
+/*@outputs
+"0"
+*/
 int rec_nullate(int a) {
     if (a == 0) {
         return a;

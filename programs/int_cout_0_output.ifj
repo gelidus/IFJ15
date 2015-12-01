@@ -1,5 +1,6 @@
-//@outputs
-//"testiik"
+/*@outputs
+"testiik"
+*/
 
 int main() {
   cout << "testiik";
