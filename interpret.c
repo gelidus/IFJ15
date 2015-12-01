@@ -129,7 +129,7 @@ void InterpretAssign(ASTNode *statement) {
 			var_name = statement->left->d.string_data;
 			break;
 	}
-	get_symbol(scopes, var_name);
+	current = get_symbol(scopes, var_name);
 
 	if (current == NULL) {
 		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Variable assigning failed due to missing variable");
@@ -202,12 +202,13 @@ void InterpretFor(ASTNode *node) {
 	if (condition->data_type != AST_VAR_BOOL) {
 		throw_error(CODE_ERROR_SEMANTIC, "[Interpret][For] Second field expects boolean result");
 	}
+
 	while(condition->data.bool_data) {
 		// block is in the left node
 		InterpretList(node->left->d.list);
 
 		// interpret third block
-
+		InterpretNode(third_block);
 
 		// get the condition result
 		condition = EvaluateExpression(second_block);
@@ -303,8 +304,7 @@ Variable* EvaluateExpression(ASTNode *expr) {
 		}
 	} else if (expr->type == AST_VAR) {
 		// the expression is variable, return the variable value
-		result = gc_malloc(sizeof(Variable));
-		// TODO: lookup value in the table
+		result = get_symbol(scopes, expr->d.string_data);
 	}
 
 	return result;
@@ -447,6 +447,7 @@ Variable* EvaluateBinaryDivide(Variable* left, Variable* right) {
 
 Variable *EvaluateBinaryLess(Variable *left, Variable *right) {
 	Variable *result = gc_malloc(sizeof(Variable));
+	result->data_type = AST_VAR_BOOL;
 
 	switch (left->data_type) {
 		case AST_VAR_INT:
@@ -454,25 +455,23 @@ Variable *EvaluateBinaryLess(Variable *left, Variable *right) {
 				left->data.numeric_data = (double)(left->data.numeric_data);
 			}
 			if(left->data.numeric_data < right->data.numeric_data) {
-				result->data.numeric_data = 1;
+				result->data.bool_data = true;
 			}
 			else {
-				result->data.numeric_data = 0;
+				result->data.bool_data = false;
 			}
-			result->data_type = AST_VAR_INT;
 			break;
 
 		case AST_VAR_DOUBLE:
-		if(right->data_type == AST_VAR_INT) {
-			right->data.numeric_data = (double)(right->data.numeric_data);
-		}
-		if(left->data.numeric_data < right->data.numeric_data) {
-			result->data.numeric_data = 1;
-		}
-		else {
-			result->data.numeric_data = 0;
-		}
-		result->data_type = AST_VAR_INT;
+			if(right->data_type == AST_VAR_INT) {
+				right->data.numeric_data = (double)(right->data.numeric_data);
+			}
+			if(left->data.numeric_data < right->data.numeric_data) {
+				result->data.bool_data = true;
+			}
+			else {
+				result->data.bool_data = false;
+			}
 			break;
 
 		case AST_VAR_STRING:
