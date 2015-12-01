@@ -1,5 +1,6 @@
-// @outputs
-//"10 2"
+/*@outputs
+"10 2"
+*/
 
 int main() {
   cout << 4 + 3 * 2 << " ";
