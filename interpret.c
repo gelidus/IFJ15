@@ -490,19 +490,18 @@ Variable *EvaluateBinaryLess(Variable *left, Variable *right) {
 
 Variable *EvaluateBinaryMore(Variable *left, Variable *right) {
 	Variable *result = gc_malloc(sizeof(Variable));
-
+	result->data_type = AST_VAR_BOOL;
 	switch (left->data_type) {
 		case AST_VAR_INT:
 			if(right->data_type == AST_VAR_DOUBLE) {
 				left->data.numeric_data = (double)(left->data.numeric_data);
 			}
 			if(left->data.numeric_data > right->data.numeric_data) {
-				result->data.numeric_data = 1;
+				result->data.bool_data = true;
 			}
 			else {
-				result->data.numeric_data = 0;
+				result->data.bool_data = false;
 			}
-			result->data_type = AST_VAR_INT;
 			break;
 
 		case AST_VAR_DOUBLE:
@@ -510,12 +509,11 @@ Variable *EvaluateBinaryMore(Variable *left, Variable *right) {
 			right->data.numeric_data = (double)(right->data.numeric_data);
 		}
 		if(left->data.numeric_data > right->data.numeric_data) {
-			result->data.numeric_data = 1;
+			result->data.bool_data = true;
 		}
 		else {
-			result->data.numeric_data = 0;
+			result->data.bool_data = false;
 		}
-		result->data_type = AST_VAR_INT;
 			break;
 
 		case AST_VAR_STRING:
@@ -534,19 +532,18 @@ Variable *EvaluateBinaryMore(Variable *left, Variable *right) {
 
 Variable *EvaluateBinaryLessEqual(Variable *left, Variable *right) {
 	Variable *result = gc_malloc(sizeof(Variable));
-
+	result->data_type = AST_VAR_BOOL;
 	switch (left->data_type) {
 		case AST_VAR_INT:
 			if(right->data_type == AST_VAR_DOUBLE) {
 				left->data.numeric_data = (double)(left->data.numeric_data);
 			}
 			if(left->data.numeric_data <= right->data.numeric_data) {
-				result->data.numeric_data = 1;
+				result->data.bool_data = true;
 			}
 			else {
-				result->data.numeric_data = 0;
+				result->data.bool_data = false;
 			}
-			result->data_type = AST_VAR_INT;
 			break;
 
 		case AST_VAR_DOUBLE:
@@ -554,12 +551,11 @@ Variable *EvaluateBinaryLessEqual(Variable *left, Variable *right) {
 			right->data.numeric_data = (double)(right->data.numeric_data);
 		}
 		if(left->data.numeric_data <= right->data.numeric_data) {
-			result->data.numeric_data = 1;
+			result->data.bool_data = true;
 		}
 		else {
-			result->data.numeric_data = 0;
+			result->data.bool_data = false;
 		}
-		result->data_type = AST_VAR_INT;
 			break;
 
 		case AST_VAR_STRING:
@@ -578,19 +574,18 @@ Variable *EvaluateBinaryLessEqual(Variable *left, Variable *right) {
 
 Variable *EvaluateBinaryMoreEqual(Variable *left, Variable *right) {
 	Variable *result = gc_malloc(sizeof(Variable));
-
+	result->data_type = AST_VAR_BOOL;
 	switch (left->data_type) {
 		case AST_VAR_INT:
 			if(right->data_type == AST_VAR_DOUBLE) {
 				left->data.numeric_data = (double)(left->data.numeric_data);
 			}
 			if(left->data.numeric_data >= right->data.numeric_data) {
-				result->data.numeric_data = 1;
+				result->data.bool_data = true;
 			}
 			else {
-				result->data.numeric_data = 0;
+				result->data.bool_data = false;
 			}
-			result->data_type = AST_VAR_INT;
 			break;
 
 		case AST_VAR_DOUBLE:
@@ -598,12 +593,11 @@ Variable *EvaluateBinaryMoreEqual(Variable *left, Variable *right) {
 			right->data.numeric_data = (double)(right->data.numeric_data);
 		}
 		if(left->data.numeric_data >= right->data.numeric_data) {
-			result->data.numeric_data = 1;
+			result->data.bool_data = true;
 		}
 		else {
-			result->data.numeric_data = 0;
+			result->data.bool_data = false;
 		}
-		result->data_type = AST_VAR_INT;
 			break;
 
 		case AST_VAR_STRING:
@@ -622,19 +616,18 @@ Variable *EvaluateBinaryMoreEqual(Variable *left, Variable *right) {
 
 Variable *EvaluateBinaryEqual(Variable *left, Variable *right) {
 	Variable *result = gc_malloc(sizeof(Variable));
-
+	result->data_type = AST_VAR_BOOL;
 	switch (left->data_type) {
 		case AST_VAR_INT:
 			if(right->data_type == AST_VAR_DOUBLE) {
 				left->data.numeric_data = (double)(left->data.numeric_data);
 			}
 			if(left->data.numeric_data == right->data.numeric_data) {
-				result->data.numeric_data = 1;
+				result->data.bool_data = true;
 			}
 			else {
-				result->data.numeric_data = 0;
+				result->data.bool_data = false;
 			}
-			result->data_type = AST_VAR_BOOL;
 			break;
 
 		case AST_VAR_DOUBLE:
@@ -642,12 +635,11 @@ Variable *EvaluateBinaryEqual(Variable *left, Variable *right) {
 			right->data.numeric_data = (double)(right->data.numeric_data);
 		}
 		if(left->data.numeric_data == right->data.numeric_data) {
-			result->data.numeric_data = 1;
+			result->data.bool_data = true;
 		}
 		else {
-			result->data.numeric_data = 0;
+			result->data.bool_data = false;
 		}
-		result->data_type = AST_VAR_INT;
 			break;
 
 		case AST_VAR_STRING:
@@ -656,15 +648,14 @@ Variable *EvaluateBinaryEqual(Variable *left, Variable *right) {
 			break;
 		case AST_VAR_BOOL:
 			if(left->data.bool_data == right->data.bool_data) {
-				result->data.numeric_data = 1;
+				result->data.bool_data = true;
 			}
 			else {
-				result->data.numeric_data = 0;
+				result->data.bool_data = false;
 			}
-			result->data_type = AST_VAR_INT;
 			break;
 		case AST_VAR_NULL:
-			result->data_type = AST_VAR_INT;
+			result->data_type = AST_VAR_NULL;
 			break;
 	}
 
@@ -673,19 +664,18 @@ Variable *EvaluateBinaryEqual(Variable *left, Variable *right) {
 
 Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right) {
 	Variable *result = gc_malloc(sizeof(Variable));
-
+	result->data_type = AST_VAR_BOOL;
 	switch (left->data_type) {
 		case AST_VAR_INT:
 			if(right->data_type == AST_VAR_DOUBLE) {
 				left->data.numeric_data = (double)(left->data.numeric_data);
 			}
 			if(left->data.numeric_data == right->data.numeric_data) {
-				result->data.numeric_data = 1;
+				result->data.bool_data = true;
 			}
 			else {
-				result->data.numeric_data = 0;
+				result->data.bool_data = false;
 			}
-			result->data_type = AST_VAR_BOOL;
 			break;
 
 		case AST_VAR_DOUBLE:
@@ -693,12 +683,11 @@ Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right) {
 			right->data.numeric_data = (double)(right->data.numeric_data);
 		}
 		if(left->data.numeric_data == right->data.numeric_data) {
-			result->data.numeric_data = 1;
+			result->data.bool_data = true;
 		}
 		else {
-			result->data.numeric_data = 0;
+			result->data.bool_data = false;
 		}
-		result->data_type = AST_VAR_INT;
 			break;
 
 		case AST_VAR_STRING:
@@ -708,15 +697,14 @@ Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right) {
 
 		case AST_VAR_BOOL:
 			if(left->data.bool_data == right->data.bool_data) {
-				result->data.numeric_data = 1;
+				result->data.bool_data = true;
 			}
 			else {
-				result->data.numeric_data = 0;
+				result->data.bool_data = false;
 			}
-			result->data_type = AST_VAR_INT;
 			break;
 		case AST_VAR_NULL:
-			result->data_type = AST_VAR_INT;
+			result->data_type = AST_VAR_NULL;
 			break;
 	}
 

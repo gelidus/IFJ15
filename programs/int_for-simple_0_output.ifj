@@ -1,10 +1,22 @@
 /*@outputs
-"0123456789"
+"0123456789 012345678910 10987654321 109876543210"
 */
 
 int main() {
 
   for(int i = 0; i < 10; i = i + 1) {
+    cout << i;
+  }
+  cout << " ";
+  for(int i = 0; i <= 10; i = i + 1) {
+    cout << i;
+  }
+  cout << " ";
+  for(int i = 10; i > 0; i = i - 1) {
+    cout << i;
+  }
+  cout << " ";
+  for(int i = 10; i >= 0; i = i - 1) {
     cout << i;
   }
   return 0;
