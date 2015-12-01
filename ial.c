@@ -37,7 +37,7 @@ int make_hash(struct hash_table * hashtable, string* key)
 {
 
 	/* convert our string to an integer index */
-    unsigned long int hashval;
+    unsigned long int hashval = 33;
     unsigned int i = 0;
     while (hashval < ULONG_MAX && i < strlen(key->str)) {
             hashval = hashval << 8;
