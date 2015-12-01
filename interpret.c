@@ -745,10 +745,11 @@ void InterpretCin(ASTNode *cin) {
 				break;
 			}
 			case AST_VAR_DOUBLE: {
-				// ZAKOMENTOVANE, NESLO ZKOMPILOVAT
-				// scanf("%g", &((float)variable->data.numeric_data));
-			}
+				double data;
+				scanf("%lf", &data);
+				variable->data.numeric_data = data;
 				break;
+			}
 			case AST_VAR_STRING: {
 				string *input = new_str("");
 				char char_input[10];
