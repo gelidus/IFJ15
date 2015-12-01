@@ -789,8 +789,8 @@ bool parse_var_creation(struct ast_node* node)
         // trosku na hulvata predelame strukturu - vracet ted musime assign
         struct ast_node* var_creation = ast_create_node();
         var_creation->type = AST_VAR_CREATION;
-        var_creation->right = var;
-        var_creation->left = node;
+        var_creation->right = node->righ;
+        var_creation->left = node->left;
 
         node->left = var_creation;
         node->type = AST_ASSIGN;
