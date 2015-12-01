@@ -6,7 +6,8 @@ filename="lex_uvozovky-ve-stringu_1.ifj"
 
 echo "##### FANCY FUCKING TESTS #####"
 
-files="programs/*"
+files="programs/old_tests/*"
+
 # zbuildime
 make &> /dev/null
 
