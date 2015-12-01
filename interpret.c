@@ -118,7 +118,19 @@ void InterpretAssign(ASTNode *statement) {
 	// left is id with name and type
 	// right is expression assigned
 	Variable *result = EvaluateExpression(statement->right);
-	Variable* current = get_symbol(scopes, statement->left->d.string_data);
+	Variable* current = NULL;
+	string* var_name = NULL;
+	switch (statement->left–>type) {
+		case AST_VAR_CREATION:
+			InterpretVarCreation(statement->left);
+			var_name = statement->left–>right->d.string_data;
+			break;
+		case AST_VAR:
+			var_name = statement->left->d.string_data;
+			break;
+	}
+	get_symbol(scopes, var_name);
+	
 	if (current == NULL) {
 		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Variable assigning failed due to missing variable");
 	}
