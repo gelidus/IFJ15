@@ -43,6 +43,7 @@ void InterpretRun() {
 
 	scope_start(scopes);
 	// TODO: interpret main function directly, not as function call (fcall is other node type)
+	InterpretList(func->right->d.list);
 
 	scope_end(scopes);
 }
