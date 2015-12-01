@@ -186,8 +186,23 @@ void InterpretFor(ASTNode *node) {
 
 	InterpretNode(first_block);
 
-	// block is in the left node
-	InterpretList(node->left->d.list);
+	Variable *condition = EvaluateExpression(second_block);
+	if (condition->data_type != AST_VAR_BOOL) {
+		throw_error(CODE_ERROR_SEMANTIC, "[Interpret][For] Second field expects boolean result");
+	}
+	while(condition->data.bool_data) {
+		// block is in the left node
+		InterpretList(node->left->d.list);
+
+		// interpret third block
+
+
+		// get the condition result
+		condition = EvaluateExpression(second_block);
+		if (condition->data_type != AST_VAR_BOOL) {
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret][For] Second field expects boolean result");
+		}
+	};
 
 	scope_end(scopes);
 }
