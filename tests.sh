@@ -9,6 +9,12 @@ files="programs/*"
 
 # zbuildime
 make &> /dev/null
+if [[ $? -ne 0 ]]; then
+    echo -e "\033[31m"
+    echo "ANI TO NEJDE PRELOZIT PROC SEM VUBEC CHODIS"
+    echo -e "\033[0m"
+    exit
+fi
 
 outputs_regex='(/\*@outputs
 \")([^(\*/)]*)\"

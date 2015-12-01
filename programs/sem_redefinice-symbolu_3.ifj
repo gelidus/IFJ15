@@ -3,5 +3,6 @@ int foo(int bar) {
 }
 
 int main() {
-    return foo(6);
+    int i = 6;
+    return i;
 }
