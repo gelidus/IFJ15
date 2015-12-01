@@ -120,17 +120,17 @@ void InterpretAssign(ASTNode *statement) {
 	Variable *result = EvaluateExpression(statement->right);
 	Variable* current = NULL;
 	string* var_name = NULL;
-	switch (statement->left–>type) {
+	switch (statement->left->type) {
 		case AST_VAR_CREATION:
 			InterpretVarCreation(statement->left);
-			var_name = statement->left–>right->d.string_data;
+			var_name = statement->left->right->d.string_data;
 			break;
 		case AST_VAR:
 			var_name = statement->left->d.string_data;
 			break;
 	}
 	get_symbol(scopes, var_name);
-	
+
 	if (current == NULL) {
 		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Variable assigning failed due to missing variable");
 	}
@@ -321,8 +321,7 @@ Variable *EvaluateBinaryPlus(Variable *left, Variable *right) {
 			result->data_type = AST_VAR_STRING;
 			break;
 		case AST_VAR_BOOL:
-			result->data.bool_data = left->data.bool_data + right->data.bool_data;
-			result->data_type = AST_VAR_BOOL;
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Cannot perform binari plus operation on bool");
 			break;
 		case AST_VAR_NULL:
 			result->data_type = AST_VAR_NULL;
