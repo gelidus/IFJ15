@@ -738,14 +738,18 @@ void InterpretCin(ASTNode *cin) {
 		}
 
 		switch (variable->data_type) {
-			case AST_VAR_INT:
-				// ZAKOMENTOVANE, NESLO ZKOMPILOVAT
-				// scanf("%d", &((int)variable->data.numeric_data));
+			case AST_VAR_INT: {
+				int data;
+				scanf("%d", &data);
+				variable->data.numeric_data = data;
 				break;
-			case AST_VAR_DOUBLE:
-				// ZAKOMENTOVANE, NESLO ZKOMPILOVAT
-				// scanf("%g", &((float)variable->data.numeric_data));
+			}
+			case AST_VAR_DOUBLE: {
+				double data;
+				scanf("%lf", &data);
+				variable->data.numeric_data = data;
 				break;
+			}
 			case AST_VAR_STRING: {
 				string *input = new_str("");
 				char char_input[10];

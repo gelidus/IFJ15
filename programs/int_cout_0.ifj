@@ -1,0 +1,7 @@
+//@outputs
+//"testiik"
+
+int main() {
+  cout << "testiik";
+  return 0;
+}
