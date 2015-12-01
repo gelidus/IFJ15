@@ -397,6 +397,7 @@ bool IsExpressionNode(struct ast_node* node) {
     switch(node->type) {
         case AST_EXPRESSION:
         case AST_BINARY_OP:
+        case AST_VAR:
         case AST_LITERAL:
             return true;
         default:
