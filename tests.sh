@@ -22,7 +22,7 @@ inputs_regex='(/\*@inputs
 
 for file in $files
 do
-    if [[ $file =~ ..._([^_]*)_([0-9])(_input)?(_output)?.ifj ]]; then
+    if [[ $file =~ ..._([^_]*)_([0-9])(_input)?(_output)?.ifj$ ]]; then
         test_name="${BASH_REMATCH[1]}"
         return_value="${BASH_REMATCH[2]}"
         input_flag="${BASH_REMATCH[3]}"
