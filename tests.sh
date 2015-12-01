@@ -22,7 +22,7 @@ inputs_regex='(/\*@inputs
 
 for file in $files
 do
-    if [[ $file =~ ..._([^_]*)_([0-9])(_input)?(_output)?.ifj ]]; then
+    if [[ $file =~ ..._([^_]*)_([0-9])(_input)?(_output)?.ifj$ ]]; then
         test_name="${BASH_REMATCH[1]}"
         return_value="${BASH_REMATCH[2]}"
         input_flag="${BASH_REMATCH[3]}"
@@ -30,7 +30,7 @@ do
 
         echo "running $test_name with expected return $return_value, input: $input_flag, output: $output_flag"
 
-        if [[ $output_flag == "_output" ]]; then
+        if [[ $output_flag = "_output" ]]; then
             value=$(<$file)
             if [[ $value =~ $outputs_regex ]]; then
                 expected_output="${BASH_REMATCH[2]}"
@@ -41,7 +41,7 @@ do
             fi
         fi
 
-        if [[ $input_flag == "_input" ]]; then
+        if [[ $input_flag = "_input" ]]; then
             value=$(<$file)
             if [[ $value =~ $inputs_regex ]]; then
                 expected_input="${BASH_REMATCH[2]}"
@@ -55,6 +55,7 @@ do
         correct_return="yes"
         correct_output="yes"
 
+        actual_output=""
         actual_output=$(echo $expected_input | ./release $file)
         actual_return_value=$?
         if [[ $actual_return_value != $return_value ]]; then
@@ -72,7 +73,7 @@ do
                 echo -e "\033[31m"
                 echo "TEST $test_name FAILED:"
                 if [[ $correct_output != "yes" ]]; then
-                    echo "expected output of '$actual_output', got '$expected_output'"
+                    echo "expected output: '$expected_output', got: '$actual_output'"
                 fi
                 if [[ $correct_return != "yes" ]]; then
                     echo "expected return value of $return_value, got $actual_return_value"

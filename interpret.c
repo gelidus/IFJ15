@@ -192,6 +192,12 @@ void InterpretFor(ASTNode *node) {
 	// TODO: retrieve the fields from the node->d.list and execute
 	// TODO: do the list interpratation based on these fields
 
+	ASTNode* first_block = node->d.list->elem; // first block
+	ASTNode* second_block = node->d.list->next->elem; // second block
+	ASTNode* third_block = node->d.list->next->next->elem; // third block
+
+	InterpretNode(first_block);
+
 	// block is in the left node
 	InterpretList(node->left->d.list);
 

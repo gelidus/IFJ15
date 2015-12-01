@@ -43,6 +43,7 @@ bool parse_expression(struct ast_node* node);
 bool parse_if(struct ast_node* node);
 bool parse_return(struct ast_node* node);
 bool parse_for(struct ast_node* node);
+bool parse_assign(struct ast_node* node);
 bool handle_id(struct ast_node* node);
 
 struct data* d;
@@ -246,7 +247,7 @@ bool parse_for(struct ast_node* node)
         first_field->type = AST_VAR_CREATION;
     // nebo je to jen vyraz
     } else {
-        EXPECT(parse_expression(first_field));
+        EXPECT(parse_assign(first_field));
     }
     EXPECT(token_semicolon());
     EXPECT(parse_expression(second_field))
@@ -267,6 +268,27 @@ bool parse_for(struct ast_node* node)
 
     node->type = AST_FOR;
     node->left = block;
+
+    return true;
+}
+
+bool parse_assign(struct ast_node* node)
+{
+    if (PRINT) printf("\tparser: parsing assign inside for!\n");
+    struct ast_node* id = ast_create_node();
+    string* var_name = NULL;
+    EXPECT(parse_id(&var_name));
+    id->d.string_data = var_name;
+    id->type = AST_VAR;
+
+    node->type = AST_ASSIGN;
+    node->left = id;
+
+    expect(EQUALS);
+
+    struct ast_node* expr = ast_create_node();
+    EXPECT(parse_expression(expr));
+    node->right = expr;
 
     return true;
 }
@@ -397,6 +419,7 @@ bool IsExpressionNode(struct ast_node* node) {
     switch(node->type) {
         case AST_EXPRESSION:
         case AST_BINARY_OP:
+        case AST_VAR:
         case AST_LITERAL:
             return true;
         default:
