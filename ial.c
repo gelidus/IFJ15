@@ -35,18 +35,41 @@ struct hash_table * create_table()
 // vrati hash
 int make_hash(struct hash_table * hashtable, string* key)
 {
-	unsigned long int hashval;
-	int i = 0;
-    char* key_as_string = key->str;
 
-    // string na integer
-	while(hashval < ULONG_MAX && i < key->len) {
-		hashval = hashval << 8;
-		hashval += key_as_string[i];
-		i++;
-	}
+	/* convert our string to an integer index */
+    unsigned long int hashval;
+    unsigned int i = 0;
+    while (hashval < ULONG_MAX && i < strlen(key->str)) {
+            hashval = hashval << 8;
+            hashval += key->str[i];
+            i++;
+    }
+    return hashval % hashtable->size;
 
-	return hashval % hashtable->size;
+	// #ifdef HASHTABLE_USE_SIMPLE_HASH
+	// for (hash = i = 0; i < key->len; hash = hash << 8, hash += key[i++]);
+	// #else /* Use: Jenkins' "One At a Time Hash" === Perl "Like" Hashing */
+	//  // http://en.wikipedia.org/wiki/Jenkins_hash_function
+	//  for ( hash = i = 0; i < keyLength; ++i ) {
+	// 	 hash += key[i], hash += ( hash << 10 ), hash ^= ( hash >> 6 );
+	//  }
+	//  hash += ( hash << 3 ), hash ^= ( hash >> 11 ), hash += ( hash << 15 );
+	// #endif
+
+ // 	return hash % hashtable->size;
+
+	// unsigned long int hashval;
+	// int i = 0;
+    // char* key_as_string = key->str;
+	//
+    // // string na integer
+	// while(hashval < ULONG_MAX && i < key->len) {
+	// 	hashval = hashval << 8;
+	// 	hashval += key_as_string[i];
+	// 	i++;
+	// }
+	//
+	// return hashval % hashtable->size;
 }
 
 // vytvori novej hash_item na vlozeni
