@@ -244,7 +244,6 @@ bool parse_for(struct ast_node* node)
     // prvni vyraz muze zacinat var creation
     if (token_datatype()) {
         parse_var_creation(first_field);
-        first_field->type = AST_VAR_CREATION;
     // nebo je to jen vyraz
     } else {
         EXPECT(parse_assign(first_field));
@@ -789,7 +788,7 @@ bool parse_var_creation(struct ast_node* node)
         // trosku na hulvata predelame strukturu - vracet ted musime assign
         struct ast_node* var_creation = ast_create_node();
         var_creation->type = AST_VAR_CREATION;
-        var_creation->right = node->righ;
+        var_creation->right = node->right;
         var_creation->left = node->left;
 
         node->left = var_creation;
