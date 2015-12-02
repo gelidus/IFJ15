@@ -1,0 +1,8 @@
+
+int fun(int x) {
+    return x * 2;
+}
+
+int main() {
+    cout << 5 + 3 + fun(2);
+}
