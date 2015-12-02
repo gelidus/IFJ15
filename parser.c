@@ -418,6 +418,7 @@ bool IsExpressionNode(struct ast_node* node) {
     switch(node->type) {
         case AST_EXPRESSION:
         case AST_BINARY_OP:
+        case AST_CALL:
         case AST_VAR:
         case AST_LITERAL:
             return true;
@@ -529,6 +530,7 @@ int GetASTNodePrecendenceValue(struct ast_node* node) {
         case AST_BINARY_OP:
             return node->d.binary;
         case AST_LITERAL:
+        case AST_CALL:
         case AST_VAR:
             return AST_EXPRESSION;
         default:
@@ -566,6 +568,16 @@ struct ast_node* GetStackTopOperator(Stack *stack) {
     return NULL; // no type
 }
 
+bool parse_function_call(struct ast_node* node) {
+    node->type = AST_CALL;
+
+    // while not end of the call
+    while (!accept(RPAR)) {
+        struct ast_node* pass = ast_create_node();
+        EXPECT(parse_expression(pass));
+    }
+}
+
 // Node passed to this function will automacially become
 // expression node, which will store the expression in the
 // left leaf. This is beacause of empty expressions parsing
@@ -588,6 +600,17 @@ bool parse_expression(struct ast_node* node) {
         // next_node is not in the
         if (next_node == NULL && StackEmpty(&stack)) {
             return true;
+        }
+
+        // we should parse the function here
+        if (!StackEmpty(&stack) && ((struct ast_node*)StackTop(&stack))->type == AST_VAR && next_node->type == AST_LEFT_BRACKET) {
+            expect(LPAR);
+            // parse the function call from the node on the top of the stack
+            struct ast_node* fnc_node = StackPop(&stack);
+            parse_function_call(fnc_node);
+
+            // override the next node by the whole func call
+            next_node = fnc_node;
         }
 
         if (GetStackTopOperator(&stack) == NULL && accept(RPAR)) {
