@@ -4,6 +4,6 @@ double a;
 double b;
 double c;
 
-a => b - c; //
+a = b ° c;
  
 }
