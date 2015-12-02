@@ -33,7 +33,7 @@ do
         return_value="${BASH_REMATCH[2]}"
         input_flag="${BASH_REMATCH[3]}"
         output_flag="${BASH_REMATCH[4]}"
-        # echo "running $test_name with expected return $return_value, input: $input_flag, output: $output_flag"
+        echo "running $test_name with expected return $return_value, input: $input_flag, output: $output_flag"
         if [[ $output_flag = "_output" ]]; then
             value=$(<$file)
             if [[ $value =~ $outputs_regex ]]; then

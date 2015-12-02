@@ -6,7 +6,7 @@
 #include "ast.h"
 #include "stack.h"
 
-#define PRINT 0
+#define PRINT 1
 
 bool expect(enum lex_type t);
 bool accept(enum lex_type t);
@@ -846,6 +846,11 @@ bool parse_datatype(enum ast_var_type* var_type)
         get_token();
         EXPECT(no_errors());
         *var_type = AST_VAR_DOUBLE;
+        return true;
+    } else if (accept(KW_AUTO)) {
+        get_token();
+        EXPECT(no_errors());
+        *var_type = AST_VAR_AUTO;
         return true;
     } else {
         // failure
