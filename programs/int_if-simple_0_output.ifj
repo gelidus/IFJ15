@@ -1,0 +1,23 @@
+/*@outputs
+"correct correct"
+*/
+
+int main() {
+
+  if(2 * 2 < 5 + 2) {
+   cout << "correct ";
+  }
+
+  else {
+    cout << "incorrect";
+  }
+
+  int a = 3;
+  if (5/a > 4*a) {
+    cout << "incorrect";
+  }
+  else {
+    cout << "correct";
+  }
+  return 0;
+}

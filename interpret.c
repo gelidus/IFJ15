@@ -150,8 +150,6 @@ void InterpretIf(ASTNode *ifstatement) {
 
 	ASTNode *block = condition_result->data.bool_data? ifstatement->left: ifstatement->right;
 	InterpretList(block->d.list);
-
-	// TODO: what's next after this this list?
 }
 
 void InterpretFunctionCall(ASTNode *call) {
