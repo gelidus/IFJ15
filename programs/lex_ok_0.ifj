@@ -1,0 +1,15 @@
+
+
+int main() {
+int n;
+int gk_1;
+string o;
+
+n= 20;
+ return (EXIT_SUCCESS);
+ return (0);
+return(5559);
+}
+
+
+
