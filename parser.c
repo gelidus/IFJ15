@@ -6,7 +6,7 @@
 #include "ast.h"
 #include "stack.h"
 
-#define PRINT 1
+#define PRINT 0
 
 bool expect(enum lex_type t);
 bool accept(enum lex_type t);
