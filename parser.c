@@ -571,11 +571,23 @@ struct ast_node* GetStackTopOperator(Stack *stack) {
 bool parse_function_call(struct ast_node* node) {
     node->type = AST_CALL;
 
+    struct ast_node* args = ast_create_node();
+    args->d.list = ast_create_list();
+
+    node->left = args;
+
     // while not end of the call
     while (!accept(RPAR)) {
         struct ast_node* pass = ast_create_node();
         EXPECT(parse_expression(pass));
+
+        // add passed argument to the list
+        ast_list_insert(args->d.list, pass);
     }
+
+    expect(RPAR);
+
+    return true;
 }
 
 // Node passed to this function will automacially become
