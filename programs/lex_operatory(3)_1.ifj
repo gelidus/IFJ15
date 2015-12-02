@@ -1,0 +1,9 @@
+int main(double seber_to) 
+{
+double a;
+double b;
+double c;
+
+a = b ? c;
+ 
+}
