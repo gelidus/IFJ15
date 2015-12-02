@@ -6,7 +6,7 @@
 #include "ast.h"
 #include "stack.h"
 
-#define PRINT 0
+#define PRINT 1
 
 bool expect(enum lex_type t);
 bool accept(enum lex_type t);
@@ -35,6 +35,7 @@ bool parse_datatype(enum ast_var_type* var_type);
 bool parse_var_creation(struct ast_node* node);
 bool parse_function_definition(struct ast_node* node);
 bool parse_function_arguments(struct ast_node* node);
+bool parse_program_block(struct ast_node* node);
 bool parse_cout(struct ast_node* node);
 bool parse_cin(struct ast_node* cin);
 bool parse_program_body();
@@ -122,23 +123,35 @@ bool parse_statement(struct ast_node* node)
 {
     // doplnit, az bude jasne, co jak vypada
     if (PRINT) printf("\tparser: handling statement\n");
+    // je to deklarace promenne
     if (token_datatype()) {
         EXPECT(parse_var_creation(node));
         EXPECT(token_semicolon());
+    // je to if
     } else if (accept(KW_IF)) {
         EXPECT(parse_if(node));
+    // je to return
     } else if(accept(KW_RETURN)) {
         EXPECT(parse_return(node));
+    // je to cout
     } else if (accept(KW_COUT)) {
         EXPECT(parse_cout(node));
+    // je to cin
     } else if (accept(KW_CIN)) {
         EXPECT(parse_cin(node));
+    // je to for
     } else if (accept(KW_FOR)) {
         EXPECT(parse_for(node));
+    // je to prirazeni nebo volani funkcce
     } else if (accept(IDENTIFIER)) {
         EXPECT(handle_id(node));
         EXPECT(token_semicolon());
-    // tyhle jsou uz fallback!
+    // je to blok kodu
+    } else if (accept(LBR)) {
+        EXPECT(token_left_brace());
+        EXPECT(parse_program_block(node));
+        EXPECT(token_right_brace());
+    // FALLBACKS:
     } else if (token_empty()) {
         // prazdny statement je validni
         node->type = AST_NONE;
