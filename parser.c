@@ -586,10 +586,9 @@ struct ast_node* GetStackTopOperator(Stack *stack, bool bracket) {
         struct ast_node* node = el->value;
         if (IsOperatorNode(node)) {
             // return null if the first found operator in the stack is not bracket
-            if (bracket && (node->type != AST_LEFT_BRACKET && node->type != AST_RIGHT_BRACKET)) {
-                return NULL;
+            if (!bracket || (bracket && (node->type != AST_LEFT_BRACKET || node->type != AST_RIGHT_BRACKET))) {
+                return node;
             }
-            return node;
         }
 
         el = el->next;
