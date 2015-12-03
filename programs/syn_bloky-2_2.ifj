@@ -1,0 +1,8 @@
+// zvlastne zanorene bloky
+int main() {
+    int c;
+    {
+        int c;
+        }
+    }
+}

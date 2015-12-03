@@ -1,0 +1,11 @@
+// zvlastne zanorene bloky, dokonce mimo funkci
+int main() {
+    int c;
+    {
+        int c;
+    }
+}
+
+{
+    int c;
+}
