@@ -576,7 +576,7 @@ char GetPrecendence(struct ast_node* stacked, struct ast_node* next) {
 // given stack of ast_node. This must be implemented because
 // of the precendence matching mechanism and due to missing
 // output stack (as we are creating ast tree instead)
-struct ast_node* GetStackTopOperator(Stack *stack) {
+struct ast_node* GetStackTopOperator(Stack *stack, bool bracket) {
 
     // get the top element from the stack so we can interate over it
     Element *el = StackTopElement(stack);
@@ -585,6 +585,10 @@ struct ast_node* GetStackTopOperator(Stack *stack) {
     while(el != NULL) {
         struct ast_node* node = el->value;
         if (IsOperatorNode(node)) {
+            // return null if the first found operator in the stack is not bracket
+            if (bracket && (node->type != AST_LEFT_BRACKET && node->type != AST_RIGHT_BRACKET)) {
+                return NULL;
+            }
             return node;
         }
 
@@ -611,7 +615,7 @@ bool parse_function_call(struct ast_node* node) {
         ast_list_insert(args->d.list, pass);
     }
 
-    expect(RPAR);
+    //expect(RPAR);
 
     return true;
 }
@@ -651,12 +655,12 @@ bool parse_expression(struct ast_node* node) {
             next_node = fnc_node;
         }
 
-        if (GetStackTopOperator(&stack) == NULL && accept(RPAR)) {
+        if (GetStackTopOperator(&stack, true) == NULL && accept(RPAR)) {
             if (PRINT) printf("\texpr parser: found right par next_node is null\n");
             next_node = NULL;
         }
 
-        char precendenceCharacter = GetPrecendence(GetStackTopOperator(&stack), next_node);
+        char precendenceCharacter = GetPrecendence(GetStackTopOperator(&stack, false), next_node);
 
         switch(precendenceCharacter) {
             case '=':
