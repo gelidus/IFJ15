@@ -1,9 +1,0 @@
-// validni telo
-
-int main() {
-    return 5;
-}
-
-int foo() {
-    return 4;
-}

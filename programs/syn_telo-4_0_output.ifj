@@ -1,0 +1,15 @@
+/*@outputs
+"2"
+*/
+
+// validni telo
+
+int main() {
+    int a = 2;
+    int x = 4 / a;
+    cout << x;
+}
+
+int foo() {
+    return 4;
+}
