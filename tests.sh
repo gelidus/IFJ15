@@ -16,15 +16,9 @@ if [[ $? -ne 0 ]]; then
     exit
 fi
 
-outputs_regex='(/\*@outputs
-\")([^(\*/)]*)\"
-\*/
-'
+outputs_regex='(/\*@outputs[^\"]*\")([^(\*/)]*)\"[^(\*/)]*\*/'
 
-inputs_regex='(/\*@inputs
-\")([^(\*/)]*)\"
-\*/
-'
+inputs_regex='(/\*@inputs[^\"]*\")([^(\*/)]*)\"[^(\*/)]*\*/'
 
 red_color='\033[31m'
 reset_color='\033[0m'
@@ -51,6 +45,7 @@ do
                 expected_output="${BASH_REMATCH[2]}"
             else
                 echo -e "\t$red_color TEST SPECIFIED OUTPUT VALUE BUT I DID NOT FIND IT $reset_color"
+                expected_output=""
             fi
         else
             expected_output=""
@@ -62,6 +57,7 @@ do
                 expected_input="${BASH_REMATCH[2]}"
             else
                 echo -e "\t$red_color TEST SPECIFIED INPUT VALUE BUT I DID NOT FIND IT $reset_color"
+                expected_input=""
             fi
         else
             expected_input=""
