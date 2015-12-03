@@ -1,0 +1,6 @@
+// radkovy komentar
+int main() {
+    int c;
+    // radek
+    return 6; //a na konci
+}

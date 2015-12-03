@@ -1,0 +1,13 @@
+// vice radkovy komentar
+int main() {
+    int c;
+    /*
+        neprepepri toho vepre
+        \xFF
+        0xAC
+        balasnkdl *
+        )-0-124=-1024 §
+    */
+
+    return 6; //a na konci
+}
