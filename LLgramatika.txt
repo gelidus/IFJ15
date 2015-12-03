@@ -1,0 +1,51 @@
+program_body -> function_definition zbytek_tela
+program_body_remainder -> EOF
+program_body_remainder -> function_definition zbytek_tela
+
+function_definition -> data_type IDENTIFIER LEFT_PARENTHESIS function_arguments RIGHT_PARENTHESIS LEFT_BRACE program_block RIGHT_BRACE
+data_type -> KEYWORD_INT
+data_type -> KEYWORD_STRING
+data_type -> KEYWORD_DOUBLE
+data_type -> KEYWORD_AUTO
+function_arguments -> NULL
+function_arguments -> data_type IDENTIFIER function_argument_pump
+function_argument_pump -> NULL
+function_argument_pump -> COMMA data_type IDENTIFIER function_argument_pump
+
+program_block -> NULL
+program_block -> statement program_block
+
+statement -> var_creation SEMICOLON
+statement -> if
+statement -> return
+statement -> cout
+statement -> cin
+statement -> for
+statement -> generic_id SEMICOLON
+statement -> LEFT_BRACE program_block RIGHT_BRACE
+statement -> expression
+
+var_creation -> data_type IDENTIFIER assign
+assign -> NULL
+assign -> ASSIGN EXPRESSION
+
+if -> IF LEFT_PARENTHESIS EXPRESSION RIGHT_PARENTHESIS LEFT_BRACE program_block RIGHT_BRACE
+return -> RETURN EXPRESSION SEMICOLON
+
+cout -> COUT OUTPUT_OPERATOR EXPRESSION cout_pump
+cout_pump -> SEMICOLON
+cout_pump -> OUTPUT_OPERATOR EXPRESSION cout_pump
+
+cin -> CIN INPUT_OPERATOR IDENTIFIER cin_pump
+cin_pump -> SEMICOLON
+cin_pump -> INPUT_OPERATOR IDENTIFIER
+
+for -> FOR LEFT_PARENTHESIS for_first_field SEMICOLON EXPRESSION SEMICOLON generic_id RIGHT_PARENTHESIS LEFT_BRACE program_block RIGHT_BRACE
+for_first_field -> var_creation
+for_first_field -> IDENTIFIER ASSIGN EXPRESSION
+
+generic_id -> IDENTIFIER assign
+generic_id -> IDENTIFIER LEFT_PARENTHESIS function_call_arguments RIGHT_PARENTHESIS
+function_call_arguments -> IDENTIFIER function_call_argument_pump
+function_call_argument_pump -> NULL
+function_call_argument_pump -> COMMA IDENTIFIER function_call_argument_pump
