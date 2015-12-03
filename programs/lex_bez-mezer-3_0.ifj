@@ -1,0 +1,5 @@
+// bez mezer kolem veci, ale melo by to byt validni
+
+int main() {
+    int d=5;return 6;
+}

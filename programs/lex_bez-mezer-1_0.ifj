@@ -1,0 +1,6 @@
+// bez mezer kolem veci, ale melo by to byt validni
+
+int main() {
+    int a = 4/b;
+    return a;
+}

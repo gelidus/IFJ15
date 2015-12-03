@@ -1,0 +1,5 @@
+// zvlastni stredniky
+
+int main() {
+    int a = 5;;
+}
