@@ -1,0 +1,6 @@
+// validni funkce s vicero argumenty
+int main(int c, double d) {
+    int i = c;
+    double x = d;
+    return 12;
+}

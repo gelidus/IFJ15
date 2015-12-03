@@ -1,0 +1,5 @@
+// validni funkce s argumentem
+int main(int c) {
+    int i = c;
+    return 12;
+}

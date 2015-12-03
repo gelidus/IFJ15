@@ -1,0 +1,5 @@
+// funkce bez navratoveho typu
+main() {
+    int i;
+    return 6;
+}

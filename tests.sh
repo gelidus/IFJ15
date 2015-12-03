@@ -32,6 +32,9 @@ green_color='\033[32m'
 funky_color='\033[34m'
 
 failed=0
+failed_lex=0
+failed_syn=0
+failed_int=0
 
 for file in $files
 do
@@ -81,6 +84,14 @@ do
                 echo -e "\t$green_color TEST $test_name PASSED!! $reset_color"
         else
                 ((failed++))
+                if [[ $module_name = "lex" ]]; then
+                    ((failed_lex++))
+                elif [[ $module_name = "syn" ]]; then
+                    ((failed_syn++))
+                elif [[ $module_name = "int" ]]; then
+                    ((failed_int++))
+                fi
+
                 echo -e "\t$red_color TEST $test_name FAILED:"
                 if [[ $correct_output != "yes" ]]; then
                     echo -e "\t\t expected output: '$expected_output', got: '$actual_output'$reset_color"
@@ -94,8 +105,13 @@ do
     fi
 done
 
+echo ""
+
 if [[ $failed -gt 0 ]]; then
-    echo -e "$red_color  ## $failed TESTS HAVE FAILED!!! ##  "
+    echo -e "$red_color  ## $failed TESTS HAVE FAILED!!! ##  $reset_color"
+    echo -e "\t$red_color$failed_lex$reset_color in module LEX"
+    echo -e "\t$red_color$failed_syn$reset_color in module SYN"
+    echo -e "\t$red_color$failed_int$reset_color in module INT"
 else
-    echo -e"$green_color  ## ALL TESTS PASSED :^)) ##  "
+    echo -e"$green_color  ## ALL TESTS PASSED :^)) ##  $reset_color"
 fi

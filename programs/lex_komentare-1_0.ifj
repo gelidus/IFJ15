@@ -1,0 +1,4 @@
+int main(/* inline komentar */) {
+    int c;
+    return 6;
+}

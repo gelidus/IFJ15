@@ -1,0 +1,4 @@
+int main(/* inline komentar s uvozovkama "mrkev" */) {
+    int c;
+    return 6;
+}

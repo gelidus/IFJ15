@@ -1,0 +1,5 @@
+// funkce bez parametru
+int main {
+    int c;
+    return 6;
+}

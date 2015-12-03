@@ -1,0 +1,5 @@
+// funkce se zvlastnimi parametry
+int main(,) {
+    int c;
+    return 6;
+}
