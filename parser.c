@@ -632,7 +632,7 @@ bool parse_expression(struct ast_node* node) {
         }
 
         // we should parse the function here
-        if (!StackEmpty(&stack) && ((struct ast_node*)StackTop(&stack))->type == AST_VAR && next_node->type == AST_LEFT_BRACKET) {
+        if (!StackEmpty(&stack) && ((struct ast_node*)StackTop(&stack))->type == AST_VAR && next_node != NULL && next_node->type == AST_LEFT_BRACKET) {
             expect(LPAR);
             // parse the function call from the node on the top of the stack
             struct ast_node* fnc_node = StackPop(&stack);
