@@ -1,5 +1,7 @@
 #include "scanner.h"
 
+#define PRINT 0
+
 const static struct {
   char* id;
   enum lex_type type;
@@ -63,6 +65,7 @@ struct lexeme read_lexeme(void) {
 	read_input();
 
 q0: //default state
+	if(PRINT) printf("q0 default\n");
 	switch(input_char_type) {
 		case LETTER:
 			temp_length = 0;
@@ -178,6 +181,7 @@ q0: //default state
 	}
 
 q1: //identifier OK
+	if(PRINT) printf("q1 identifier\n");
 	switch(input_char_type) {
 		case LETTER:
 		case DIGIT:
@@ -200,6 +204,7 @@ q1: //identifier OK
 	}
 
 q2: //underscored identifier OK
+	if(PRINT) printf("q2 underscored identifier\n");
 	switch(input_char_type) {
 		case LETTER:
 		case DIGIT:
@@ -216,7 +221,9 @@ q2: //underscored identifier OK
 	}
 
 q3: //comments or divide OK
+	if(PRINT) printf("q3 comments or divide\n");
 	switch(input_char_type) {
+		case LETTER:
 		case DIGIT:
 		case WHITE_SPACE:
 			return_input();
@@ -259,6 +266,7 @@ q3: //comments or divide OK
 	}
 
 q4: //integer or double OK
+	if(PRINT) printf("q4 integer or double\n");
 	switch(input_char_type) {
 		case DIGIT:
 			save_temp(input_char);
@@ -283,7 +291,10 @@ q4: //integer or double OK
 			save_temp(0);
 			tmpData.value.integer = atoi((const char *)temp);
 			return tmpData;
-		case OTHERS:
+		case UNDERSCORE:
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;				
+		case OTHERS:			
 			if(input_char == '.') {
 				save_temp(input_char);
 				read_input();
@@ -293,7 +304,7 @@ q4: //integer or double OK
 			return_input();
 			save_temp(0);
 			tmpData.value.integer = atoi((const char *)temp);
-			return tmpData;
+			return tmpData;		
 		default:
 			return_input();
 			save_temp(0);
@@ -302,6 +313,7 @@ q4: //integer or double OK
 	}
 
 q5: //double e OK
+	if(PRINT) printf("q5 double e\n");
 	switch(input_char_type) {
 		case DIGIT:
 			save_temp(input_char);
@@ -335,6 +347,7 @@ q5: //double e OK
 	}
 
 q6: //double OK
+	if(PRINT) printf("q6 double\n");
 	switch(input_char_type) {
 		case DIGIT:
 			save_temp(input_char);
@@ -368,6 +381,7 @@ q6: //double OK
 	}
 
 q7: //double e +- OK
+	if(PRINT) printf("q7 double e +-\n");
 	switch(input_char_type) {
 		case DIGIT:
 			save_temp(input_char);
@@ -390,6 +404,7 @@ q7: //double e +- OK
 	}
 
 q8: //string OK
+	if(PRINT) printf("q8 string\n");
 	switch(input_char_type) {
 		case OTHERS:
 			if(input_char == '\\') {
@@ -404,14 +419,14 @@ q8: //string OK
 			save(&tmpData, input_char);
 			read_input();
 			goto q8; //string
-		case END:
-			throw_error(CODE_ERROR_LEX, "invalid input");
-			break;
 		case WHITE_SPACE:
 			if(input_char == '\n') {
 				throw_error(CODE_ERROR_LEX, "invalid input");
 				break;
-			}
+			}			
+		case END:
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;
 		default:
 			save(&tmpData, input_char);
 			read_input();
@@ -419,15 +434,16 @@ q8: //string OK
 	}
 
 q9: //escaped string OK
+	if(PRINT) printf("q9 escaped string\n");
 	switch(input_char_type) {
-		case END:
-			throw_error(CODE_ERROR_LEX, "invalid input");
-			break;
 		case WHITE_SPACE:
 			if(input_char == '\n') {
 				throw_error(CODE_ERROR_LEX, "invalid input");
 				break;
 			}
+		case END:
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;			
 		default:
 			save(&tmpData, input_char);
 			read_input();
