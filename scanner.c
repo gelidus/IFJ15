@@ -406,7 +406,7 @@ q7: //double e +- OK
 q8: //string OK
 	if(PRINT) printf("q8 string\n");
 	switch(input_char_type) {
-		case OTHERS:
+		case OTHERS:			
 			if(input_char == '\\') {
 				save(&tmpData, input_char);
 				read_input();
@@ -419,15 +419,18 @@ q8: //string OK
 			save(&tmpData, input_char);
 			read_input();
 			goto q8; //string
-		case WHITE_SPACE:
+		case WHITE_SPACE:			
 			if(input_char == '\n') {
 				throw_error(CODE_ERROR_LEX, "invalid input");
 				break;
-			}			
+			}
+			save(&tmpData, input_char);
+			read_input();
+			goto q8; //string			
 		case END:
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;
-		default:
+		default:			
 			save(&tmpData, input_char);
 			read_input();
 			goto q8;  //string
