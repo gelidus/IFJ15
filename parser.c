@@ -384,21 +384,34 @@ bool parse_function_arguments(struct ast_node* node)
 
     EXPECT(token_left_par());
     string* var_name = NULL;
-    // dokud argumenty neskonci
-    while (! accept(RPAR)) {
+    // tohle je krkolomne, ale nevim jak tu pumping lemmu jinak prepsat
+    if (! accept(RPAR)) {
+        // kdyz nejake parametry jsou
         if ( PRINT ) printf("\tparser: function argument parsing\n");
         // nejdriv datatyp, potom promenna
-        enum ast_var_type* var_type = malloc(sizeof(enum ast_var_type));
+        enum ast_var_type * var_type = malloc(sizeof(enum ast_var_type));
         EXPECT(parse_datatype(var_type));
         EXPECT(parse_id(&var_name));
         // vytvorime promennou
-        struct ast_node* variable = ast_create_node();
+        struct ast_node * variable = ast_create_node();
         variable->type = AST_VAR;
         variable->d.string_data = var_name;
         // zalozime do seznamu argumentu
         ast_list_insert(node->d.list, variable);
-        if (! accept(RPAR)) {
+        // tohle je ta pumping lemma - pumpujeme kombinaci ",datatype id"
+        while (! accept(RPAR)) {
             EXPECT(token_comma());
+            if ( PRINT ) printf("\tparser: function argument parsing, pumping lemma\n");
+            // nejdriv datatyp, potom promenna
+            enum ast_var_type * var_type = malloc(sizeof(enum ast_var_type));
+            EXPECT(parse_datatype(var_type));
+            EXPECT(parse_id(&var_name));
+            // vytvorime promennou
+            struct ast_node * variable = ast_create_node();
+            variable->type = AST_VAR;
+            variable->d.string_data = var_name;
+            // zalozime do seznamu argumentu
+            ast_list_insert(node->d.list, variable);
         }
     }
 
@@ -844,6 +857,8 @@ bool parse_var_creation(struct ast_node* node)
 
         struct ast_node* expr = ast_create_node();
         EXPECT(parse_expression(expr));
+
+        if (PRINT) printf("\tparser: parsed assign after var creation\n");
 
         node->right = expr;
     }

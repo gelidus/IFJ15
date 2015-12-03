@@ -1,0 +1,6 @@
+// je tu navic mr strednik
+
+int main() {
+    int c = 0;
+    return 5;
+};
