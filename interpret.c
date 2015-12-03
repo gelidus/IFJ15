@@ -9,30 +9,49 @@
 #define ASTList struct ast_list
 
 struct symbol_table* scopes;
-ASTList* functions;
+Stack functions;
 
-ASTNode *FindFunction(string *name) {
-	ASTList* list = functions;
-	if (list->elem == NULL) {
+// PrepareFunctions will populate the stack of
+// functions, checking for redefinitions.
+void PrepareFunctions(ASTList* fcns) {
+	if (fcns == NULL || fcns->elem == NULL) {
 		throw_error(CODE_ERROR_SEMANTIC, "No function was defined");
 	}
 
 	do {
-		ASTNode* func = list->elem;
+		ASTNode* func = fcns->elem;
+		// check for function redefinitions
+		if (FindFunction(func->d.string_data) != NULL) {
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret][Redefinition] Function redefinition");
+		}
+
+		StackPush(&functions, func);
+		fcns = fcns->next;
+	} while(fcns != NULL);
+}
+
+ASTNode *FindFunction(string *name) {
+	Element* el = StackTopElement(&functions);
+	if (el == NULL) {
+		return NULL;
+	}
+
+	do {
+		ASTNode* func = el->value;
 		if (equals(func->d.string_data, name)) {
-			// interpret definition of main
 			return func;
 		}
 
-		list = list->next;
-	} while(list != NULL);
+		el = el->next;
+	} while(el != NULL);
 
 	return NULL;
 }
 
 void InterpretInit(ASTList* fcns) {
 	scopes = init_table();
-	functions = fcns;
+	StackInit(&functions);
+	PrepareFunctions(fcns);
 }
 
 void InterpretRun() {
@@ -42,7 +61,6 @@ void InterpretRun() {
 	}
 
 	scope_start(scopes);
-	// TODO: interpret main function directly, not as function call (fcall is other node type)
 	InterpretList(func->right->d.list);
 
 	scope_end(scopes);
@@ -191,8 +209,6 @@ void InterpretFunctionCall(ASTNode *call) {
 
 void InterpretFor(ASTNode *node) {
 	scope_start(scopes);
-	// TODO: retrieve the fields from the node->d.list and execute
-	// TODO: do the list interpratation based on these fields
 
 	ASTNode* first_block = node->d.list->elem; // first block
 	ASTNode* second_block = node->d.list->next->elem; // second block
