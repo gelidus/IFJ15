@@ -5,9 +5,13 @@
 int main() {
 
   if(2 * 2 < 5 + 2) {
-   cout << "correct ";
+   if(3 != 2) {
+    cout << "correct";
+   }
+   else {
+    cout << "incorrect";
+   }
   }
-
   else {
     cout << "incorrect";
   }
@@ -17,7 +21,12 @@ int main() {
     cout << "incorrect";
   }
   else {
-    cout << "correct";
+    if(2 == 2) {
+        cout << "correct";
+    }
+    else {
+        cout << "incorrect";
+    }
   }
   return 0;
 }

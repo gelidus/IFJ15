@@ -901,6 +901,7 @@ bool parse_datatype(enum ast_var_type* var_type)
         get_token();
         EXPECT(no_errors());
         *var_type = AST_VAR_INT;
+
         return true;
     } else if (accept(KW_STRING)) {
         // se s tim nebudu mrdat

@@ -4,5 +4,6 @@ int fun(int x) {
 }
 
 int main() {
-    cout << 5 + 3 + fun(2);
+    int a = fun(2)
+    cout << a;
 }

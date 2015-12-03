@@ -1,14 +1,14 @@
-/* Program 1: Vypocet faktorialu (iterativne) */
+/*@outputs
+"120"
+*/
+/*@inputs
+"5"
+*/
 int main()
 {
 	int a;
 	int vysl;
-	cout << "Zadejte cislo pro vypocet faktorialu: ";
 	cin >> a;
-	for (int foo = 0; foo < 10; foo = foo + 1)
-	{
-		a = foo + a;
-	}
 	if (a < 0) // cin nacitani zaporneho cisla nemusi podporovat
 	{
 		cout << "Faktorial nelze spocitat!\n";
@@ -20,7 +20,7 @@ int main()
 		{
 			vysl = vysl * a;
 		}
-		// cout << "Vysledek je: " << vysl << "\n";
+		cout << vysl;
 	}
 	return 0;
 }
