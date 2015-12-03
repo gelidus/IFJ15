@@ -4,9 +4,9 @@
 
 int main() {
 
-  if(2 * 2 < 5 + 2) {
-   if(3 != 2) {
-    cout << "correct ";
+  if(2 < 3) {
+   if(2 * 2 < 5 + 2) {
+    cout << "correct";
    }
    else {
     cout << "incorrect";

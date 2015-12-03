@@ -1,0 +1,12 @@
+/*@outputs
+"correct"
+*/
+
+int main() {
+    if(3<=3){
+        cout << "correct";
+    }
+    else {
+
+    }
+}
