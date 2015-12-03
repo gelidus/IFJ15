@@ -1,0 +1,9 @@
+// spatny typ symbolu
+int foo() {
+    return 4
+}
+
+int main() {
+    foo = 5;
+    return 5;
+}

@@ -1,0 +1,8 @@
+// zadny main
+int man() {
+    return 5;
+}
+
+int min() {
+    return 3;
+}
