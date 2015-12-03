@@ -118,6 +118,10 @@ void InterpretAssign(ASTNode *statement) {
 	// left is id with name and type
 	// right is expression assigned
 	Variable *result = EvaluateExpression(statement->right);
+	if (result == NULL) {
+		throw_error(CODE_ERROR_SEMANTIC, "[Interpret][Expression] Expression could not be evaluated");
+	}
+
 	Variable* current = NULL;
 	string* var_name = NULL;
 	switch (statement->left->type) {
