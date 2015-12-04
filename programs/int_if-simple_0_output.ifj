@@ -13,7 +13,7 @@ int main() {
   }
 
   int a = 3;
-  if (5 / a > 4 * a) {
+  if (5 /a > 4 * a) {
     cout << "incorrect";
   }
   else {
