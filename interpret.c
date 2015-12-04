@@ -177,12 +177,14 @@ void InterpretAssign(ASTNode *statement) {
 }
 
 void InterpretIf(ASTNode *ifstatement) {
+	scope_start(scopes);
 	Variable* condition_result = EvaluateExpression(ifstatement->d.condition);
 
 	ASTNode *block = condition_result->data.bool_data? ifstatement->left: ifstatement->right;
 
 	Variable* return_val = gc_malloc(sizeof(Variable));
 	InterpretList(block->d.list, return_val);
+	scope_end(scopes);
 }
 
 Variable* InterpretFunctionCall(ASTNode *call) {
