@@ -1,4 +1,0 @@
-int main() {
-    int c = "\x22";
-    return 5;
-}

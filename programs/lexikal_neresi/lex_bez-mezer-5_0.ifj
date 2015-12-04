@@ -1,8 +1,0 @@
-// bez mezer kolem veci, ale melo by to byt validni
-
-int main() {
-    for(int a=5-3;a<4;a=1+5){a=2+3;}
-    a=4*5;
-    int d=5;
-    return 6;
-}

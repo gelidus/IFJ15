@@ -1,4 +1,0 @@
-int main() {
-    int c = "\xFF";
-    return 5;
-}

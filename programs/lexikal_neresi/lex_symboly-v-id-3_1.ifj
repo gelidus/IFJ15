@@ -1,2 +1,0 @@
-// zvlastni id
-int (i = 4; //lexikal nezna kontext okoli, zavorku vyhodnoti zvlast a promennou

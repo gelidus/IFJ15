@@ -1,4 +1,4 @@
 int main()
 {
-double /a; //
+double /a; //lexikal nezna kontext okoli
 }

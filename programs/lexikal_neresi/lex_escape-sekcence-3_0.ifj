@@ -1,4 +1,0 @@
-int main() {
-    int c = "ahoj'sve\n\t\n\\hh";
-    return 5;
-}
