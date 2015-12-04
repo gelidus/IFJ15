@@ -1,0 +1,11 @@
+
+int hash(int x) {
+    return x * 3 + 4;
+}
+
+int main() {
+    int a;
+    a = hash(5 + 2);
+
+    cout << a;
+}
