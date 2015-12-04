@@ -68,6 +68,8 @@ void InterpretRun() {
 }
 
 void InterpretNode(ASTNode *node) {
+	Variable* return_val = gc_malloc(sizeof(Variable));
+
 	switch(node->type) {
 		// retrieve the node from the list
 		case AST_ASSIGN:
@@ -95,6 +97,10 @@ void InterpretNode(ASTNode *node) {
 		case AST_FOR:
 			InterpretFor(node);
 			break;
+		case AST_BLOCK:
+			scope_start(scopes);
+			InterpretList(node->d.list, return_val);
+			scope_end(scopes);
 		case AST_NONE:
 			// Empty Statement can happen from trailing semicolons after the expressions.
 			// Warn: This is hotfix
@@ -105,7 +111,7 @@ void InterpretNode(ASTNode *node) {
 }
 
 void InterpretVarCreation(ASTNode *var) {
-	if (get_symbol(scopes, var->right->d.string_data) != NULL) {
+	if (!is_creatable(scopes, var->right->d.string_data)) {
 		throw_error(CODE_ERROR_SEMANTIC, "Variable redefinition");
 	}
 

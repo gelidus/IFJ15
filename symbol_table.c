@@ -20,6 +20,13 @@ struct symbol_table * init_table()
     return table;
 }
 
+
+bool is_creatable(struct symbol_table * table, string *key) {
+    Stack *current = StackTop(table->stack);
+    void * symbol = get_item((struct hash_table*)current, key);
+    return symbol == NULL;
+}
+
 // zavolat kdyz se zacne novy scope - v kazdem bloku instrukci (AST_LIST)!
 void scope_start(struct symbol_table * symbol_table)
 {
