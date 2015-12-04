@@ -31,11 +31,9 @@ void InterpretList(ASTList *list);
 
 void InterpretAssign(ASTNode* statement);
 
-void InterpretReturn(ASTNode* ret);
-
 void InterpretIf(ASTNode* ifstatement);
 
-void InterpretFunctionCall(ASTNode*call);
+Variable* InterpretFunctionCall(ASTNode*call);
 
 void InterpretFor(ASTNode* node);
 

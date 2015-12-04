@@ -72,9 +72,6 @@ void InterpretNode(ASTNode *node) {
 		case AST_ASSIGN:
 			InterpretAssign(node);
 			break;
-		case AST_RETURN:
-			InterpretReturn(node);
-			break;
 		case AST_CALL:
 			InterpretFunctionCall(node);
 			break;
@@ -163,10 +160,6 @@ void InterpretAssign(ASTNode *statement) {
 	current->data = result->data;
 }
 
-void InterpretReturn(ASTNode *ret) {
-	// TODO: return the value to the stack
-}
-
 void InterpretIf(ASTNode *ifstatement) {
 	Variable* condition_result = EvaluateExpression(ifstatement->d.condition);
 
@@ -174,9 +167,10 @@ void InterpretIf(ASTNode *ifstatement) {
 	InterpretList(block->d.list);
 }
 
-void InterpretFunctionCall(ASTNode *call) {
+Variable* InterpretFunctionCall(ASTNode *call) {
 	if (call->d.list == NULL || call->d.list->elem == NULL) {
-		return; // function is empty
+		// TODO: if function should return value, semantic error
+		return NULL; // function is empty
 	}
 
 	ASTNode* func = FindFunction(call->d.string_data);
@@ -324,8 +318,7 @@ Variable* EvaluateExpression(ASTNode *expr) {
 		// the expression is variable, return the variable value
 		result = get_symbol(scopes, expr->d.string_data);
 	} else if (expr->type == AST_CALL) {
-		// TODO: Interpret the function call in the expression
-		//InterpretFunctionCall(expr);
+		result = InterpretFunctionCall(expr);
 	}
 
 	return result;
