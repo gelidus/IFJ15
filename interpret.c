@@ -197,13 +197,10 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Calling function that was not defined");
 	}
 
-	// TODO Evaluate expressions that were passed
-	// TODO check if the input arguments are the same size as function arguments
-
 	scope_start(scopes);
 
 	ASTList* arg = func->left->d.list;
-	for(ASTList* it = call->left->d.list; it != NULL; it = it->next, arg = arg->next) {
+	for(ASTList* it = call->left->d.list; it != NULL && it->elem != NULL; it = it->next, arg = arg->next) {
 		// this is the symbol that is bein passed to the function
 		Variable* symbol = EvaluateExpression(it->elem);
 		// we need to copy this symbol to the current scope with name provided by function
@@ -278,15 +275,14 @@ enum ast_var_type GetVarTypeFromLiteral(enum ast_literal_type type) {
 }
 
 Variable* EvaluateExpression(ASTNode *expr) {
-	assert(expr);
-	// unpack if the expression is packed
-	if (expr->type == AST_EXPRESSION) {
-		expr = expr->left;
-	}
-
 	// empty epxression
 	if (expr == NULL) {
 		return NULL;
+	}
+
+	// unpack if the expression is packed
+	if (expr->type == AST_EXPRESSION) {
+		expr = expr->left;
 	}
 
 	Variable* result = NULL;
