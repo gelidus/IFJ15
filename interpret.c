@@ -67,8 +67,7 @@ void InterpretRun() {
 	scope_end(scopes);
 }
 
-void InterpretNode(ASTNode *node) {
-	Variable* return_val = gc_malloc(sizeof(Variable));
+void InterpretNode(ASTNode* node, Variable* return_val) {
 
 	switch(node->type) {
 		// retrieve the node from the list
@@ -83,7 +82,7 @@ void InterpretNode(ASTNode *node) {
 			EvaluateExpression(node->left);
 			break;
 		case AST_IF:
-			InterpretIf(node);
+			InterpretIf(node, return_val);
 			break;
 		case AST_COUT:
 			InterpretCout(node);
@@ -95,7 +94,7 @@ void InterpretNode(ASTNode *node) {
 			InterpretVarCreation(node);
 			break;
 		case AST_FOR:
-			InterpretFor(node);
+			InterpretFor(node, return_val);
 			break;
 		case AST_BLOCK:
 			scope_start(scopes);
@@ -133,7 +132,7 @@ void InterpretList(ASTList* list, Variable* return_val) {
 	do {
 		if (list->elem->type != AST_RETURN) {
 			// interpret node on current leaf
-			InterpretNode(list->elem);
+			InterpretNode(list->elem, return_val);
 		} else {
 			// handle return
 			Variable *ret = EvaluateExpression(list->elem->left);
@@ -142,7 +141,7 @@ void InterpretList(ASTList* list, Variable* return_val) {
 		}
 		// change leaf to next
 		list = list->next;
-	} while (list != NULL);
+	} while (list != NULL && return_val->data_type == AST_VAR_NULL);
 }
 
 void InterpretAssign(ASTNode *statement) {
@@ -176,14 +175,14 @@ void InterpretAssign(ASTNode *statement) {
 	current->data = result->data;
 }
 
-void InterpretIf(ASTNode *ifstatement) {
+void InterpretIf(ASTNode *ifstatement, Variable* return_val) {
 	scope_start(scopes);
 	Variable* condition_result = EvaluateExpression(ifstatement->d.condition);
 
 	ASTNode *block = condition_result->data.bool_data? ifstatement->left: ifstatement->right;
 
-	Variable* return_val = gc_malloc(sizeof(Variable));
 	InterpretList(block->d.list, return_val);
+
 	scope_end(scopes);
 }
 
@@ -226,29 +225,27 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 	return return_val;
 }
 
-void InterpretFor(ASTNode *node) {
+void InterpretFor(ASTNode *node, Variable* return_val) {
 	scope_start(scopes);
 
 	ASTNode* first_block = node->d.list->elem; // first block
 	ASTNode* second_block = node->d.list->next->elem; // second block
 	ASTNode* third_block = node->d.list->next->next->elem; // third block
 
-	InterpretNode(first_block);
+	InterpretNode(first_block, return_val);
 
 	Variable *condition = EvaluateExpression(second_block);
 	if (condition->data_type != AST_VAR_BOOL) {
 		throw_error(CODE_ERROR_SEMANTIC, "[Interpret][For] Second field expects boolean result");
 	}
 
-	while(condition->data.bool_data) {
+	while(condition->data.bool_data && return_val->data_type == AST_VAR_NULL) {
 		scope_start(scopes);
 		// block is in the left node
-		// TODO: add return variable
-		Variable* return_val = gc_malloc(sizeof(Variable));
 		InterpretList(node->left->d.list, return_val);
 
 		// interpret third block
-		InterpretNode(third_block);
+		InterpretNode(third_block, return_val);
 
 		// get the condition result
 		condition = EvaluateExpression(second_block);

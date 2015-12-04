@@ -23,7 +23,7 @@ void InterpretInit(ASTList* functions);
 // will be called afterwards
 void InterpretRun();
 
-void InterpretNode(ASTNode *node);
+void InterpretNode(ASTNode *node, Variable* return_val);
 
 void InterpretVarCreation(ASTNode* var);
 
@@ -31,11 +31,11 @@ void InterpretList(ASTList *list, Variable* return_val);
 
 void InterpretAssign(ASTNode* statement);
 
-void InterpretIf(ASTNode* ifstatement);
+void InterpretIf(ASTNode* ifstatement, Variable* return_val);
 
-Variable* InterpretFunctionCall(ASTNode*call);
+Variable* InterpretFunctionCall(ASTNode* call);
 
-void InterpretFor(ASTNode* node);
+void InterpretFor(ASTNode* node, Variable* return_val);
 
 enum ast_var_type GetVarTypeFromLiteral(enum ast_literal_type type);
 
