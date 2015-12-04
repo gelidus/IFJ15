@@ -1,3 +1,6 @@
+/*@outputs
+"25"
+*/
 
 int hash(int x) {
     return x * 3 + 4;
