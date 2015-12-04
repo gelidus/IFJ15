@@ -323,6 +323,9 @@ Variable* EvaluateExpression(ASTNode *expr) {
 	} else if (expr->type == AST_VAR) {
 		// the expression is variable, return the variable value
 		result = get_symbol(scopes, expr->d.string_data);
+	} else if (expr->type == AST_CALL) {
+		// TODO: Interpret the function call in the expression
+		//InterpretFunctionCall(expr);
 	}
 
 	return result;

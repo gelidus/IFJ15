@@ -622,7 +622,7 @@ bool parse_function_call(struct ast_node* node) {
         ast_list_insert(args->d.list, pass);
     }
 
-    //expect(RPAR);
+    expect(RPAR);
 
     return true;
 }
@@ -674,8 +674,11 @@ bool parse_expression(struct ast_node* node) {
             case '<': {
                 StackPush(&stack, next_node);
 
-                // prepare the next token of the expression
-                get_token(); next_node = GetASTNodeFromToken(d->token);
+                if (next_node->type != AST_CALL) {
+                    // prepare the next token of the expression
+                    get_token();
+                }
+                next_node = GetASTNodeFromToken(d->token);
                 break;
             }
             case '>': {
