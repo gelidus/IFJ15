@@ -3,7 +3,7 @@
 */
 
 int main() {
-    if(2 != 3){
+    if(2 + 1 != 3 * 6){
         cout << "correct";
     }
     else {

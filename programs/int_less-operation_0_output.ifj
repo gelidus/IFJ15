@@ -3,7 +3,7 @@
 */
 
 int main() {
-    if(2<3){
+    if((2)*((10-5) + 2) <100){
         cout << "correct";
     }
     else {

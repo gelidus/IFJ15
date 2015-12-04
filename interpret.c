@@ -433,9 +433,11 @@ Variable *EvaluateBinaryMult(Variable *left, Variable *right) {
 Variable* EvaluateBinaryDivide(Variable* left, Variable* right) {
 	Variable *result = gc_malloc(sizeof(Variable));
 
-	// TODO: division by zero check
 	switch (left->data_type) {
 		case AST_VAR_INT:
+			if(right->data.numeric_data == 0) {
+				throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Can't divide by zero");
+			}
 			if(right->data_type == AST_VAR_DOUBLE){
 				result->data_type = AST_VAR_DOUBLE;
 			}
@@ -446,6 +448,9 @@ Variable* EvaluateBinaryDivide(Variable* left, Variable* right) {
 			break;
 
 		case AST_VAR_DOUBLE:
+			if(right->data.numeric_data == 0) {
+				throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Can't divide by zero");
+			}
 			result->data.numeric_data = (left->data.numeric_data / right->data.numeric_data);
 			result->data_type = AST_VAR_DOUBLE;
 			break;
@@ -688,7 +693,7 @@ Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right) {
 			if(right->data_type == AST_VAR_DOUBLE) {
 				left->data.numeric_data = (double)(left->data.numeric_data);
 			}
-			if(left->data.numeric_data == right->data.numeric_data) {
+			if(left->data.numeric_data != right->data.numeric_data) {
 				result->data.bool_data = true;
 			}
 			else {
@@ -700,7 +705,7 @@ Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right) {
 		if(right->data_type == AST_VAR_INT) {
 			right->data.numeric_data = (double)(right->data.numeric_data);
 		}
-		if(left->data.numeric_data == right->data.numeric_data) {
+		if(left->data.numeric_data != right->data.numeric_data) {
 			result->data.bool_data = true;
 		}
 		else {

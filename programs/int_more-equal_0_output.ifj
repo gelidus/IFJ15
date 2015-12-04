@@ -3,7 +3,7 @@
 */
 
 int main() {
-    if(3>=3){
+    if(3/2*10 >=3-20/2){
         cout << "correct";
     }
     else {
