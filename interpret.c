@@ -171,7 +171,9 @@ void InterpretIf(ASTNode *ifstatement) {
 	Variable* condition_result = EvaluateExpression(ifstatement->d.condition);
 
 	ASTNode *block = condition_result->data.bool_data? ifstatement->left: ifstatement->right;
-	InterpretList(block->d.list, NULL);
+
+	Variable* return_val = gc_malloc(sizeof(Variable));
+	InterpretList(block->d.list, return_val);
 }
 
 Variable* InterpretFunctionCall(ASTNode *call) {
@@ -230,7 +232,8 @@ void InterpretFor(ASTNode *node) {
 	while(condition->data.bool_data) {
 		// block is in the left node
 		// TODO: add return variable
-		InterpretList(node->left->d.list, NULL);
+		Variable* return_val = gc_malloc(sizeof(Variable));
+		InterpretList(node->left->d.list, return_val);
 
 		// interpret third block
 		InterpretNode(third_block);
