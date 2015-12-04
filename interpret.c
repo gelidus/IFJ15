@@ -61,7 +61,8 @@ void InterpretRun() {
 	}
 
 	scope_start(scopes);
-	InterpretList(func->right->d.list);
+	Variable *return_val = gc_malloc(sizeof(Variable));
+	InterpretList(func->right->d.list, return_val);
 
 	scope_end(scopes);
 }
@@ -115,15 +116,21 @@ void InterpretVarCreation(ASTNode *var) {
 	set_symbol(scopes, var->right->d.string_data, variable);
 }
 
-void InterpretList(ASTList* list) {
+void InterpretList(ASTList* list, Variable* return_val) {
+	return_val->data_type = AST_VAR_NULL;
+
 	// no interpretation for empty list needed
 	if (list->elem == NULL) {
 		return;
 	}
 
 	do {
-		// interpret node on current leaf
-		InterpretNode(list->elem);
+		if (list->elem->type != AST_RETURN) {
+			// interpret node on current leaf
+			InterpretNode(list->elem);
+		} else {
+			// handle return
+		}
 		// change leaf to next
 		list = list->next;
 	} while (list != NULL);
@@ -164,7 +171,7 @@ void InterpretIf(ASTNode *ifstatement) {
 	Variable* condition_result = EvaluateExpression(ifstatement->d.condition);
 
 	ASTNode *block = condition_result->data.bool_data? ifstatement->left: ifstatement->right;
-	InterpretList(block->d.list);
+	InterpretList(block->d.list, NULL);
 }
 
 Variable* InterpretFunctionCall(ASTNode *call) {
@@ -195,11 +202,15 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 		set_symbol(scopes, arg->elem->d.string_data, this_symbol);
 	}
 
+	Variable* return_val = gc_malloc(sizeof(Variable));
 	// list of statements that should be interpreted
 	// is in the right leaf of the function
-	InterpretList(func->right->d.list);
+	ASTList* list = func->right->d.list;
+	InterpretList(list, return_val);
 
 	scope_end(scopes);
+
+	return return_val;
 }
 
 void InterpretFor(ASTNode *node) {
@@ -218,7 +229,8 @@ void InterpretFor(ASTNode *node) {
 
 	while(condition->data.bool_data) {
 		// block is in the left node
-		InterpretList(node->left->d.list);
+		// TODO: add return variable
+		InterpretList(node->left->d.list, NULL);
 
 		// interpret third block
 		InterpretNode(third_block);
