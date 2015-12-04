@@ -182,10 +182,11 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 	// TODO check if the input arguments are the same size as function arguments
 
 	scope_start(scopes);
+
 	ASTList* arg = func->left->d.list;
-	for(ASTList* it = call->d.list; it != NULL; it = it->next, arg = arg->next) {
+	for(ASTList* it = call->left->d.list; it != NULL; it = it->next, arg = arg->next) {
 		// this is the symbol that is bein passed to the function
-		Variable* symbol = get_symbol(scopes, it->elem->d.string_data);
+		Variable* symbol = EvaluateExpression(it->elem);
 		// we need to copy this symbol to the current scope with name provided by function
 		Variable* this_symbol = gc_malloc(sizeof(Variable));
 		this_symbol->data = symbol->data;
@@ -196,7 +197,7 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 
 	// list of statements that should be interpreted
 	// is in the right leaf of the function
-	InterpretList(call->right->d.list);
+	InterpretList(func->right->d.list);
 
 	scope_end(scopes);
 }
