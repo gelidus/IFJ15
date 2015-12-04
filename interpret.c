@@ -130,6 +130,9 @@ void InterpretList(ASTList* list, Variable* return_val) {
 			InterpretNode(list->elem);
 		} else {
 			// handle return
+			Variable *ret = EvaluateExpression(list->elem->left);
+			return_val->data_type = ret->data_type;
+			return_val->data = ret->data;
 		}
 		// change leaf to next
 		list = list->next;
@@ -230,6 +233,7 @@ void InterpretFor(ASTNode *node) {
 	}
 
 	while(condition->data.bool_data) {
+		scope_start(scopes);
 		// block is in the left node
 		// TODO: add return variable
 		Variable* return_val = gc_malloc(sizeof(Variable));
@@ -243,6 +247,7 @@ void InterpretFor(ASTNode *node) {
 		if (condition->data_type != AST_VAR_BOOL) {
 			throw_error(CODE_ERROR_SEMANTIC, "[Interpret][For] Second field expects boolean result");
 		}
+		scope_end(scopes);
 	};
 
 	scope_end(scopes);
