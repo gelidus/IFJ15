@@ -45,6 +45,7 @@ enum ast_node_type
     AST_FUNCTION_LIST,
     AST_FUNCTION_ARGUMENTS,
     AST_BODY,
+    AST_BLOCK,
 };
 
 enum ast_literal_type
