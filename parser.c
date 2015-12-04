@@ -151,6 +151,7 @@ bool parse_statement(struct ast_node* node)
         EXPECT(token_left_brace());
         EXPECT(parse_program_block(node));
         EXPECT(token_right_brace());
+        node->type = AST_BLOCK;
     // FALLBACKS:
     } else if (token_empty()) {
         // prazdny statement je validni
