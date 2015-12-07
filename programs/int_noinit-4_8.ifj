@@ -1,0 +1,15 @@
+
+int fun() {
+	int c = 5;
+	return c;
+}
+
+int main() {
+	string a = "";
+	int b = 5 + 6 + 9 * 10;
+	int c;
+
+	fun();
+
+	cout << a << b << c;
+}

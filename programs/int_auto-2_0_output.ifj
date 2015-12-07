@@ -1,0 +1,9 @@
+/*@outputs
+"abcdefg"
+*/
+
+int main() {
+	auto a = "abcdefg";
+	cout << a;
+	return 0;
+}

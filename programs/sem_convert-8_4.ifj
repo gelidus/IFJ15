@@ -1,0 +1,11 @@
+
+int fun() {
+	int b = 10;
+	return a + b;
+}
+
+int main() {
+	int a = 5;
+	int b = fun();
+	return 0;
+}

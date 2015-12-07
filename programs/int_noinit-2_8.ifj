@@ -1,0 +1,12 @@
+
+int fun() {
+	return 5;
+}
+
+int main() {
+	int a;
+	int b = fun();
+
+	int c = a + b;
+	return 0;
+}

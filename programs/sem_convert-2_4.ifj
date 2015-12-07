@@ -1,0 +1,9 @@
+int main () {
+	int a = 5;
+	int b = 10;
+	string c = "lol";
+
+	double h = a + b + c;
+
+	return a;
+}

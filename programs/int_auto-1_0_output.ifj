@@ -1,0 +1,9 @@
+/*@outputs
+"5"
+*/
+
+int main() {
+	auto a = 5;
+	cout << a;
+	return 0;
+}

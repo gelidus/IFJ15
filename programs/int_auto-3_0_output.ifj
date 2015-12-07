@@ -1,0 +1,13 @@
+/*@outputs
+"15.25"
+*/
+
+int fun() {
+	return 5;
+}
+
+int main () {
+	auto b = 10.25 + fun();
+	cout << b;
+	return 0;
+}

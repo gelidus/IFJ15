@@ -1,0 +1,10 @@
+
+int fun() {
+	return "ab";
+}
+
+int main() {
+	int a = fun();
+
+	return a;
+}

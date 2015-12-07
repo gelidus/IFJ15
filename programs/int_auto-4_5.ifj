@@ -1,0 +1,5 @@
+
+int main() {
+	auto a;
+	return 0;
+}
