@@ -1,0 +1,9 @@
+/*@outputs
+"8"
+*/
+
+int main() {
+	string s = "abcd1234";
+	cout << length(s);
+	return 0;
+}

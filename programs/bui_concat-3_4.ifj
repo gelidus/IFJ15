@@ -1,0 +1,6 @@
+int main() {
+	string a = "abc";
+	int b = 5;
+	string res = concat(a, b);
+	return 0;
+}

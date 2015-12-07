@@ -1,0 +1,9 @@
+/*@outputs
+"4"
+*/
+
+int main() {
+	string s = "abcd";
+	cout << length(s);
+	return 0;
+}

@@ -1,0 +1,12 @@
+/*@outputs
+"abcdefgh"
+*/
+
+string fun() {
+	return "efgh";
+}
+
+int main() {
+	cout << concat("abcd", fun());
+	return 0;
+}

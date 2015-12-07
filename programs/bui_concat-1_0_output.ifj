@@ -1,0 +1,13 @@
+/*@outputs
+"abcdefgh"
+*/
+
+int main() {
+	string a = "abcd";
+	string b = "efgh";
+	string c = concat(a, b);
+
+	cout << c;
+
+	return 0;
+}

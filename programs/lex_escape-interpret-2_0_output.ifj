@@ -1,0 +1,9 @@
+/*@outputs
+"\n\t\t"
+*/
+
+int main() {
+	string s = "\n\t\t";
+	cout << s;
+	return 0;
+}
