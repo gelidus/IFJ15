@@ -24,7 +24,7 @@ void PrepareFunctions(ASTList* fcns) {
 	do {
 		ASTNode* func = fcns->elem;
 		// check for function redefinitions
-		if (FindFunction(func->d.string_data) != NULL || IsBuiltin(func)) {
+		if (FindFunction(func->d.string_data) != NULL || IsBuiltin(func->d.string_data)) {
 			throw_error(CODE_ERROR_SEMANTIC, "[Interpret][Redefinition] Function redefinition");
 		}
 
@@ -195,8 +195,7 @@ void InterpretIf(ASTNode *ifstatement, Variable* return_val) {
 	scope_end(scopes);
 }
 
-bool IsBuiltin(ASTNode *call) {
-	string* name = call->d.string_data;
+bool IsBuiltin(string *name) {
 	for (int i = 0; i < kBuiltinsCount; i++) {
 		if (equals(name, kBuiltins[i])) {
 			return true;
@@ -210,6 +209,10 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 	if (call->d.list == NULL || call->d.list->elem == NULL) {
 		// TODO: if function should return value, semantic error
 		return NULL; // function is empty
+	}
+
+	if (IsBuiltin(call->d.string_data)) {
+		return InterpretBuiltinCall(call);
 	}
 
 	ASTNode* func = FindFunction(call->d.string_data);

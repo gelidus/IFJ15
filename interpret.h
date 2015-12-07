@@ -33,7 +33,7 @@ void InterpretAssign(ASTNode* statement);
 
 void InterpretIf(ASTNode* ifstatement, Variable* return_val);
 
-bool IsBuiltin(ASTNode* call);
+bool IsBuiltin(string* name);
 
 Variable* InterpretFunctionCall(ASTNode* call);
 
