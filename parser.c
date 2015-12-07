@@ -621,6 +621,10 @@ bool parse_function_call(struct ast_node* node) {
 
         // add passed argument to the list
         ast_list_insert(args->d.list, pass);
+
+        if (accept(COLON)) {
+            expect(COLON);
+        }
     }
 
     expect(RPAR);
