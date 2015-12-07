@@ -33,11 +33,17 @@ void InterpretAssign(ASTNode* statement);
 
 void InterpretIf(ASTNode* ifstatement, Variable* return_val);
 
+bool IsBuiltin(ASTNode* call);
+
 Variable* InterpretFunctionCall(ASTNode* call);
+
+Variable* InterpretBuiltinCall(ASTNode* call);
 
 void InterpretFor(ASTNode* node, Variable* return_val);
 
 enum ast_var_type GetVarTypeFromLiteral(enum ast_literal_type type);
+
+bool AreCompatibleTypes(enum ast_var_type t1, enum ast_var_type t2);
 
 Variable* EvaluateExpression(ASTNode* node);
 

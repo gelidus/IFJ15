@@ -11,6 +11,9 @@
 struct symbol_table* scopes;
 Stack functions;
 
+const int kBuiltinsCount = 5;
+string* kBuiltins[5];
+
 // PrepareFunctions will populate the stack of
 // functions, checking for redefinitions.
 void PrepareFunctions(ASTList* fcns) {
@@ -21,7 +24,7 @@ void PrepareFunctions(ASTList* fcns) {
 	do {
 		ASTNode* func = fcns->elem;
 		// check for function redefinitions
-		if (FindFunction(func->d.string_data) != NULL) {
+		if (FindFunction(func->d.string_data) != NULL || IsBuiltin(func)) {
 			throw_error(CODE_ERROR_SEMANTIC, "[Interpret][Redefinition] Function redefinition");
 		}
 
@@ -49,6 +52,12 @@ ASTNode *FindFunction(string *name) {
 }
 
 void InterpretInit(ASTList* fcns) {
+	kBuiltins[0] = new_str("concat");
+	kBuiltins[1] = new_str("length");
+	kBuiltins[2] = new_str("substr");
+	kBuiltins[3] = new_str("find");
+	kBuiltins[4] = new_str("sort");
+
 	scopes = init_table();
 	StackInit(&functions);
 	PrepareFunctions(fcns);
@@ -186,6 +195,17 @@ void InterpretIf(ASTNode *ifstatement, Variable* return_val) {
 	scope_end(scopes);
 }
 
+bool IsBuiltin(ASTNode *call) {
+	string* name = call->d.string_data;
+	for (int i = 0; i < kBuiltinsCount; i++) {
+		if (equals(name, kBuiltins[i])) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 Variable* InterpretFunctionCall(ASTNode *call) {
 	if (call->d.list == NULL || call->d.list->elem == NULL) {
 		// TODO: if function should return value, semantic error
@@ -220,6 +240,10 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 	scope_end(scopes);
 
 	return return_val;
+}
+
+Variable *InterpretBuiltinCall(ASTNode *call) {
+	return NULL;
 }
 
 void InterpretFor(ASTNode *node, Variable* return_val) {

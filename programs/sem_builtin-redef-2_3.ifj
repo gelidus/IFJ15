@@ -1,0 +1,10 @@
+
+string sort(string ab) {
+	return ab;
+}
+
+int main() {
+	string a = "aaaaa";
+	string sorted = sort(a);
+	return 0;
+}
