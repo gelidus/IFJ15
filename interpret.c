@@ -169,7 +169,7 @@ void InterpretAssign(ASTNode *statement) {
 		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Variable assigning failed due to missing variable");
 	}
 	if (current->data_type != result->data_type) {
-		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Assigning bad value to the variable");
+		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Assigning bad value to the variable");
 	}
 
 	current->data = result->data;
@@ -274,6 +274,14 @@ enum ast_var_type GetVarTypeFromLiteral(enum ast_literal_type type) {
 	return AST_VAR_NULL;
 }
 
+bool AreCompatibleTypes(enum ast_var_type t1, enum ast_var_type t2) {
+	if ((t1 == AST_VAR_INT && t2 == AST_VAR_DOUBLE) || (t1 == AST_VAR_DOUBLE && t2 == AST_VAR_INT)) {
+		return true;
+	}
+
+	return t1 == t2;
+}
+
 Variable* EvaluateExpression(ASTNode *expr) {
 	// empty epxression
 	if (expr == NULL) {
@@ -299,8 +307,8 @@ Variable* EvaluateExpression(ASTNode *expr) {
 		Variable *left = EvaluateExpression(expr->left);
 		Variable *right = EvaluateExpression(expr->right);
 
-		if (left->data_type != right->data_type) {
-			throw_error(CODE_ERROR_SEMANTIC, "[Interpret][Expression] Provided values are of different types");
+		if (!AreCompatibleTypes(left->data_type, right->data_type)) {
+			throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret][Expression] Provided values are of different types");
 		}
 
 		// expression is binary operation, calculate based on the operator
