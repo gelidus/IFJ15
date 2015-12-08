@@ -29,6 +29,8 @@ failed=0
 failed_lex=0
 failed_syn=0
 failed_int=0
+failed_sem=0
+failed_bui=0
 
 for file in $files
 do
@@ -86,6 +88,10 @@ do
                     ((failed_syn++))
                 elif [[ $module_name = "int" ]]; then
                     ((failed_int++))
+                elif [[ $module_name = "bui" ]]; then
+                    ((fauiled_bui++))
+                elif [[ $module_name = "sym" ]]; then
+                    ((failed_sym++))
                 fi
 
                 echo -e "\t$red_color TEST $test_name FAILED:"
@@ -108,6 +114,8 @@ if [[ $failed -gt 0 ]]; then
     echo -e "\t$red_color$failed_lex$reset_color in module LEX"
     echo -e "\t$red_color$failed_syn$reset_color in module SYN"
     echo -e "\t$red_color$failed_int$reset_color in module INT"
+    echo -e "\t$red_color$failed_int$reset_color in module SEM"
+    echo -e "\t$red_color$failed_int$reset_color in module BUI"
 else
     echo -e"$green_color  ## ALL TESTS PASSED :^)) ##  $reset_color"
 fi
