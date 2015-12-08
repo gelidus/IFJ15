@@ -177,6 +177,11 @@ void InterpretAssign(ASTNode *statement) {
 	if (current == NULL) {
 		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Variable assigning failed due to missing variable");
 	}
+	// handle auto keyword
+	if (current->data_type == AST_VAR_AUTO) {
+		current->data_type = result->data_type;
+		current->data = result->data;
+	}
 	if (current->data_type != result->data_type) {
 		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Assigning bad value to the variable");
 	}
