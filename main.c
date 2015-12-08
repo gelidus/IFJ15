@@ -36,6 +36,11 @@ int main(int argc, char *argv[]) {
 	// otevrem soubor
 	set_input(argv[1]);
 
+#ifdef LEX_TEST
+    do {
+		get_token();
+    } while (d->token->type != EOF);
+#else
 	// parse
 	parser_prepare(d);
 	d = parser_run();
@@ -47,6 +52,7 @@ int main(int argc, char *argv[]) {
 	InterpretInit(d->tree->d.list);
 	// interpret the list
 	InterpretRun();
+#endif
 
 	return 0;
 }
