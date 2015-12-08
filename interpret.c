@@ -796,6 +796,7 @@ void InterpretCout(ASTNode *cout) {
 		ASTNode* elem = list->elem;
 		Variable* result = EvaluateExpression(elem);
 		if (result == NULL) {
+			list = list->next;
 			continue; // empty expression
 		}
 
