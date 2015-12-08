@@ -126,6 +126,7 @@ void InterpretVarCreation(ASTNode *var) {
 	Variable *variable = gc_malloc(sizeof(Variable));
 	variable->data_type = var->left->var_type;
 	variable->data.numeric_data = 0; // null the data
+	variable->initialized = false;
 
 	set_symbol(scopes, var->right->d.string_data, variable);
 }
@@ -186,6 +187,9 @@ void InterpretAssign(ASTNode *statement) {
 		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Assigning bad value to the variable");
 	}
 
+	// variable was assigned a value
+	current->initialized = true;
+
 	current->data = result->data;
 }
 
@@ -235,6 +239,7 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 		Variable* this_symbol = gc_malloc(sizeof(Variable));
 		this_symbol->data = symbol->data;
 		this_symbol->data_type = symbol->data_type;
+		this_symbol->initialized = true;
 
 		set_symbol(scopes, arg->elem->d.string_data, this_symbol);
 	}
@@ -334,6 +339,7 @@ Variable* EvaluateExpression(ASTNode *expr) {
 		result = gc_malloc(sizeof(Variable));;
 		result->data_type = GetVarTypeFromLiteral(expr->literal);
 		result->data = expr->d;
+		result->initialized = true;
 	} else if (expr->type == AST_BINARY_OP) {
 		// evaluate expressions on both sides
 		Variable *left = EvaluateExpression(expr->left);
@@ -341,6 +347,10 @@ Variable* EvaluateExpression(ASTNode *expr) {
 
 		if (!AreCompatibleTypes(left->data_type, right->data_type)) {
 			throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret][Expression] Provided values are of different types");
+		}
+
+		if (!(left->initialized && right->initialized)) {
+			throw_error(CODE_ERROR_UNINITIALIZED_ID, "[Interpret][Expression] Trying to use uninitialized variable");
 		}
 
 		// expression is binary operation, calculate based on the operator
@@ -376,6 +386,8 @@ Variable* EvaluateExpression(ASTNode *expr) {
 				result = EvaluateBinaryNotEqual(left, right);
 				break;
 		}
+
+		result->initialized = true;
 	} else if (expr->type == AST_VAR) {
 		// the expression is variable, return the variable value
 		result = get_symbol(scopes, expr->d.string_data);

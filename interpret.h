@@ -9,6 +9,7 @@
 typedef struct {
     enum ast_var_type data_type;
     union ast_node_data data;
+		bool initialized;
 } Variable;
 
 /*Interpret functions*/
