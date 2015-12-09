@@ -1,0 +1,11 @@
+/*@outputs
+"DJKSbdfnz"
+*/
+
+string str(string a){
+    return a+"JdfSDnK"
+}
+
+int main() {
+    string a = sort(str("bz"))
+}
