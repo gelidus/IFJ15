@@ -232,7 +232,8 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Calling function that was not defined");
 	}
 
-	scope_start(scopes, SCOPE_FUNCTION);
+	// first set this to block, so we can add variables that are in the outer block
+	scope_start(scopes, SCOPE_BLOCK);
 
 	ASTList* arg = func->left->d.list;
 	for(ASTList* it = call->left->d.list; it != NULL && it->elem != NULL; it = it->next, arg = arg->next) {
@@ -246,6 +247,9 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 
 		set_symbol(scopes, arg->elem->d.string_data, this_symbol);
 	}
+
+	// correct the scope type to function
+	((struct hash_table*)StackTop(scopes->stack))->scope_type = SCOPE_FUNCTION;
 
 	Variable* return_val = gc_malloc(sizeof(Variable));
 	// list of statements that should be interpreted
