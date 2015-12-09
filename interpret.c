@@ -915,7 +915,7 @@ Variable * BuiltInFind(ASTList * args) {
 
 	result->data_type= AST_VAR_INT;
 	result->data.numeric_data =  find(str1->data.string_data->str, str2->data.string_data->str);
-	result->data.string_data = new_str( substr(arg1->data.string_data->str, (int)arg2->data.numeric_data, (int)arg3->data.numeric_data) );
+
 	return result;
 }
 

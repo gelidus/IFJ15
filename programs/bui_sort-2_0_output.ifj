@@ -1,11 +1,12 @@
 /*@outputs
-"DJKSbdfnz"
+"DJKSadfnz"
 */
 
 string str(string a){
-    return a+"JdfSDnK"
+    return concat(a,"JdfSDnK");
 }
 
 int main() {
-    string a = sort(str("bz"))
+    string a = sort(str("az"));
+    cout << a;
 }
