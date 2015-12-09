@@ -665,11 +665,11 @@ bool parse_expression(struct ast_node* node) {
 
             // override the next node by the whole func call
             next_node = fnc_node;
-        }
-
-        if (GetStackTopOperator(&stack, true) == NULL && accept(RPAR)) {
-            if (PRINT) printf("\texpr parser: found right par next_node is null\n");
-            next_node = NULL;
+        } else {
+            if (GetStackTopOperator(&stack, true) == NULL && accept(RPAR)) {
+                if (PRINT) printf("\texpr parser: found right par next_node is null\n");
+                next_node = NULL;
+            }
         }
 
         char precendenceCharacter = GetPrecendence(GetStackTopOperator(&stack, false), next_node);
