@@ -67,6 +67,8 @@ Variable *EvaluateBinaryEqual(Variable *left, Variable *right);
 
 Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right);
 
+Variable * BuiltInConcat(ASTList * args);
+
 
 void InterpretCout(ASTNode* cout);
 

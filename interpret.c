@@ -4,6 +4,8 @@
 #include "errors.h"
 #include "symbol_table.h"
 #include "gc.h"
+#include "ial.h"
+#include "string.h"
 
 #define ASTNode struct ast_node // definition of ast node for definition file
 #define ASTList struct ast_list
@@ -246,6 +248,12 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 }
 
 Variable *InterpretBuiltinCall(ASTNode *call) {
+	string * func_name = call->d.string_data;
+	ASTList* it = call->left->d.list;
+
+	if(equals(func_name, new_str("concat")) ) {
+		return BuiltInConcat(it);
+	}
 	return NULL;
 }
 
@@ -326,7 +334,7 @@ Variable* EvaluateExpression(ASTNode *expr) {
 	// is copy the literal to the top node as a start
 	if (expr->type == AST_LITERAL) {
 		// expression is literal. Just get the literal type and return value
-		result = gc_malloc(sizeof(Variable));;
+		result = gc_malloc(sizeof(Variable));
 		result->data_type = GetVarTypeFromLiteral(expr->literal);
 		result->data = expr->d;
 	} else if (expr->type == AST_BINARY_OP) {
@@ -784,6 +792,28 @@ Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right) {
 			break;
 	}
 
+	return result;
+}
+
+Variable * BuiltInConcat(ASTList * args) {
+	Variable* result = gc_malloc(sizeof(Variable));
+	Variable * str1 = NULL;
+	Variable * str2 = NULL;
+	if(args->elem->type == AST_CALL) {
+		str1 = InterpretFunctionCall(args->elem);
+	}
+	else if (args->elem->type == AST_EXPRESSION) {
+		str1 = EvaluateExpression(args->elem);
+	}
+	if(args->next->elem->type == AST_CALL) {
+		str2 = InterpretFunctionCall(args->next->elem);
+	}
+	else if (args->next->elem->type == AST_EXPRESSION) {
+		str2 = EvaluateExpression(args->next->elem);
+	}
+
+	result->data_type= AST_VAR_STRING;
+	result->data.string_data =  new_str(concat(str1->data.string_data->str, str2->data.string_data->str));
 	return result;
 }
 
