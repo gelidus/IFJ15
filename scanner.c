@@ -455,19 +455,65 @@ q8: //string OK
 q9: //escaped string OK
 	if(PRINT) printf("q9 escaped string\n");
 	switch(input_char_type) {
-		case WHITE_SPACE:
-			if(input_char == '\n') {
-				throw_error(CODE_ERROR_LEX, "invalid input");
-				break;
-			}
 		case END:
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;			
 		default:
-			save(&tmpData, input_char);
-			read_input();
-			goto q8;  //string
+			if(input_char == 'n' || input_char == 't' || input_char == '\\' || input_char == '"') {
+				save(&tmpData, input_char);
+				read_input();
+				goto q8;  //string
+			} else if(input_char == 'x') {
+				read_input();
+				goto q16;
+			}
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;			
 	}
+	
+q16: //escaped string x
+	switch(input_char_type) {
+		case LETTER:
+			if(input_char < 65 || input_char > 70) {
+				throw_error(CODE_ERROR_LEX, "invalid input");
+				break;					
+			} else if(input_char < 97 || input_char > 102) {
+				throw_error(CODE_ERROR_LEX, "invalid input");
+				break;							
+			}
+		case DIGIT:
+			//ulozit do tmp promenne
+			read_input();
+			goto q17;
+		default:
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;		
+	}
+	
+q17: //escaped string xH
+	switch(input_char_type) {
+		case LETTER:
+			if(input_char < 65 || input_char > 70) {
+				throw_error(CODE_ERROR_LEX, "invalid input");
+				break;					
+			} else if(input_char < 97 || input_char > 102) {
+				throw_error(CODE_ERROR_LEX, "invalid input");
+				break;							
+			}
+		case DIGIT:
+			//ulozit do tmp_char promenne
+			//prepocitat tmp_char promennou
+				//unsigned char c = tmp_char;
+				//printf("%c", c); prepocet umi treba funkce pro tisk printf, je treba najit takovou, ktera to ulozi do promenne
+				//ulozit zase treba do tmp_char
+			//ulozit do vysledneho retezce
+				//save(&tmpData, tmp_char);
+			read_input();
+			goto q8;
+		default:
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;		
+	}	
 
 	return tmpData;
 }
