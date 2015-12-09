@@ -882,7 +882,7 @@ Variable * BuiltInSubstr(ASTList * args) {
 	}
 
 	result->data_type = AST_VAR_STRING;
-<<<<<<< HEAD
+
 	result->data.string_data = new_str( substr(arg1->data.string_data->str, arg2->data.numeric_data, arg3->data.numeric_data) );
 	return result;
 }
@@ -916,9 +916,6 @@ Variable * BuiltInFind(ASTList * args) {
 
 	result->data_type= AST_VAR_INT;
 	result->data.numeric_data =  find(str1->data.string_data->str, str2->data.string_data->str);
-=======
-	result->data.string_data = new_str( substr(arg1->data.string_data->str, (int)arg2->data.numeric_data, (int)arg3->data.numeric_data) );
->>>>>>> 882d04b52a2dbc4b87a8d87ad79043ab1f39cb02
 	return result;
 }
 
