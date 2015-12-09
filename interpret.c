@@ -186,7 +186,7 @@ void InterpretAssign(ASTNode *statement) {
 		current->data_type = result->data_type;
 		current->data = result->data;
 	}
-	if (current->data_type != result->data_type) {
+	if (!AreCompatibleTypes(current->data_type, result->data_type)) {
 		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Assigning bad value to the variable");
 	}
 
@@ -434,7 +434,7 @@ Variable *EvaluateBinaryPlus(Variable *left, Variable *right) {
 			else {
 				result->data_type = AST_VAR_INT;
 			}
-			result->data.numeric_data = (left->data.numeric_data + right->data.numeric_data);
+			result->data.numeric_data = (int)(left->data.numeric_data + right->data.numeric_data);
 			break;
 
 		case AST_VAR_DOUBLE:
@@ -470,7 +470,7 @@ Variable *EvaluateBinaryMinus(Variable *left, Variable *right) {
 			else {
 				result->data_type = AST_VAR_INT;
 			}
-			result->data.numeric_data = (left->data.numeric_data - right->data.numeric_data);
+			result->data.numeric_data = (int)(left->data.numeric_data - right->data.numeric_data);
 			break;
 		case AST_VAR_DOUBLE:
 			if(right->data_type == AST_VAR_INT) {
@@ -504,7 +504,7 @@ Variable *EvaluateBinaryMult(Variable *left, Variable *right) {
 			else {
 				result->data_type = AST_VAR_INT;
 			}
-			result->data.numeric_data = (left->data.numeric_data * right->data.numeric_data);
+			result->data.numeric_data = (int)(left->data.numeric_data * right->data.numeric_data);
 			break;
 
 		case AST_VAR_DOUBLE:
@@ -530,7 +530,7 @@ Variable* EvaluateBinaryDivide(Variable* left, Variable* right) {
 
 	switch (left->data_type) {
 		case AST_VAR_INT:
-			if(right->data.numeric_data == 0) {
+			if((int)right->data.numeric_data == 0) {
 				throw_error(CODE_ERROR_RUNTIME_DIV_BY_0, "[Interpret] Can't divide by zero");
 			}
 			if(right->data_type == AST_VAR_DOUBLE){
@@ -539,7 +539,7 @@ Variable* EvaluateBinaryDivide(Variable* left, Variable* right) {
 			else {
 				result->data_type = AST_VAR_INT;
 			}
-			result->data.numeric_data = (left->data.numeric_data / right->data.numeric_data);
+			result->data.numeric_data = (int)(left->data.numeric_data / right->data.numeric_data);
 			break;
 
 		case AST_VAR_DOUBLE:
