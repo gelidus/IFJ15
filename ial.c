@@ -234,7 +234,6 @@ char* substr(char* s, int i, int n) {
 	}
 	return str->str;
 }
-
 char* concat(char* s1, char* s2) {
 	return (cat_str(new_str(s1), new_str(s2))->str);
 }

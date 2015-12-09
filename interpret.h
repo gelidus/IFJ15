@@ -9,6 +9,7 @@
 typedef struct {
     enum ast_var_type data_type;
     union ast_node_data data;
+		bool initialized;
 } Variable;
 
 /*Interpret functions*/
@@ -67,8 +68,13 @@ Variable *EvaluateBinaryEqual(Variable *left, Variable *right);
 
 Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right);
 
+Variable * EvaluateArgument(ASTNode* arg);
+
 Variable * BuiltInConcat(ASTList * args);
 
+Variable * BuiltInLength(ASTList * args);
+
+Variable * BuiltInSubstr(ASTList * args);
 
 void InterpretCout(ASTNode* cout);
 

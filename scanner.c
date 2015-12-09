@@ -67,6 +67,7 @@ struct lexeme read_lexeme(void) {
 q0: //default state
 	if(PRINT) printf("q0 default\n");
 	switch(input_char_type) {
+		case UNDERSCORE:
 		case LETTER:
 			temp_length = 0;
 			save_temp(input_char);
@@ -82,11 +83,13 @@ q0: //default state
 		case WHITE_SPACE:
 			read_input();
 			goto q0; //default state
+		/*
 		case UNDERSCORE:
 			temp_length = 0;
 			save_temp(input_char);
 			read_input();
-			goto q2; //underscored identifier
+			goto q1; //underscored identifier
+		*/
 		case END:
 			tmpData.type = END_OF_FILE;
 			return tmpData;
@@ -191,7 +194,7 @@ q1: //identifier OK
 		case UNDERSCORE:
 			save_temp(input_char);
 			read_input();
-			goto q2; //underscored identifier
+			goto q1; //underscored identifier
 		default:
 			return_input();
 			save_temp(0);
@@ -202,7 +205,7 @@ q1: //identifier OK
 			}
 			return tmpData;
 	}
-
+/*
 q2: //underscored identifier OK
 	if(PRINT) printf("q2 underscored identifier\n");
 	switch(input_char_type) {
@@ -219,7 +222,7 @@ q2: //underscored identifier OK
 			return_input();
 			return tmpData;
 	}
-
+*/
 q3: //comments or divide OK
 	if(PRINT) printf("q3 comments or divide\n");
 	switch(input_char_type) {
@@ -249,18 +252,24 @@ q3: //comments or divide OK
 							read_input();
 						} while(input_char != '*' && input_char_type != END);
 						if(input_char_type == END) {
-							tmpData.type = END_OF_FILE;
-							return tmpData;
+							throw_error(CODE_ERROR_LEX, "invalid input");
+							break;
 						}
 						read_input();
 						if(input_char == '/') {
 							read_input();
 							goto q0; //default state
+						} else if(input_char == '*') {
+							return_input();
+						} else if(input_char_type == END) {
+							throw_error(CODE_ERROR_LEX, "invalid input");
+							break;
 						}
 					} while(1);
 				default:
-					throw_error(CODE_ERROR_LEX, "invalid input");
-					break;
+					return_input();
+					tmpData.type = DIVIDE;
+					return tmpData;
 			}
 			break;
 	}
@@ -272,10 +281,12 @@ q4: //integer or double OK
 			save_temp(input_char);
 			read_input();
 			goto q4; //integer or double
+		/*
 		case WHITE_SPACE:
 			save_temp(0);
 			tmpData.value.integer = atoi((const char *)temp);
 			return tmpData;
+		*/
 		case LETTER:
 			if(input_char == 'e' || input_char == 'E') {
 				save_temp(input_char);
@@ -287,10 +298,8 @@ q4: //integer or double OK
 				break;
 			}
 		case END:
-			return_input();
-			save_temp(0);
-			tmpData.value.integer = atoi((const char *)temp);
-			return tmpData;
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;
 		case UNDERSCORE:
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;				
@@ -299,7 +308,7 @@ q4: //integer or double OK
 				save_temp(input_char);
 				read_input();
 				tmpData.type = DOUBLE;
-				goto q6; //double
+				goto q13; //double
 			}
 			return_input();
 			save_temp(0);
@@ -318,33 +327,46 @@ q5: //double e OK
 		case DIGIT:
 			save_temp(input_char);
 			read_input();
-			goto q5; //double e
+			goto q7; //double e
 		case OTHERS:
 			if(input_char == '+' || input_char == '-') {
 				save_temp(input_char);
 				read_input();
-				goto q7; //double e +-
+				goto q14; //double e +-
 			} else {
 				return_input();
 				save_temp(0);
 				tmpData.value.real = strtod((const char *)temp, &e_strtod);
 				return tmpData;
-			}
-		case WHITE_SPACE:
-			save_temp(0);
-			tmpData.value.real = strtod((const char *)temp, &e_strtod);
-			return tmpData;
-		case END:
-			return_input();
-			save_temp(0);
-			tmpData.value.real = strtod((const char *)temp, &e_strtod);
-			return tmpData;
+			}	
 		default:
-			return_input();
-			save_temp(0);
-			tmpData.value.real = strtod((const char *)temp, &e_strtod);
-			return tmpData;
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;
 	}
+
+q13: //potential double
+	if(PRINT) printf("q13 potential double\n");
+	switch(input_char_type) {
+		case DIGIT:
+			save_temp(input_char);
+			read_input();
+			goto q6; //double
+		default:
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;				
+	} 
+	
+q14: //potential double e +-
+	if(PRINT) printf("q14 potential double e +-\n");
+	switch(input_char_type) {
+		case DIGIT:
+			save_temp(input_char);
+			read_input();
+			goto q7; //double e +-
+		default:
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;				
+	} 	
 
 q6: //double OK
 	if(PRINT) printf("q6 double\n");
@@ -359,20 +381,16 @@ q6: //double OK
 				read_input();
 				goto q5; //double e
 			} else {
-				return_input();
-				save_temp(0);
-				tmpData.value.real = strtod((const char *)temp, &e_strtod);
-				return tmpData;
+				throw_error(CODE_ERROR_LEX, "invalid input");
+				break;
 			}
 		case WHITE_SPACE:
 			save_temp(0);
 			tmpData.value.real = strtod((const char *)temp, &e_strtod);
 			return tmpData;
 		case END:
-			return_input();
-			save_temp(0);
-			tmpData.value.real = strtod((const char *)temp, &e_strtod);
-			return tmpData;
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;
 		default:
 			return_input();
 			save_temp(0);
@@ -392,10 +410,8 @@ q7: //double e +- OK
 			tmpData.value.real = strtod((const char *)temp, &e_strtod);
 			return tmpData;
 		case END:
-			return_input();
-			save_temp(0);
-			tmpData.value.real = strtod((const char *)temp, &e_strtod);
-			return tmpData;
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;
 		default:
 			return_input();
 			save_temp(0);
@@ -408,7 +424,7 @@ q8: //string OK
 	switch(input_char_type) {
 		case OTHERS:			
 			if(input_char == '\\') {
-				save(&tmpData, input_char);
+				//save(&tmpData, input_char);
 				read_input();
 				goto q9;	//escaped string
 			} else if(input_char == '"') {
@@ -420,13 +436,13 @@ q8: //string OK
 			read_input();
 			goto q8; //string
 		case WHITE_SPACE:			
-			if(input_char == '\n') {
-				throw_error(CODE_ERROR_LEX, "invalid input");
-				break;
+			if(input_char == 32) {
+				save(&tmpData, input_char);
+				read_input();
+				goto q8; //string	
 			}
-			save(&tmpData, input_char);
-			read_input();
-			goto q8; //string			
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			break;
 		case END:
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;

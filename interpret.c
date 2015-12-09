@@ -128,6 +128,7 @@ void InterpretVarCreation(ASTNode *var) {
 	Variable *variable = gc_malloc(sizeof(Variable));
 	variable->data_type = var->left->var_type;
 	variable->data.numeric_data = 0; // null the data
+	variable->initialized = false;
 
 	set_symbol(scopes, var->right->d.string_data, variable);
 }
@@ -179,9 +180,17 @@ void InterpretAssign(ASTNode *statement) {
 	if (current == NULL) {
 		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Variable assigning failed due to missing variable");
 	}
+	// handle auto keyword
+	if (current->data_type == AST_VAR_AUTO) {
+		current->data_type = result->data_type;
+		current->data = result->data;
+	}
 	if (current->data_type != result->data_type) {
 		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Assigning bad value to the variable");
 	}
+
+	// variable was assigned a value
+	current->initialized = true;
 
 	current->data = result->data;
 }
@@ -232,6 +241,7 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 		Variable* this_symbol = gc_malloc(sizeof(Variable));
 		this_symbol->data = symbol->data;
 		this_symbol->data_type = symbol->data_type;
+		this_symbol->initialized = true;
 
 		set_symbol(scopes, arg->elem->d.string_data, this_symbol);
 	}
@@ -253,6 +263,9 @@ Variable *InterpretBuiltinCall(ASTNode *call) {
 
 	if(equals(func_name, new_str("concat")) ) {
 		return BuiltInConcat(it);
+	}
+	else if(equals(func_name, new_str("length"))) {
+		return  BuiltInLength(it);
 	}
 	return NULL;
 }
@@ -337,6 +350,7 @@ Variable* EvaluateExpression(ASTNode *expr) {
 		result = gc_malloc(sizeof(Variable));
 		result->data_type = GetVarTypeFromLiteral(expr->literal);
 		result->data = expr->d;
+		result->initialized = true;
 	} else if (expr->type == AST_BINARY_OP) {
 		// evaluate expressions on both sides
 		Variable *left = EvaluateExpression(expr->left);
@@ -344,6 +358,10 @@ Variable* EvaluateExpression(ASTNode *expr) {
 
 		if (!AreCompatibleTypes(left->data_type, right->data_type)) {
 			throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret][Expression] Provided values are of different types");
+		}
+
+		if (!(left->initialized && right->initialized)) {
+			throw_error(CODE_ERROR_UNINITIALIZED_ID, "[Interpret][Expression] Trying to use uninitialized variable");
 		}
 
 		// expression is binary operation, calculate based on the operator
@@ -379,6 +397,8 @@ Variable* EvaluateExpression(ASTNode *expr) {
 				result = EvaluateBinaryNotEqual(left, right);
 				break;
 		}
+
+		result->initialized = true;
 	} else if (expr->type == AST_VAR) {
 		// the expression is variable, return the variable value
 		result = get_symbol(scopes, expr->d.string_data);
@@ -795,25 +815,64 @@ Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right) {
 	return result;
 }
 
+Variable * EvaluateArgument(ASTNode* arg) {
+	if(arg->type == AST_CALL) {
+		return  InterpretFunctionCall(arg);
+	}
+	else if(arg->type == AST_EXPRESSION) {
+		return  EvaluateExpression(arg);
+	}
+}
+
 Variable * BuiltInConcat(ASTList * args) {
 	Variable* result = gc_malloc(sizeof(Variable));
 	Variable * str1 = NULL;
 	Variable * str2 = NULL;
-	if(args->elem->type == AST_CALL) {
-		str1 = InterpretFunctionCall(args->elem);
-	}
-	else if (args->elem->type == AST_EXPRESSION) {
-		str1 = EvaluateExpression(args->elem);
-	}
-	if(args->next->elem->type == AST_CALL) {
-		str2 = InterpretFunctionCall(args->next->elem);
-	}
-	else if (args->next->elem->type == AST_EXPRESSION) {
-		str2 = EvaluateExpression(args->next->elem);
+
+	str1 = EvaluateArgument(args->elem);
+	str2 = EvaluateArgument(args->next->elem);
+
+	if(str1->data_type !=  AST_VAR_STRING || str2->data_type != AST_VAR_STRING ) {
+		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Invalid parameter type.");
 	}
 
 	result->data_type= AST_VAR_STRING;
 	result->data.string_data =  new_str(concat(str1->data.string_data->str, str2->data.string_data->str));
+	return result;
+}
+
+
+Variable * BuiltInLength(ASTList * args) {
+	Variable * result = gc_malloc(sizeof(Variable));
+	Variable * arg = NULL;
+
+	arg = EvaluateArgument(args->elem);
+
+	if(arg->data_type !=  AST_VAR_STRING) {
+		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Invalid parameter type.");
+	}
+
+	result->data_type = AST_VAR_INT;
+	result->data.numeric_data = length(arg->data.string_data->str);
+	return result;
+}
+
+Variable * BuiltInSubstr(ASTList * args) {
+	Variable * result = gc_malloc(sizeof(Variable));
+	Variable * arg1 = NULL;
+	Variable * arg2 = NULL;
+	Variable * arg3 = NULL ;
+
+	arg1 = EvaluateArgument(args->elem);
+	arg2 = EvaluateArgument(args->next->elem);
+	arg3 = EvaluateArgument(args->next->next->elem);
+
+	if (arg1->data_type != AST_VAR_STRING || arg2->data_type != AST_VAR_INT || arg3->data_type != AST_VAR_INT) {
+		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Invalid parameter type. ");
+	}
+
+	result->data_type = AST_VAR_STRING;
+	result->data.string_data = new_str( substr(arg1->data.string_data, arg2->data.numeric_data, arg3->data.numeric_data) );
 	return result;
 }
 
@@ -826,6 +885,7 @@ void InterpretCout(ASTNode *cout) {
 		ASTNode* elem = list->elem;
 		Variable* result = EvaluateExpression(elem);
 		if (result == NULL) {
+			list = list->next;
 			continue; // empty expression
 		}
 

@@ -1,0 +1,8 @@
+/* @outputs
+"cde"
+*/
+
+int main() {
+    string s = "abcdefgh";
+    cout << substr(s, 2, 5);
+}
