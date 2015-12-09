@@ -871,7 +871,7 @@ Variable * BuiltInSubstr(ASTList * args) {
 	Variable * result = gc_malloc(sizeof(Variable));
 	Variable * arg1 = NULL;
 	Variable * arg2 = NULL;
-	Variable * arg3 = NULL ;
+	Variable * arg3 = NULL;
 
 	arg1 = EvaluateArgument(args->elem);
 	arg2 = EvaluateArgument(args->next->elem);
@@ -882,8 +882,7 @@ Variable * BuiltInSubstr(ASTList * args) {
 	}
 
 	result->data_type = AST_VAR_STRING;
-
-	result->data.string_data = new_str( substr(arg1->data.string_data->str, arg2->data.numeric_data, arg3->data.numeric_data) );
+	result->data.string_data = new_str( substr( arg1->data.string_data->str, (int)arg2->data.numeric_data, (int)arg3->data.numeric_data ));
 	return result;
 }
 
@@ -916,6 +915,7 @@ Variable * BuiltInFind(ASTList * args) {
 
 	result->data_type= AST_VAR_INT;
 	result->data.numeric_data =  find(str1->data.string_data->str, str2->data.string_data->str);
+
 	return result;
 }
 

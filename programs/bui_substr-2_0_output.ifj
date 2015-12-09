@@ -1,0 +1,13 @@
+/*@outputs
+"azec"
+*/
+
+string retStr() {
+    return "retazec";
+}
+
+int main() {
+    int a = 3;
+    int b = 10;
+    cout << substr(retStr(), a, b);
+}
