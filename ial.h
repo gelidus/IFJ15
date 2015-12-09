@@ -15,8 +15,13 @@ struct hash_item {
 	struct hash_item* next;
 };
 
+typedef enum {
+	SCOPE_FUNCTION, SCOPE_BLOCK
+} ScopeType;
+
 struct hash_table {
 	int size;
+	ScopeType scope_type;
 	struct hash_item** table;
 };
 

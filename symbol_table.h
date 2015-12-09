@@ -13,7 +13,7 @@ struct symbol_table * init_table();
 // taken or not
 bool is_creatable(struct symbol_table * table, string* key);
 
-void scope_start(struct symbol_table * table);
+void scope_start(struct symbol_table * table, ScopeType type);
 void scope_end(struct symbol_table * table);
 
 struct symbol_table {

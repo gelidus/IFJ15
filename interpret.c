@@ -71,7 +71,7 @@ void InterpretRun() {
 		throw_error(CODE_ERROR_SEMANTIC, "Main function could not be found");
 	}
 
-	scope_start(scopes);
+	scope_start(scopes, SCOPE_BLOCK);
 	Variable *return_val = gc_malloc(sizeof(Variable));
 	InterpretList(func->right->d.list, return_val);
 
@@ -108,7 +108,7 @@ void InterpretNode(ASTNode* node, Variable* return_val) {
 			InterpretFor(node, return_val);
 			break;
 		case AST_BLOCK:
-			scope_start(scopes);
+			scope_start(scopes, SCOPE_BLOCK);
 			InterpretList(node->d.list, return_val);
 			scope_end(scopes);
 		case AST_NONE:
@@ -197,7 +197,7 @@ void InterpretAssign(ASTNode *statement) {
 }
 
 void InterpretIf(ASTNode *ifstatement, Variable* return_val) {
-	scope_start(scopes);
+	scope_start(scopes, SCOPE_BLOCK);
 	Variable* condition_result = EvaluateExpression(ifstatement->d.condition);
 
 	ASTNode *block = condition_result->data.bool_data? ifstatement->left: ifstatement->right;
@@ -232,7 +232,7 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 		throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Calling function that was not defined");
 	}
 
-	scope_start(scopes);
+	scope_start(scopes, SCOPE_FUNCTION);
 
 	ASTList* arg = func->left->d.list;
 	for(ASTList* it = call->left->d.list; it != NULL && it->elem != NULL; it = it->next, arg = arg->next) {
@@ -281,7 +281,7 @@ Variable *InterpretBuiltinCall(ASTNode *call) {
 }
 
 void InterpretFor(ASTNode *node, Variable* return_val) {
-	scope_start(scopes);
+	scope_start(scopes, SCOPE_BLOCK);
 
 	ASTNode* first_block = node->d.list->elem; // first block
 	ASTNode* second_block = node->d.list->next->elem; // second block
@@ -295,7 +295,7 @@ void InterpretFor(ASTNode *node, Variable* return_val) {
 	}
 
 	while(condition->data.bool_data && return_val->data_type == AST_VAR_NULL) {
-		scope_start(scopes);
+		scope_start(scopes, SCOPE_BLOCK);
 		// block is in the left node
 		InterpretList(node->left->d.list, return_val);
 

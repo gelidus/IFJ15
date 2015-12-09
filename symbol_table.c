@@ -28,10 +28,11 @@ bool is_creatable(struct symbol_table * table, string *key) {
 }
 
 // zavolat kdyz se zacne novy scope - v kazdem bloku instrukci (AST_LIST)!
-void scope_start(struct symbol_table * symbol_table)
+void scope_start(struct symbol_table * symbol_table, ScopeType type)
 {
     // vytvorime novou hash tabulku a placnem ji na konec stacku
     struct hash_table * table = create_table(); //malloc(sizeof(struct hash_table));
+    table->scope_type = type;
     StackPush(symbol_table->stack, table);
 }
 
@@ -54,12 +55,23 @@ void * get_symbol(struct symbol_table * table, string * key)
     if (symbol) {
         return symbol;
     }
+
+    // we won't iterate if we are in function scope already
+    if (((struct hash_table*)hash_table_carry->value)->scope_type == SCOPE_FUNCTION) {
+        return NULL;
+    }
+
     // nenasli jsme, zaiterujem si
-    while (hash_table_carry && hash_table_carry->next) {
+    while (hash_table_carry->next) {
         hash_table_carry = hash_table_carry->next;
         symbol = get_item(hash_table_carry->value, key);
         if (symbol) {
             return symbol;
+        }
+
+        // if this was the function scope, we didnt find the symbol
+        if (((struct hash_table*)hash_table_carry->value)->scope_type == SCOPE_FUNCTION) {
+            return NULL;
         }
     }
     // nenasli jsme vubec

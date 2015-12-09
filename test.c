@@ -18,7 +18,7 @@ void TestString() {
 
 void testHashTable() {
 	struct symbol_table * t = init_table();
-	scope_start(t);
+	scope_start(t, SCOPE_BLOCK);
 	set_symbol(t, new_str("a"), new_str("value_a"));
 	set_symbol(t, new_str("b"), new_str("value_b"));
 	string * val_a = get_symbol(t, new_str("a"));
