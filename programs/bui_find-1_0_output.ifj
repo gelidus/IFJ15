@@ -1,0 +1,7 @@
+/*@outputs
+"11"
+*/
+
+int main() {
+    cout <<  find("find uz funguje","gu");
+}

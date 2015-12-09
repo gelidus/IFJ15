@@ -76,6 +76,10 @@ Variable * BuiltInLength(ASTList * args);
 
 Variable * BuiltInSubstr(ASTList * args);
 
+Variable * BuiltInSort(ASTList * args);
+
+Variable * BuiltInFind(ASTList * args);
+
 void InterpretCout(ASTNode* cout);
 
 void InterpretCin(ASTNode* cin);

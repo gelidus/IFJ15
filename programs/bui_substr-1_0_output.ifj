@@ -1,5 +1,5 @@
-/* @outputs
-"cde"
+/*@outputs
+"cdefg"
 */
 
 int main() {

@@ -1,0 +1,7 @@
+/*@outputs
+"ABCDabcd"
+*/
+
+int main() {
+    cout << sort("BcDCdAba");
+}

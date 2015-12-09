@@ -227,7 +227,7 @@ char* substr(char* s, int i, int n) {
 	if(length(s) > i+n)
 	  max = i+n-1;
 	else
-	max = length(s)-1;
+		max = length(s)-1;
 	string* str = new_str("");
 	for (i; i <= max; i++) {
 	   add_char(str,s[i]);

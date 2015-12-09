@@ -267,6 +267,15 @@ Variable *InterpretBuiltinCall(ASTNode *call) {
 	else if(equals(func_name, new_str("length"))) {
 		return  BuiltInLength(it);
 	}
+	else if(equals(func_name, new_str("substr"))) {
+		return BuiltInSubstr(it);
+	}
+	else if(equals(func_name, new_str("sort"))) {
+		return BuiltInSort(it);
+	}
+	else if(equals(func_name, new_str("find"))) {
+		return  BuiltInFind(it);
+	}
 	return NULL;
 }
 
@@ -872,7 +881,39 @@ Variable * BuiltInSubstr(ASTList * args) {
 	}
 
 	result->data_type = AST_VAR_STRING;
-	result->data.string_data = new_str( substr(arg1->data.string_data, arg2->data.numeric_data, arg3->data.numeric_data) );
+	result->data.string_data = new_str( substr(arg1->data.string_data->str, arg2->data.numeric_data, arg3->data.numeric_data) );
+	return result;
+}
+
+Variable * BuiltInSort(ASTList * args) {
+	Variable * result = gc_malloc(sizeof(Variable));
+	Variable * arg = NULL;
+
+	arg = EvaluateArgument(args->elem);
+
+	if(arg->data_type !=  AST_VAR_STRING) {
+		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Invalid parameter type.");
+	}
+
+	result->data_type = AST_VAR_STRING;
+	result->data.string_data = new_str(sort(arg->data.string_data->str));
+	return result;
+}
+
+Variable * BuiltInFind(ASTList * args) {
+	Variable* result = gc_malloc(sizeof(Variable));
+	Variable * str1 = NULL;
+	Variable * str2 = NULL;
+
+	str1 = EvaluateArgument(args->elem);
+	str2 = EvaluateArgument(args->next->elem);
+
+	if(str1->data_type !=  AST_VAR_STRING || str2->data_type != AST_VAR_STRING ) {
+		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Invalid parameter type.");
+	}
+
+	result->data_type= AST_VAR_INT;
+	result->data.numeric_data =  find(str1->data.string_data->str, str2->data.string_data->str);
 	return result;
 }
 
