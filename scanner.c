@@ -11,6 +11,7 @@ const static struct {
   {NULL, NO_TYPE}
 };
 
+unsigned char tmp_esc_val[2];
 static int input_char; //prave nacteny znak
 static enum input_type input_char_type; //prave nacteny typ znaku
 
@@ -298,8 +299,14 @@ q4: //integer or double OK
 				break;
 			}
 		case END:
+			/*
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;
+			*/
+			return_input();
+			save_temp(0);
+			tmpData.value.integer = atoi((const char *)temp);
+			return tmpData;			
 		case UNDERSCORE:
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;				
@@ -329,16 +336,16 @@ q5: //double e OK
 			read_input();
 			goto q7; //double e
 		case OTHERS:
-			if(input_char == '+' || input_char == '-') {
+			if(input_char == '+' || input_char == '-') {  
 				save_temp(input_char);
 				read_input();
 				goto q14; //double e +-
-			} else {
+			}/* else {
 				return_input();
 				save_temp(0);
 				tmpData.value.real = strtod((const char *)temp, &e_strtod);
 				return tmpData;
-			}	
+			}*/	
 		default:
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;
@@ -384,6 +391,7 @@ q6: //double OK
 				throw_error(CODE_ERROR_LEX, "invalid input");
 				break;
 			}
+		/*
 		case WHITE_SPACE:
 			save_temp(0);
 			tmpData.value.real = strtod((const char *)temp, &e_strtod);
@@ -391,6 +399,7 @@ q6: //double OK
 		case END:
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;
+		*/ 
 		default:
 			return_input();
 			save_temp(0);
@@ -405,6 +414,7 @@ q7: //double e +- OK
 			save_temp(input_char);
 			read_input();
 			goto q7; //double e +-
+		/*
 		case WHITE_SPACE:
 			save_temp(0);
 			tmpData.value.real = strtod((const char *)temp, &e_strtod);
@@ -412,6 +422,7 @@ q7: //double e +- OK
 		case END:
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;
+		*/
 		default:
 			return_input();
 			save_temp(0);
@@ -429,13 +440,13 @@ q8: //string OK
 				goto q9;	//escaped string
 			} else if(input_char == '"') {
 				//q10
-				save(&tmpData, 0);
+				//save(&tmpData, 0);
 				return tmpData;
 			}
 			save(&tmpData, input_char);
 			read_input();
 			goto q8; //string
-		case WHITE_SPACE:			
+		case WHITE_SPACE:			 
 			if(input_char == 32) {
 				save(&tmpData, input_char);
 				read_input();
@@ -459,7 +470,10 @@ q9: //escaped string OK
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;			
 		default:
+		
+		//  n -> \n   t -> \t
 			if(input_char == 'n' || input_char == 't' || input_char == '\\' || input_char == '"') {
+				save(&tmpData, '\\');
 				save(&tmpData, input_char);
 				read_input();
 				goto q8;  //string
@@ -482,7 +496,12 @@ q16: //escaped string x
 				break;							
 			}
 		case DIGIT:
-			//ulozit do tmp promenne
+			//ulozit do tmp promenne ....prevod na cislo dokoncit z hexadec. na cislo
+			//neznamekovy char, nasobeni 16
+			tmp_esc_val[0] = '2';
+			//printf("** %i\n", tmp_esc_val);
+			//printf("** %c\n", tmp_esc_val);			
+			//tmp_esc_val = input_char * 16;
 			read_input();
 			goto q17;
 		default:
@@ -501,13 +520,11 @@ q17: //escaped string xH
 				break;							
 			}
 		case DIGIT:
-			//ulozit do tmp_char promenne
-			//prepocitat tmp_char promennou
-				//unsigned char c = tmp_char;
-				//printf("%c", c); prepocet umi treba funkce pro tisk printf, je treba najit takovou, ktera to ulozi do promenne
-				//ulozit zase treba do tmp_char
-			//ulozit do vysledneho retezce
-				//save(&tmpData, tmp_char);
+			tmp_esc_val[1] = '1';
+			//const char *frmtChar = hexToInt(tmp_esc_val);
+			//unsigned char *resChar;
+			//sscanf(&frmtChar, "%c", &resChar);
+			save(&tmpData, hexToInt(tmp_esc_val));			
 			read_input();
 			goto q8;
 		default:
@@ -516,6 +533,28 @@ q17: //escaped string xH
 	}	
 
 	return tmpData;
+}
+
+unsigned char hexToInt(unsigned char *tmp)
+{
+	unsigned char hp1, hp2;
+	unsigned char h1 = tmp[0];
+	if(h1 >= '0' && h1 <= '9') {
+		hp1 = h1 - '0';
+	} else if(h1 >= 'a' && h1 <= 'f') {
+		hp1 = h1 - 'a' + 10;
+	} else if(h1 >= 'A' && h1 <= 'F') {
+		hp1 = h1 - 'A' + 10;
+	}
+	unsigned char h2 = tmp[1];
+	if(h2 >= '0' && h2 <= '9') {
+		hp2 = h2 - '0';
+	} else if(h2 >= 'a' && h2 <= 'f') {
+		hp2 = h2 - 'a' + 10;
+	} else if(h2 >= 'A' && h2 <= 'F') {
+		hp2 = h2 - 'A' + 10;
+	}	
+	return (16 * hp1 + hp2);
 }
 
 void save(struct lexeme *tmpData, char to_save) {
