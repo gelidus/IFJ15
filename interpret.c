@@ -150,6 +150,7 @@ void InterpretList(ASTList* list, Variable* return_val) {
 			Variable *ret = EvaluateExpression(list->elem->left);
 			return_val->data_type = ret->data_type;
 			return_val->data = ret->data;
+			return_val->initialized = ret->initialized;
 		}
 		// change leaf to next
 		list = list->next;
