@@ -1,0 +1,17 @@
+
+int nofun() {
+    return 55;
+}
+
+int fun() {
+    int a = nofun();
+
+    return a;
+}
+
+int main() {
+    fun();
+    a = 11;
+
+    return 0;
+}
