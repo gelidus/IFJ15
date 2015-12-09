@@ -150,6 +150,7 @@ void InterpretList(ASTList* list, Variable* return_val) {
 			Variable *ret = EvaluateExpression(list->elem->left);
 			return_val->data_type = ret->data_type;
 			return_val->data = ret->data;
+			return_val->initialized = ret->initialized;
 		}
 		// change leaf to next
 		list = list->next;
@@ -526,7 +527,7 @@ Variable* EvaluateBinaryDivide(Variable* left, Variable* right) {
 	switch (left->data_type) {
 		case AST_VAR_INT:
 			if(right->data.numeric_data == 0) {
-				throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Can't divide by zero");
+				throw_error(CODE_ERROR_RUNTIME_DIV_BY_0, "[Interpret] Can't divide by zero");
 			}
 			if(right->data_type == AST_VAR_DOUBLE){
 				result->data_type = AST_VAR_DOUBLE;
@@ -539,7 +540,7 @@ Variable* EvaluateBinaryDivide(Variable* left, Variable* right) {
 
 		case AST_VAR_DOUBLE:
 			if(right->data.numeric_data == 0) {
-				throw_error(CODE_ERROR_SEMANTIC, "[Interpret] Can't divide by zero");
+				throw_error(CODE_ERROR_RUNTIME_DIV_BY_0, "[Interpret] Can't divide by zero");
 			}
 			result->data.numeric_data = (left->data.numeric_data / right->data.numeric_data);
 			result->data_type = AST_VAR_DOUBLE;
@@ -881,6 +882,7 @@ Variable * BuiltInSubstr(ASTList * args) {
 	}
 
 	result->data_type = AST_VAR_STRING;
+<<<<<<< HEAD
 	result->data.string_data = new_str( substr(arg1->data.string_data->str, arg2->data.numeric_data, arg3->data.numeric_data) );
 	return result;
 }
@@ -914,6 +916,9 @@ Variable * BuiltInFind(ASTList * args) {
 
 	result->data_type= AST_VAR_INT;
 	result->data.numeric_data =  find(str1->data.string_data->str, str2->data.string_data->str);
+=======
+	result->data.string_data = new_str( substr(arg1->data.string_data->str, (int)arg2->data.numeric_data, (int)arg3->data.numeric_data) );
+>>>>>>> 882d04b52a2dbc4b87a8d87ad79043ab1f39cb02
 	return result;
 }
 
@@ -991,6 +996,9 @@ void InterpretCin(ASTNode *cin) {
 				 break;
 			}
 		}
+
+		// inputed variables are always initialized if no error happened
+		variable->initialized = true;
 
 		list = list->next;
 	} while(list != NULL);

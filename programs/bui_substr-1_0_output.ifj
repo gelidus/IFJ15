@@ -1,5 +1,9 @@
 /*@outputs
+<<<<<<< HEAD
 "cdefg"
+=======
+"cde"
+>>>>>>> 882d04b52a2dbc4b87a8d87ad79043ab1f39cb02
 */
 
 int main() {

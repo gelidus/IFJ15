@@ -1,0 +1,13 @@
+
+int main() {
+    int a = 5;
+    if (a == 5) {
+        int b = 10;
+    } else {}
+
+    if (b > 2) {
+        a = 22;
+    } else {}
+
+    return 0;
+}
