@@ -211,3 +211,29 @@ int find(char *input, char *pat)
     return -1;
 }
 /**find**/
+
+int length(char* s) {
+	int c = 0;
+	if (!strcmp(s, "")) {
+		return 0;
+	}
+	while (s[c] != '\0')
+		c++;
+		return c;
+	}
+
+char* substr(char* s, int i, int n) {
+	int max;
+	if(length(s) > i+n)
+	  max = i+n-1;
+	else
+	max = length(s)-1;
+	string* str = new_str("");
+	for (i; i <= max; i++) {
+	   add_char(str,s[i]);
+	}
+	return str->str;
+}
+char* concat(char* s1, char* s2) {
+	return (cat_str(new_str(s1), new_str(s2))->str);
+}

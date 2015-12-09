@@ -4,6 +4,8 @@
 #include "errors.h"
 #include "symbol_table.h"
 #include "gc.h"
+#include "ial.h"
+#include "string.h"
 
 #define ASTNode struct ast_node // definition of ast node for definition file
 #define ASTList struct ast_list
@@ -256,6 +258,15 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 }
 
 Variable *InterpretBuiltinCall(ASTNode *call) {
+	string * func_name = call->d.string_data;
+	ASTList* it = call->left->d.list;
+
+	if(equals(func_name, new_str("concat")) ) {
+		return BuiltInConcat(it);
+	}
+	else if(equals(func_name, new_str("length"))) {
+		return  BuiltInLength(it);
+	}
 	return NULL;
 }
 
@@ -336,7 +347,7 @@ Variable* EvaluateExpression(ASTNode *expr) {
 	// is copy the literal to the top node as a start
 	if (expr->type == AST_LITERAL) {
 		// expression is literal. Just get the literal type and return value
-		result = gc_malloc(sizeof(Variable));;
+		result = gc_malloc(sizeof(Variable));
 		result->data_type = GetVarTypeFromLiteral(expr->literal);
 		result->data = expr->d;
 		result->initialized = true;
@@ -801,6 +812,67 @@ Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right) {
 			break;
 	}
 
+	return result;
+}
+
+Variable * EvaluateArgument(ASTNode* arg) {
+	if(arg->type == AST_CALL) {
+		return  InterpretFunctionCall(arg);
+	}
+	else if(arg->type == AST_EXPRESSION) {
+		return  EvaluateExpression(arg);
+	}
+}
+
+Variable * BuiltInConcat(ASTList * args) {
+	Variable* result = gc_malloc(sizeof(Variable));
+	Variable * str1 = NULL;
+	Variable * str2 = NULL;
+
+	str1 = EvaluateArgument(args->elem);
+	str2 = EvaluateArgument(args->next->elem);
+
+	if(str1->data_type !=  AST_VAR_STRING || str2->data_type != AST_VAR_STRING ) {
+		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Invalid parameter type.");
+	}
+
+	result->data_type= AST_VAR_STRING;
+	result->data.string_data =  new_str(concat(str1->data.string_data->str, str2->data.string_data->str));
+	return result;
+}
+
+
+Variable * BuiltInLength(ASTList * args) {
+	Variable * result = gc_malloc(sizeof(Variable));
+	Variable * arg = NULL;
+
+	arg = EvaluateArgument(args->elem);
+
+	if(arg->data_type !=  AST_VAR_STRING) {
+		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Invalid parameter type.");
+	}
+
+	result->data_type = AST_VAR_INT;
+	result->data.numeric_data = length(arg->data.string_data->str);
+	return result;
+}
+
+Variable * BuiltInSubstr(ASTList * args) {
+	Variable * result = gc_malloc(sizeof(Variable));
+	Variable * arg1 = NULL;
+	Variable * arg2 = NULL;
+	Variable * arg3 = NULL ;
+
+	arg1 = EvaluateArgument(args->elem);
+	arg2 = EvaluateArgument(args->next->elem);
+	arg3 = EvaluateArgument(args->next->next->elem);
+
+	if (arg1->data_type != AST_VAR_STRING || arg2->data_type != AST_VAR_INT || arg3->data_type != AST_VAR_INT) {
+		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret] Invalid parameter type. ");
+	}
+
+	result->data_type = AST_VAR_STRING;
+	result->data.string_data = new_str( substr(arg1->data.string_data, arg2->data.numeric_data, arg3->data.numeric_data) );
 	return result;
 }
 
