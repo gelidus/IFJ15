@@ -371,6 +371,7 @@ bool parse_function_definition(struct ast_node* node)
 
     // poskladame
     node->type = AST_FUNCTION;
+    node->var_type = *var_type;
     node->d.string_data = function_name;
     node->left = arguments;
     node->right = body;
