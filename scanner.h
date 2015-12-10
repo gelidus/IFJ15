@@ -25,6 +25,7 @@ void read_input(); //nacteni znaku ze vstupu
 void return_input(); //vraceni znaku na vstup nacteneho navic pri ukonceni lexemu
 
 struct lexeme read_lexeme(void); // hlavni funkce
+unsigned char hexToInt(unsigned char *tmp);
 
 void free_token(struct lexeme *); //uvolneni struktury lexemu
 
