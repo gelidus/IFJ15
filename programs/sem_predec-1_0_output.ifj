@@ -1,0 +1,19 @@
+/*@outputs
+"Test
+Neco"
+*/
+
+string foo();
+
+int main(){
+    string i;
+    i = foo();
+    cout << i;
+
+    return 0;
+}
+
+string foo(){
+    cout << "Test";
+    return "Neco";
+}

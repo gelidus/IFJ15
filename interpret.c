@@ -199,6 +199,9 @@ void InterpretAssign(ASTNode *statement) {
 void InterpretIf(ASTNode *ifstatement, Variable* return_val) {
 	scope_start(scopes, SCOPE_BLOCK);
 	Variable* condition_result = EvaluateExpression(ifstatement->d.condition);
+	if (!AreCompatibleTypes(condition_result->data_type, AST_VAR_BOOL)) {
+		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret][If] Expression not bool");
+	}
 
 	ASTNode *block = condition_result->data.bool_data? ifstatement->left: ifstatement->right;
 
@@ -256,6 +259,10 @@ Variable* InterpretFunctionCall(ASTNode *call) {
 	// is in the right leaf of the function
 	ASTList* list = func->right->d.list;
 	InterpretList(list, return_val);
+
+	if (!AreCompatibleTypes(return_val->data_type, func->var_type)) {
+		throw_error(CODE_ERROR_COMPATIBILITY, "[Interpret][Return] Cannot return non-compatible values");
+	}
 
 	scope_end(scopes);
 
@@ -337,7 +344,11 @@ enum ast_var_type GetVarTypeFromLiteral(enum ast_literal_type type) {
 }
 
 bool AreCompatibleTypes(enum ast_var_type t1, enum ast_var_type t2) {
-	if ((t1 == AST_VAR_INT && t2 == AST_VAR_DOUBLE) || (t1 == AST_VAR_DOUBLE && t2 == AST_VAR_INT)) {
+	if (t1 == AST_VAR_DOUBLE && t2 == AST_VAR_INT) {
+		return true;
+	}
+
+	if ((t1 == AST_VAR_INT && t2 == AST_VAR_BOOL) || (t1 == AST_VAR_BOOL && t2 == AST_VAR_INT)) {
 		return true;
 	}
 
@@ -416,6 +427,9 @@ Variable* EvaluateExpression(ASTNode *expr) {
 	} else if (expr->type == AST_VAR) {
 		// the expression is variable, return the variable value
 		result = get_symbol(scopes, expr->d.string_data);
+		if (result == NULL) {
+			throw_error(CODE_ERROR_SEMANTIC, "[Interpret][Var] Variable in the expression was not found");
+		}
 	} else if (expr->type == AST_CALL) {
 		result = InterpretFunctionCall(expr);
 	}
@@ -852,6 +866,7 @@ Variable * BuiltInConcat(ASTList * args) {
 
 	result->data_type= AST_VAR_STRING;
 	result->data.string_data =  new_str(concat(str1->data.string_data->str, str2->data.string_data->str));
+	result->initialized = true;
 	return result;
 }
 
@@ -868,6 +883,7 @@ Variable * BuiltInLength(ASTList * args) {
 
 	result->data_type = AST_VAR_INT;
 	result->data.numeric_data = length(arg->data.string_data->str);
+	result->initialized = true;
 	return result;
 }
 
@@ -887,6 +903,7 @@ Variable * BuiltInSubstr(ASTList * args) {
 
 	result->data_type = AST_VAR_STRING;
 	result->data.string_data = new_str( substr( arg1->data.string_data->str, (int)arg2->data.numeric_data, (int)arg3->data.numeric_data ));
+	result->initialized = true;
 	return result;
 }
 
@@ -902,6 +919,7 @@ Variable * BuiltInSort(ASTList * args) {
 
 	result->data_type = AST_VAR_STRING;
 	result->data.string_data = new_str(sort(arg->data.string_data->str));
+	result->initialized = true;
 	return result;
 }
 
@@ -919,6 +937,7 @@ Variable * BuiltInFind(ASTList * args) {
 
 	result->data_type= AST_VAR_INT;
 	result->data.numeric_data =  find(str1->data.string_data->str, str2->data.string_data->str);
+	result->initialized = true;
 
 	return result;
 }
@@ -934,6 +953,10 @@ void InterpretCout(ASTNode *cout) {
 		if (result == NULL) {
 			list = list->next;
 			continue; // empty expression
+		}
+
+		if (!result->initialized) {
+			throw_error(CODE_ERROR_UNINITIALIZED_ID, "[Interpret][Cout] Uninitialized variabled used");
 		}
 
 		switch (result->data_type) {

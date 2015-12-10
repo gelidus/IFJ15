@@ -1,0 +1,9 @@
+/*@outputs
+"0"
+*/
+
+int main() {
+    int i = 1 == 0;
+    cout << i;
+    return i;
+}
