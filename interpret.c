@@ -175,6 +175,8 @@ void InterpretAssign(ASTNode *statement) {
 		case AST_VAR:
 			var_name = statement->left->d.string_data;
 			break;
+		default:
+			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
 	current = get_symbol(scopes, var_name);
 
@@ -468,6 +470,8 @@ Variable *EvaluateBinaryPlus(Variable *left, Variable *right) {
 		case AST_VAR_NULL:
 			result->data_type = AST_VAR_NULL;
 			break;
+		default:
+			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
 
 	return result;
@@ -502,6 +506,8 @@ Variable *EvaluateBinaryMinus(Variable *left, Variable *right) {
 		case AST_VAR_NULL:
 			result->data_type = AST_VAR_NULL;
 			break;
+		default:
+			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
 
 	return result;
@@ -534,6 +540,8 @@ Variable *EvaluateBinaryMult(Variable *left, Variable *right) {
 		case AST_VAR_NULL:
 			result->data_type = AST_VAR_NULL;
 			break;
+		default:
+			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
 
 	return result;
@@ -572,6 +580,8 @@ Variable* EvaluateBinaryDivide(Variable* left, Variable* right) {
 		case AST_VAR_NULL:
 			result->data_type = AST_VAR_NULL;
 			break;
+		default:
+			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
 
 	return result;
@@ -615,6 +625,8 @@ Variable *EvaluateBinaryLess(Variable *left, Variable *right) {
 		case AST_VAR_NULL:
 			result->data_type = AST_VAR_NULL;
 			break;
+		default:
+			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
 
 	return result;
@@ -657,6 +669,8 @@ Variable *EvaluateBinaryMore(Variable *left, Variable *right) {
 		case AST_VAR_NULL:
 			result->data_type = AST_VAR_NULL;
 			break;
+		default:
+			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
 
 	return result;
@@ -699,6 +713,8 @@ Variable *EvaluateBinaryLessEqual(Variable *left, Variable *right) {
 		case AST_VAR_NULL:
 			result->data_type = AST_VAR_NULL;
 			break;
+		default:
+			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
 
 	return result;
@@ -741,6 +757,8 @@ Variable *EvaluateBinaryMoreEqual(Variable *left, Variable *right) {
 		case AST_VAR_NULL:
 			result->data_type = AST_VAR_NULL;
 			break;
+		default:
+			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
 
 	return result;
@@ -789,6 +807,8 @@ Variable *EvaluateBinaryEqual(Variable *left, Variable *right) {
 		case AST_VAR_NULL:
 			result->data_type = AST_VAR_NULL;
 			break;
+		default:
+			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
 
 	return result;
@@ -838,6 +858,8 @@ Variable *EvaluateBinaryNotEqual(Variable *left, Variable *right) {
 		case AST_VAR_NULL:
 			result->data_type = AST_VAR_NULL;
 			break;
+		default:
+			throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided ASTNode type not recognized");
 	}
 
 	return result;
@@ -850,6 +872,8 @@ Variable * EvaluateArgument(ASTNode* arg) {
 	else if(arg->type == AST_EXPRESSION) {
 		return  EvaluateExpression(arg);
 	}
+
+	return NULL;
 }
 
 Variable * BuiltInConcat(ASTList * args) {
@@ -975,6 +999,8 @@ void InterpretCout(ASTNode *cout) {
 			case AST_VAR_BOOL:
 				printf(result->data.bool_data ? "true" : "false");
 				break;
+			default:
+				throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided var in cout not supported");
 		}
 
 		list = list->next;
@@ -1019,6 +1045,8 @@ void InterpretCin(ASTNode *cin) {
 			case AST_VAR_NULL:
 				 break;
 			}
+			default:
+				throw_error(CODE_ERROR_RUNTIME_OTHER, "[Interpret] Provided var in cin not supported");
 		}
 
 		// inputed variables are always initialized if no error happened
