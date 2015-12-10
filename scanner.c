@@ -435,31 +435,35 @@ q7: //double e +- OK
 q8: //string OK
 	if(PRINT) printf("q8 string\n");
 	switch(input_char_type) {
-		case OTHERS:			
+		case OTHERS:	
+		 printf("*\n");		
 			if(input_char == '\\') {
 				//save(&tmpData, input_char);
 				read_input();
 				goto q9;	//escaped string
 			} else if(input_char == '"') {
 				//q10
-				//save(&tmpData, 0);
+				save(&tmpData, 0);  //UZAVRENI RETEZCE NULOVYM ZNAKEM
 				return tmpData;
 			}
 			save(&tmpData, input_char);
 			read_input();
 			goto q8; //string
-		case WHITE_SPACE:			 
+		case WHITE_SPACE:	
+			printf("**\n");	
 			if(input_char == 32) {
 				save(&tmpData, input_char);
 				read_input();
 				goto q8; //string	
 			}
+			printf("%d\n",input_char);	
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;
 		case END:
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;
-		default:			
+		default:	
+			printf("***\n");	
 			save(&tmpData, input_char);
 			read_input();
 			goto q8;  //string
