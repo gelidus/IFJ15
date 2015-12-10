@@ -436,8 +436,7 @@ q8: //string OK
 	if(PRINT) printf("q8 string\n");
 	switch(input_char_type) {
 		case OTHERS:	
-		 printf("*\n");		
-			if(input_char == '\\') {
+		 		if(input_char == '\\') {
 				//save(&tmpData, input_char);
 				read_input();
 				goto q9;	//escaped string
@@ -450,8 +449,7 @@ q8: //string OK
 			read_input();
 			goto q8; //string
 		case WHITE_SPACE:	
-			printf("**\n");	
-			if(input_char == 32) {
+				if(input_char == 32) {
 				save(&tmpData, input_char);
 				read_input();
 				goto q8; //string	
@@ -463,7 +461,6 @@ q8: //string OK
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;
 		default:	
-			printf("***\n");	
 			save(&tmpData, input_char);
 			read_input();
 			goto q8;  //string
