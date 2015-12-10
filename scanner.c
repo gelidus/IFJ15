@@ -26,6 +26,8 @@ static int length; //delka retezce
 static int chunks; //zvetsovani bufferu
 
 static char *e_strtod; //osetreni parametru pro prevod cisel double
+static unsigned char tmpx = 0;
+
 
 enum lex_type check_keyword(char* candidate) {
   int i = -1;
@@ -467,73 +469,112 @@ q9: //escaped string OK
 	if(PRINT) printf("q9 escaped string\n");
 	switch(input_char_type) {
 		case END:
+		if(PRINT) printf("vypis 1\n");
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;			
 		default:
+		if(PRINT) printf("vypis 2\n");
 		
-		//  n -> \n   t -> \t
-			if(input_char == 'n' || input_char == 't' || input_char == '\\' || input_char == '"') {
-				save(&tmpData, '\\');
+		//  n -> \n   t -> \t   /* LOMITKA DOPLNENA */
+		
+			if(input_char == 'n' || input_char == 't' || input_char == '\\' || input_char == '"') 
+			{
+												if(PRINT) printf("vypis 3\n");
+			//	save(&tmpData, '\\');   NENMA TU BYT
+ 				if(input_char == 'n')
+ 				save(&tmpData, '\n');	
+ 				else if (input_char == 't')
+ 				save(&tmpData, '\t');
+ 				else
 				save(&tmpData, input_char);
+												if(PRINT) printf("vypis 5\n");
 				read_input();
+												if(PRINT) printf("vypis 6\n");
 				goto q8;  //string
-			} else if(input_char == 'x') {
+												if(PRINT) printf("vypis 7\n");
+			} else if(input_char == 'x') 
+												if(PRINT) printf("vypis 8\n");
+			{
 				read_input();
+												if(PRINT) printf("vypis 9\n");
 				goto q16;
 			}
 			throw_error(CODE_ERROR_LEX, "invalid input");
+												if(PRINT) printf("\n");
 			break;			
 	}
 	
+	
+	
 q16: //escaped string x
+
+tmpx = 0;
 	switch(input_char_type) {
 		case LETTER:
-			if(input_char < 65 || input_char > 70) {
-				throw_error(CODE_ERROR_LEX, "invalid input");
-				break;					
-			} else if(input_char < 97 || input_char > 102) {
-				throw_error(CODE_ERROR_LEX, "invalid input");
-				break;							
+									if(PRINT) printf("vypis 10\n");
+			if(input_char >= 'A' && input_char <= 'F') {
+								tmpx += (input_char - 'A'+10)*16;
+				
+												break;
+									if(PRINT) printf("vypis 11\n");
+								
+			} else if(input_char >= 'a' && input_char <= 'f') {
+								tmpx += (input_char - 'a'+10)*16;
+				
+									if(PRINT) printf("vypis 12\n");	
+								break;						
+					
 			}
+			throw_error(CODE_ERROR_LEX, "invalid input");
+	
+						
 		case DIGIT:
+			tmpx += (input_char - '0')*16;
 			//ulozit do tmp promenne ....prevod na cislo dokoncit z hexadec. na cislo
 			//neznamekovy char, nasobeni 16
-			tmp_esc_val[0] = '2';
-			//printf("** %i\n", tmp_esc_val);
+			// tmp_esc_val[0] = '2';  DELETE
+ 			//printf("** %i\n", tmp_esc_val);
 			//printf("** %c\n", tmp_esc_val);			
 			//tmp_esc_val = input_char * 16;
-			read_input();
-			goto q17;
+					if(PRINT) printf("vypis 14\n");
+			
+			break;
 		default:
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;		
 	}
+	read_input();
+	goto q17;
 	
 q17: //escaped string xH
 	switch(input_char_type) {
 		case LETTER:
-			if(input_char < 65 || input_char > 70) {
-				throw_error(CODE_ERROR_LEX, "invalid input");
-				break;					
-			} else if(input_char < 97 || input_char > 102) {
-				throw_error(CODE_ERROR_LEX, "invalid input");
+		if(input_char >= 'A' && input_char <= 'F') {
+				tmpx += (input_char - 'A'+10);
+				break;
+									
+			} else if(input_char >= 'a' && input_char <= 'f') {
+				tmpx += (input_char - 'a'+10);
 				break;							
 			}
+			throw_error(CODE_ERROR_LEX, "invalid input");
+			
 		case DIGIT:
-			tmp_esc_val[1] = '1';
+			tmpx += (input_char - '0');
+			break;
+			//tmp_esc_val[1] = '1';
 			//const char *frmtChar = hexToInt(tmp_esc_val);
 			//unsigned char *resChar;
 			//sscanf(&frmtChar, "%c", &resChar);
-			save(&tmpData, hexToInt(tmp_esc_val));			
-			read_input();
-			goto q8;
+		
 		default:
 			throw_error(CODE_ERROR_LEX, "invalid input");
 			break;		
 	}	
-
-	return tmpData;
-}
+	save(&tmpData,tmpx);			
+	read_input();
+	goto q8;
+	}
 
 unsigned char hexToInt(unsigned char *tmp)
 {
