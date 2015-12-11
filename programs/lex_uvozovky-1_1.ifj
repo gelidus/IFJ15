@@ -1,1 +1,1 @@
-"hello'
+int main () {int c = "hello"; int a = "date'}

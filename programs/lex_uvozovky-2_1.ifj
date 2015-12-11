@@ -1,1 +1,1 @@
-int main {int c = "hello"; int a = "}//token se k lexikalu nedostane
+int main () {int c = "hello"; int a = "}//token se k lexikalu nedostane
