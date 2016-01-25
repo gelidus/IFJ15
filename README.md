@@ -1,11 +1,12 @@
 # IFJ15
 
+School team project for compilers class.
 
-## Unit Testing
+These are the results:
 
-To start the unit tests, either define UNIT_TEST on the compilation, or uncomment
-the definition in the `common.h` file
-
-## IO Testing
-
-TODO
+Lexical analysis: 88% (220/248)
+Syntax analysis: 71% (185/259)
+Semantic analysis: 76% (250/328)
+Interpretation errors: 46% (90/195)
+Interpretation: 68% (680/997)
+Final: 70% (1425/2027)
